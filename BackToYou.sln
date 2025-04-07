@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35919.96
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiGateways", "ApiGateways", "{5F80DB54-963A-4A37-ADA7-5595E0EF06F5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildingBlocks", "BuildingBlocks", "{DD3827B6-199B-4E08-99B6-86E41C1326A5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Auth", "Auth", "{A4E8902B-35AA-4BA2-8E2C-793894A7F0AE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebApps", "WebApps", "{9070ACF3-F90C-45DF-801C-8594A7DC23BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackToYou.Web", "WebApps\BackToYou.Web\BackToYou.Web.csproj", "{E9F43F00-95F8-469C-8F3C-F02E57737F1F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.API", "Services\Auth\Auth.API\Auth.API.csproj", "{A97B6D8E-9E8D-402C-81F7-0818CA031716}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E9F43F00-95F8-469C-8F3C-F02E57737F1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9F43F00-95F8-469C-8F3C-F02E57737F1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9F43F00-95F8-469C-8F3C-F02E57737F1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9F43F00-95F8-469C-8F3C-F02E57737F1F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A97B6D8E-9E8D-402C-81F7-0818CA031716}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A97B6D8E-9E8D-402C-81F7-0818CA031716}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A97B6D8E-9E8D-402C-81F7-0818CA031716}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A97B6D8E-9E8D-402C-81F7-0818CA031716}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A4E8902B-35AA-4BA2-8E2C-793894A7F0AE} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{E9F43F00-95F8-469C-8F3C-F02E57737F1F} = {9070ACF3-F90C-45DF-801C-8594A7DC23BB}
+		{A97B6D8E-9E8D-402C-81F7-0818CA031716} = {A4E8902B-35AA-4BA2-8E2C-793894A7F0AE}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {77533E4F-064D-4AA1-8726-6DDF04D87391}
+	EndGlobalSection
+EndGlobal
