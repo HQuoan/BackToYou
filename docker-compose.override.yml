@@ -1,0 +1,10 @@
+services:
+  authdb:
+    container_name: authdb
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Hquoan12345678
+    restart: always
+    ports:
+      - "1400:1433"
+  
