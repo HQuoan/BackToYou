@@ -1,3 +1,11 @@
 ﻿global using BuildingBlocks.Enums;
 global using BuildingBlocks.Models;
 global using BuildingBlocks.Enums.Interceptors;
+global using Auth.API.Data;
+global using Auth.API.Models;
+global using Auth.API.Services;
+global using Auth.API.Services.IServices;
+global using Auth.API.Models.Dtos;
+global using EmailService;
+global using Microsoft.AspNetCore.Identity;
+global using Microsoft.EntityFrameworkCore;

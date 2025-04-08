@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Auth.API.Models;
 
@@ -14,6 +14,9 @@ public class ApplicationUser : IdentityUser, IBaseEntity
     public string? Avatar { get; set; }
     public int CoinBalance { get; set; } = default!;
     public float ReputationScore { get; set; } = default!;
+
+    [NotMapped]
+    public Role? Role { get; set; }
 
     public DateTime? CreatedAt { get; set; }
     public string? CreatedBy { get; set; }
