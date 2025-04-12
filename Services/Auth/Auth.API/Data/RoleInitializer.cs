@@ -1,4 +1,5 @@
 ﻿using Auth.API.Models;
+using BuildingBlocks.Utilities;
 using Microsoft.AspNetCore.Identity;
 
 namespace Auth.API.Data;
@@ -10,7 +11,7 @@ public class RoleInitializer
         var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-        string[] roles = Enum.GetNames(typeof(Role));
+        string[] roles = { SD.CustomerRole, SD.AdminRole };
 
         foreach (var role in roles)
         {
@@ -37,7 +38,7 @@ public class RoleInitializer
                 Email = adminEmail,
                 Avatar = null,
                 NormalizedEmail = adminEmail.ToUpper(),
-                Sex = Sex.Male,
+                Sex = SD.Male,
                 DateOfBirth = DateTime.UtcNow,
                 EmailConfirmed = true,
             };
@@ -45,7 +46,7 @@ public class RoleInitializer
             var result = await userManager.CreateAsync(adminUser, "Admin@123");
             if (result.Succeeded)
             {
-                await userManager.AddToRoleAsync(adminUser, Role.ADMIN.ToString());
+                await userManager.AddToRoleAsync(adminUser, SD.AdminRole);
             }
             else
             {

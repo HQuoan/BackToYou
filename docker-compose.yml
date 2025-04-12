@@ -1,5 +1,5 @@
 services:
-    authdb: 
+    sqldb: 
         image: mcr.microsoft.com/mssql/server
 
     # postdb: 
@@ -13,7 +13,7 @@ services:
     #       dockerfile: ApiGateways/YarpApiGateway/Dockerfile
 
 volumes:
-  sqlserver_auth:
+  sqlserver:
   # sqlserver_post:
   
 

@@ -1,6 +1,4 @@
-﻿using BuildingBlocks.Dtos;
-using BuildingBlocks.Utilities;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 

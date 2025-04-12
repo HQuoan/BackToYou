@@ -1,3 +1,5 @@
+using Auth.API;
+using AutoMapper;
 using BuildingBlocks.Exceptions.Handler;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
@@ -12,6 +14,11 @@ builder.Services.AddDbContext<AppDbContext>((sp, options) =>
     options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+// Configure AutoMapper
+IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
+builder.Services.AddSingleton(mapper);
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 
 

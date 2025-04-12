@@ -1,6 +1,6 @@
 services:
-  authdb:
-    container_name: authdb
+  sqldb:
+    container_name: sqldb
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=Hquoan12345678
@@ -8,7 +8,7 @@ services:
     ports:
       - "1400:1433"
     volumes:
-      - sqlserver_auth:/var/opt/mssql
+      - sqlserver:/var/opt/mssql
   # postdb:
   #   container_name: postdb
   #   environment:

@@ -1,6 +1,4 @@
 ﻿using Auth.API.Exceptions;
-using BuildingBlocks.Exceptions;
-using BuildingBlocks.Utilities;
 using Microsoft.Extensions.Options;
 
 namespace Auth.API.Services;
