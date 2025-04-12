@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using System.Text.Json.Serialization;
+using BuildingBlocks.Utilities;
 
 namespace Auth.API.Models.Dtos;
 
@@ -41,9 +42,8 @@ public class RegistrationRequestDto
     //public Sex Sex { get; set; }
 
     [Required]
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    [DefaultValue(Sex.Male)]
-    public Sex Sex { get; set; }
+    [DefaultValue(SD.Male)]
+    public string Sex { get; set; }
 
     [Required]
     public DateTime DateOfBirth { get; set; }

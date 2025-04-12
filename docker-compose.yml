@@ -2,7 +2,18 @@ services:
     authdb: 
         image: mcr.microsoft.com/mssql/server
 
+    # postdb: 
+    #     image: mcr.microsoft.com/mssql/server
+
+
+    # yarpapigateway:
+    #     image: ${DOCKER_REGISTRY-}yarpapigateway
+    #     build:
+    #       context: .
+    #       dockerfile: ApiGateways/YarpApiGateway/Dockerfile
 
 volumes:
   sqlserver_auth:
+  # sqlserver_post:
   
+

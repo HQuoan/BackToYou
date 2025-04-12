@@ -1,6 +1,4 @@
-﻿using Auth.API.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Auth.API.Data;
 
@@ -15,11 +13,5 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-
-        builder.Entity<ApplicationUser>().Property(u => u.Sex)
-            .HasDefaultValue(Sex.Male)
-            .HasConversion(
-                s => s.ToString(),
-                dbSex => (Sex)Enum.Parse(typeof(Sex), dbSex));
     }
 }
