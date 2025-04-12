@@ -1,7 +1,4 @@
-﻿using Post.API.Models;
-
-namespace Post.API.Data;
-
+﻿namespace Post.API.Data;
 public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
@@ -12,5 +9,13 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+
+        builder.Entity<Category>()
+         .HasIndex(c => c.Slug)
+         .IsUnique();
+
+        builder.Entity<Category>()
+       .HasIndex(c => c.Name)
+       .IsUnique();
     }
 }

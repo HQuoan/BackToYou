@@ -1,4 +1,10 @@
+using AutoMapper;
+using BuildingBlocks.Exceptions.Handler;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Post.API;
+using Post.API.Repositories.IRepositories;
+using Post.API.Repositories;
+using Post.API.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,10 +18,20 @@ builder.Services.AddDbContext<AppDbContext>((sp, options) =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+// Configure AutoMapper
+IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
+builder.Services.AddSingleton(mapper);
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+// Learn more about configuring Swagger/OpenAPI 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 var app = builder.Build();
 
@@ -36,6 +52,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseExceptionHandler(options => { });
 
 app.Run();
 

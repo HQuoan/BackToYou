@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using BuildingBlocks.Dtos;
+using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -41,6 +42,12 @@ public class CustomExceptionHandler
                 exception.GetType().Name,
                 context.Response.StatusCode = StatusCodes.Status404NotFound
             ),
+            DuplicateKeyException =>
+            (
+                exception.Message,
+                exception.GetType().Name,
+                context.Response.StatusCode = StatusCodes.Status409Conflict
+            ),
             _ =>
             (
                 exception.Message,
@@ -54,7 +61,7 @@ public class CustomExceptionHandler
             Title = details.Title,
             Detail = details.Detail,
             Status = details.StatusCode,
-            Instance = context.Request.Path
+            Instance = context.Request.Path,
         };
 
         problemDetails.Extensions.Add("traceId", context.TraceIdentifier);
@@ -64,7 +71,13 @@ public class CustomExceptionHandler
             problemDetails.Extensions.Add("ValidationErrors", validationException.Errors);
         }
 
-        await context.Response.WriteAsJsonAsync(problemDetails, cancellationToken: cancellationToken);
+        if (exception is DuplicateKeyException dupEx && dupEx.PropertyName != null)
+        {
+            problemDetails.Extensions.Add("DuplicateField", dupEx.PropertyName);
+        }
+
+
+        await context.Response.WriteAsJsonAsync(new ResponseDto { Result = problemDetails, IsSuccess = false}, cancellationToken: cancellationToken);
         return true;
     }
 }
