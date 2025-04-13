@@ -20,10 +20,11 @@ public class UserController : ControllerBase
         _roleManager = roleManager;
         _mapper = mapper;
         _db = db;
+        _response = new();
     }
 
     [HttpGet]
-    [Authorize(Roles = SD.AdminRole)]
+   // [Authorize(Roles = SD.AdminRole)]
     public async Task<IActionResult> Get([FromQuery] UserQueryParameters queryParameters)
     {
         // Build query parameters

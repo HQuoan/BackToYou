@@ -1,10 +1,8 @@
-using AutoMapper;
-using BuildingBlocks.Exceptions.Handler;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Post.API;
-using Post.API.Repositories.IRepositories;
-using Post.API.Repositories;
-using Post.API.Exceptions;
+﻿using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +27,55 @@ builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Post Management API",
+        Version = "v1",
+        Description = "",
+        Contact = new OpenApiContact
+        {
+            Name = "Support Team",
+            Email = "vuongvodtan@gmail.com",
+            Url = new Uri("https://cineworld.io.vn")
+        },
+    });
+
+    options.AddSecurityDefinition(name: JwtBearerDefaults.AuthenticationScheme, securityScheme: new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Description = "Enter the Bearer Authorization string as following: `Bearer Generated-JWT-Token`",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = JwtBearerDefaults.AuthenticationScheme
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = JwtBearerDefaults.AuthenticationScheme
+                }
+            }, new string[]{ }
+        }
+    });
+
+    // Đường dẫn đến tệp XML
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    if (File.Exists(xmlPath))
+    {
+        options.IncludeXmlComments(xmlPath);
+    }
+});
+
+builder.AddAppAuthentication();
+builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -45,8 +91,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.UseAuthentication();
 app.UseAuthorization();

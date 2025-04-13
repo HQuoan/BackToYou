@@ -1,12 +1,5 @@
-﻿using AutoMapper;
-using BuildingBlocks.Dtos;
-using BuildingBlocks.Exceptions;
-using BuildingBlocks.Utilities;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Post.API.APIFeatures;
-using Post.API.Exceptions;
-using Post.API.Repositories.IRepositories;
 
 namespace Post.API.Controllers;
 [Route("categories")]
@@ -25,6 +18,7 @@ public class CategoryAPIController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = SD.AdminRole)]
     public async Task<ActionResult<ResponseDto>> Get([FromQuery] CategoryQueryParameters queryParameters)
     {
         var query = CategoryFeatures.Build(queryParameters);
