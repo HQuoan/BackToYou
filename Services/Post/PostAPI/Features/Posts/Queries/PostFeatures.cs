@@ -1,6 +1,7 @@
-﻿using System.Linq.Expressions;
+﻿using PostAPI.Features.Posts;
+using System.Linq.Expressions;
 
-namespace PostAPI.APIFeatures;
+namespace PostAPI.Features.Posts.Queries;
 
 public static class PostFeatures
 {
@@ -17,9 +18,30 @@ public static class PostFeatures
             {
                 switch (prop.Name)
                 {
+                    case nameof(PostQueryParameters.UserId):
+                        filters.Add(m => m.UserId == (Guid)value);
+                        break;
+
+                    case nameof(PostQueryParameters.CategoryId):
+                        filters.Add(m => m.CategoryId == (Guid)value);
+                        break;
+
                     case nameof(PostQueryParameters.Slug):
                         filters.Add(m => m.Slug.ToLower().Contains(((string)value).ToLower()));
                         break;
+
+                    case nameof(PostQueryParameters.PostType):
+                        filters.Add(m => m.PostType == (PostType)value);
+                        break;
+
+                    case nameof(PostQueryParameters.PostLabel):
+                        filters.Add(m => m.PostLabel == (PostLabel)value);
+                        break;
+
+                    case nameof(PostQueryParameters.PostStatus):
+                        filters.Add(m => m.PostStatus == (PostStatus)value);
+                        break;
+
                 }
             }
         }
@@ -41,11 +63,11 @@ public static class PostFeatures
             {
 
                 "slug" => isDescending
-                  ? (Func<IQueryable<Post>, IOrderedQueryable<Post>>)(q => q.OrderByDescending(m => m.Slug))
+                  ? (q => q.OrderByDescending(m => m.Slug))
                   : q => q.OrderBy(m => m.Slug),
 
-                "Postid" => isDescending
-                    ? (Func<IQueryable<Post>, IOrderedQueryable<Post>>)(q => q.OrderByDescending(m => m.PostId))
+                "postid" => isDescending
+                    ? (q => q.OrderByDescending(m => m.PostId))
                     : q => q.OrderBy(m => m.PostId),
 
                 _ => q => q.OrderByDescending(m => m.PostId)
@@ -54,9 +76,6 @@ public static class PostFeatures
 
         return orderByFunc;
     }
-
-
-
 
     public static QueryParameters<Post> Build(PostQueryParameters queryParameters)
     {

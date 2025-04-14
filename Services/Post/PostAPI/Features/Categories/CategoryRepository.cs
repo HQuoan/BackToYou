@@ -1,7 +1,5 @@
 ﻿using BuildingBlocks.Repositories;
-using PostAPI.Repositories.IRepositories;
-
-namespace PostAPI.Repositories;
+namespace PostAPI.Features.Categories;
 
 public class CategoryRepository : Repository<Category>, ICategoryRepository
 {

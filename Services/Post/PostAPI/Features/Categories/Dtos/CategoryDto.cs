@@ -1,8 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿namespace PostAPI.Features.Categories.Dtos;
 
-namespace PostAPI.Models.Dtos;
-
-public class CategoryDto
+public class CategoryDto : BaseEntity
 {
     public Guid CategoryId { get; set; }
 

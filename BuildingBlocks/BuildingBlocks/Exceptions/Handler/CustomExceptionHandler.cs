@@ -50,7 +50,7 @@ public class CustomExceptionHandler
             ),
             _ =>
             (
-                exception.Message,
+                $"{exception.Message} {Environment.NewLine} {exception.InnerException}",
                 exception.GetType().Name,
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError
             )

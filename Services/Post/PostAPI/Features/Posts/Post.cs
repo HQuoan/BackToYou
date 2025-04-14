@@ -1,12 +1,12 @@
-﻿using BuildingBlocks.Enums;
+﻿using PostAPI.Features.Categories;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PostAPI.Models;
+namespace PostAPI.Features.Posts;
 
 public class Post : BaseEntity
 {
     [Key]
-    public Guid PostId { get; set; }
+    public Guid PostId { get; set; } 
     [Required]
     public Guid UserId { get; set; }
     [Required]

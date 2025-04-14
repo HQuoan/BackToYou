@@ -1,6 +1,7 @@
-﻿using System.Linq.Expressions;
+﻿using PostAPI.Features.Categories;
+using System.Linq.Expressions;
 
-namespace PostAPI.APIFeatures;
+namespace PostAPI.Features.Categories.Queries;
 
 public static class CategoryFeatures
 {
@@ -43,15 +44,15 @@ public static class CategoryFeatures
             orderByFunc = property.ToLower() switch
             {
                 "name" => isDescending
-                    ? (Func<IQueryable<Category>, IOrderedQueryable<Category>>)(q => q.OrderByDescending(m => m.Name))
+                    ? (q => q.OrderByDescending(m => m.Name))
                     : q => q.OrderBy(m => m.Name),
 
                 "slug" => isDescending
-                  ? (Func<IQueryable<Category>, IOrderedQueryable<Category>>)(q => q.OrderByDescending(m => m.Slug))
+                  ? (q => q.OrderByDescending(m => m.Slug))
                   : q => q.OrderBy(m => m.Slug),
 
                 "categoryid" => isDescending
-                    ? (Func<IQueryable<Category>, IOrderedQueryable<Category>>)(q => q.OrderByDescending(m => m.CategoryId))
+                    ? (q => q.OrderByDescending(m => m.CategoryId))
                     : q => q.OrderBy(m => m.CategoryId),
 
                 _ => q => q.OrderByDescending(m => m.CategoryId)

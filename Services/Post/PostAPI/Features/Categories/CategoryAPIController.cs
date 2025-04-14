@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PostAPI.Features.Categories.Dtos;
+using PostAPI.Features.Categories.Queries;
 
-namespace PostAPI.Controllers;
+namespace PostAPI.Features.Categories;
 [Route("categories")]
 [ApiController]
 public class CategoryAPIController : ControllerBase
@@ -18,7 +20,7 @@ public class CategoryAPIController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Roles = SD.AdminRole)]
+    //[Authorize(Roles = SD.AdminRole)]
     public async Task<ActionResult<ResponseDto>> Get([FromQuery] CategoryQueryParameters queryParameters)
     {
         var query = CategoryFeatures.Build(queryParameters);
@@ -68,11 +70,10 @@ public class CategoryAPIController : ControllerBase
 
     [HttpPost]
     //[Authorize(Roles = SD.AdminRole)]
-    public async Task<ActionResult<ResponseDto>> Post([FromBody] CategoryDto categoryDto)
+    public async Task<ActionResult<ResponseDto>> Post([FromBody] CategoryCreateDto categoryDto)
     {
         Category category = _mapper.Map<Category>(categoryDto);
 
-        category.CategoryId = Guid.NewGuid();
         // Generate slug
         category.Slug = SlugGenerator.GenerateSlug(category.Name);
 
@@ -100,9 +101,8 @@ public class CategoryAPIController : ControllerBase
 
     [HttpPut]
     //[Authorize(Roles = SD.AdminRole)]
-    public async Task<ActionResult<ResponseDto>> Put([FromBody] CategoryDto categoryDto)
+    public async Task<ActionResult<ResponseDto>> Put([FromBody] CategoryUpdateDto categoryDto)
     {
-        Category category = _mapper.Map<Category>(categoryDto);
 
         Category cateFromDb = await _unitOfWork.Category.GetAsync(c => c.CategoryId == categoryDto.CategoryId);
         if (cateFromDb == null)
@@ -110,9 +110,10 @@ public class CategoryAPIController : ControllerBase
             throw new CategoryNotFoundException(categoryDto.CategoryId);
         }
 
-        // Generate slug
-        cateFromDb.Name = category.Name;
-        cateFromDb.Slug = SlugGenerator.GenerateSlug(category.Name);
+        _mapper.Map(categoryDto, cateFromDb);
+
+        cateFromDb.Slug = SlugGenerator.GenerateSlug(categoryDto.Name);
+
 
         try
         {

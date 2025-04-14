@@ -1,4 +1,4 @@
-﻿namespace PostAPI.APIFeatures;
+﻿namespace PostAPI.Features.Categories.Queries;
 
 public class CategoryQueryParameters : BaseQueryParameters
 {

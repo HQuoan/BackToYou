@@ -1,4 +1,6 @@
-﻿namespace PostAPI.Models;
+﻿using PostAPI.Features.Posts;
+
+namespace PostAPI.Features.Categories;
 
 public class Category : BaseEntity
 {
