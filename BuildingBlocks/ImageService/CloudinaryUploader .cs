@@ -21,25 +21,93 @@ public class CloudinaryUploader : IImageUploader
         _cloudinary = new Cloudinary(account);
     }
 
-    public async Task<string> UploadImageAsync(IFormFile file)
+    public async Task<ImageUploadResult> UploadImageAsync(IFormFile file)
     {
-        if (file == null || file.Length == 0) return null;
-
-        await using var stream = file.OpenReadStream();
-        var uploadParams = new ImageUploadParams
+        if (file == null || file.Length == 0)
         {
-            File = new FileDescription(file.FileName, stream),
-            Folder = _folderName
-        };
+            return new ImageUploadResult
+            {
+                IsSuccess = false,
+                ErrorMessage = "File is null or empty."
+            };
+        }
 
-        var uploadResult = await _cloudinary.UploadAsync(uploadParams);
-        return uploadResult.SecureUrl?.ToString();
+        try
+        {
+            await using var stream = file.OpenReadStream();
+            var uploadParams = new ImageUploadParams
+            {
+                File = new FileDescription(file.FileName, stream),
+                Folder = _folderName
+            };
+
+            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+
+            if (uploadResult.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return new ImageUploadResult
+                {
+                    IsSuccess = true,
+                    Url = uploadResult.SecureUrl?.ToString(),
+                    PublicId = uploadResult.PublicId
+                };
+            }
+
+            return new ImageUploadResult
+            {
+                IsSuccess = false,
+                ErrorMessage = uploadResult.Error?.Message ?? "Upload failed for unknown reason."
+            };
+        }
+        catch (Exception ex)
+        {
+            return new ImageUploadResult
+            {
+                IsSuccess = false,
+                ErrorMessage = $"Exception: {ex.Message}"
+            };
+        }
     }
 
-    public async Task<bool> DeleteImageAsync(string publicId)
+
+    public async Task<ImageUploadResult> DeleteImageAsync(string publicId)
     {
-        var deletionParams = new DeletionParams(publicId);
-        var result = await _cloudinary.DestroyAsync(deletionParams);
-        return result.Result == "ok";
+        if (string.IsNullOrWhiteSpace(publicId))
+        {
+            return new ImageUploadResult
+            {
+                IsSuccess = false,
+                ErrorMessage = "PublicId is required."
+            };
+        }
+
+        try
+        {
+            var deletionParams = new DeletionParams(publicId);
+            var result = await _cloudinary.DestroyAsync(deletionParams);
+
+            if (result.Result == "ok")
+            {
+                return new ImageUploadResult
+                {
+                    IsSuccess = true
+                };
+            }
+
+            return new ImageUploadResult
+            {
+                IsSuccess = false,
+                ErrorMessage = result.Error?.Message ?? $"Delete failed: {result.Result}"
+            };
+        }
+        catch (Exception ex)
+        {
+            return new ImageUploadResult
+            {
+                IsSuccess = false,
+                ErrorMessage = $"Exception: {ex.Message}"
+            };
+        }
     }
+
 }

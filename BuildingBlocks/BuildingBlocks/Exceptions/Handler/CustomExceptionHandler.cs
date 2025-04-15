@@ -49,6 +49,11 @@ public class CustomExceptionHandler(ILogger<CustomExceptionHandler> logger)
                 nameof(NotFoundException),
                 StatusCodes.Status404NotFound),
 
+            ForbiddenException => (
+                exception.Message,
+                nameof(ForbiddenException),
+                StatusCodes.Status403Forbidden),
+
             DuplicateKeyException => (
                 exception.Message,
                 nameof(DuplicateKeyException),

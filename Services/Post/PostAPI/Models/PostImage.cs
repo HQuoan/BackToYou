@@ -11,5 +11,6 @@ public class PostImage
     [ForeignKey(nameof(PostId))]
     public Post? Post { get; set; }
     public string ImageUrl { get; set; }
+    public string PublicId { get; set; }
     //public string? FeatureVector { get; set; } sẽ lưu ở no sql
 }

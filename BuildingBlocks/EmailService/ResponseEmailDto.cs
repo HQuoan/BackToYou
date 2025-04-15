@@ -2,6 +2,6 @@
 
 public class ResponseEmailDto
 {
-public bool IsSuccess { get; set; } = true;
-public string Message { get; set; } = "";
+    public bool IsSuccess { get; set; } = true;
+    public string Message { get; set; } = "";
 }

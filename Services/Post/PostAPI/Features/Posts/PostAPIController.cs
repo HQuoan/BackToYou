@@ -1,7 +1,10 @@
-﻿using ImageService;
+﻿using BuildingBlocks.Dtos;
+using ImageService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PostAPI.Features.Posts.Dtos;
 using PostAPI.Features.Posts.Queries;
+using System.Security.Claims;
 
 namespace PostAPI.Features.Posts;
 [Route("posts")]
@@ -47,19 +50,62 @@ public class PostAPIController : ControllerBase
         return Ok(_response);
     }
 
+    [HttpGet("me")]
+    [Authorize]
+    public async Task<ActionResult<ResponseDto>> GetMyPosts([FromQuery] PostQueryParameters? queryParameters)
+    {
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+        {
+            throw new BadRequestException("Invalid or missing user ID claim.");
+        }
+        queryParameters.UserId = userId;
+
+        var query = PostFeatures.Build(queryParameters);
+        query.IncludeProperties = "Category,PostImages";
+
+        IEnumerable<Post> posts = await _unitOfWork.Post.GetAllAsync(query);
+
+        _response.Result = _mapper.Map<IEnumerable<PostDto>>(posts);
+
+        int totalItems = await _unitOfWork.Post.CountAsync(query);
+        _response.Pagination = new PaginationDto
+        {
+            TotalItems = totalItems,
+            TotalItemsPerPage = queryParameters.PageSize,
+            CurrentPage = queryParameters.PageNumber,
+            TotalPages = (int)Math.Ceiling((double)totalItems / queryParameters.PageSize)
+        };
+
+        return Ok(_response);
+    }
+
+
     [HttpGet]
     [Route("{id}")]
-    public async Task<ActionResult<ResponseDto>> GetById(string id)
+    public async Task<ActionResult<ResponseDto>> GetById(Guid id)
     {
         Post post;
         bool isAdmin = User.IsInRole(SD.AdminRole);
+
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+
         if (isAdmin)
         {
-            post = await _unitOfWork.Post.GetAsync(c => c.PostId.ToString() == id, includeProperties: "Category,PostImages");
+            post = await _unitOfWork.Post.GetAsync(c => c.PostId == id, includeProperties: "Category,PostImages");
+        }   
+        else if (userIdClaim != null)
+        {
+            if (!Guid.TryParse(userIdClaim.Value, out Guid userId))
+            {
+                throw new BadRequestException("Invalid or missing user ID claim.");
+            }
+
+            post = await _unitOfWork.Post.GetAsync(c => c.PostId == id && c.UserId == userId, includeProperties: "Category,PostImages");
         }
         else
         {
-            post = await _unitOfWork.Post.GetAsync(c => c.PostId.ToString() == id && c.PostStatus == PostStatus.Resolved, includeProperties: "Category,PostImages");
+            post = await _unitOfWork.Post.GetAsync(c => c.PostId == id && c.PostStatus == PostStatus.Approved, includeProperties: "Category,PostImages");
         }
 
         if (post == null)
@@ -78,13 +124,24 @@ public class PostAPIController : ControllerBase
     {
         Post post;
         bool isAdmin = User.IsInRole(SD.AdminRole);
+
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
         if (isAdmin)
         {
             post = await _unitOfWork.Post.GetAsync(c => c.Slug == slug, includeProperties: "Category,PostImages");
         }
+        else if (userIdClaim != null)
+        {
+            if (!Guid.TryParse(userIdClaim.Value, out Guid userId))
+            {
+                throw new BadRequestException("Invalid or missing user ID claim.");
+            }
+
+            post = await _unitOfWork.Post.GetAsync(c => c.Slug == slug && c.UserId == userId, includeProperties: "Category,PostImages");
+        }
         else
         {
-            post = await _unitOfWork.Post.GetAsync(c => c.Slug == slug && c.PostStatus == PostStatus.Resolved, includeProperties: "Category,PostImages");
+            post = await _unitOfWork.Post.GetAsync(c => c.Slug == slug && c.PostStatus == PostStatus.Approved, includeProperties: "Category,PostImages");
         }
 
         if (post == null)
@@ -102,6 +159,13 @@ public class PostAPIController : ControllerBase
     [Consumes("multipart/form-data")] // Bắt buộc để dùng IFormFile
     public async Task<ActionResult<ResponseDto>> Post([FromForm] PostCreateDto postDto)
     {
+        //var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        //if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+        //{
+        //    throw new BadRequestException("Invalid or missing user ID claim.");
+        //}
+        //postDto.UserId = userId;
+
         Post post = _mapper.Map<Post>(postDto);
         post.PostStatus = PostStatus.Pending;
 
@@ -117,21 +181,26 @@ public class PostAPIController : ControllerBase
 
         // upload images
         int i = 0;
-        if(postDto.ThumbnailIndex > postDto.ImageFiles.Count ||  postDto.ThumbnailIndex < 0)
+        if(postDto.ThumbnailIndex >= postDto.ImageFiles.Count ||  postDto.ThumbnailIndex < 0)
             postDto.ThumbnailIndex = 0;
 
         foreach (var imgDto in postDto.ImageFiles)
         {
-            var imageUrl = await _imageUploader.UploadImageAsync(imgDto);
+            var imageResult = await _imageUploader.UploadImageAsync(imgDto);
+            if (!imageResult.IsSuccess) {
+                throw new BadRequestException(imageResult.ErrorMessage);
+            }
+
             var postImage = new PostImage
             {
                 PostId = post.PostId,
-                ImageUrl = imageUrl,
+                ImageUrl = imageResult.Url,
+                PublicId = imageResult.PublicId,
             };
             await _unitOfWork.PostImage.AddAsync(postImage);
 
-            if(i == postDto.ThumbnailIndex)
-                post.ThumbnailUrl = imageUrl;
+            if (i == postDto.ThumbnailIndex)
+                post.ThumbnailUrl = imageResult.Url;
 
             i++;
         }
@@ -147,16 +216,87 @@ public class PostAPIController : ControllerBase
     //[Authorize(Roles = SD.AdminRole)]
     public async Task<ActionResult<ResponseDto>> Put([FromBody] PostUpdateDto postDto)
     {
+        if ((!postDto.RetainedImagePublicIds?.Any() ?? true) && (postDto.ImageFiles == null || !postDto.ImageFiles.Any()))
+        {
+            throw new BadRequestException("Post must contain at least one image.");
+        }
+
+        bool isAdmin = User.IsInRole(SD.AdminRole);
+
         Post postFromDb = await _unitOfWork.Post.GetAsync(c => c.PostId == postDto.PostId);
         if (postFromDb == null)
         {
             throw new PostNotFoundException(postDto.PostId);
         }
 
-        postDto.Slug = SlugGenerator.GenerateSlug(postDto.Title);
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+        {
+            throw new ForbiddenException();
+        }
+        
+        if(!isAdmin || userId != postFromDb.UserId)
+        {
+            throw new BadRequestException("Invalid or missing user ID claim.");
+        }
+
+
+        postFromDb.Slug = SlugGenerator.GenerateSlug(postDto.Title);
 
         // Cập nhật các thuộc tính của movieFromDb từ movieDto
         _mapper.Map(postDto, postFromDb);
+
+        //xử lý ảnh
+        var queryImage = new QueryParameters<PostImage>();
+        queryImage.Filters.Add(img => img.PostId == postDto.PostId);
+
+        var existingImages = await _unitOfWork.PostImage
+            .GetAllAsync(queryImage);
+
+        // xóa ảnh cũ 
+        var imagesToDelete = existingImages
+                                .Where(img => !postDto.RetainedImagePublicIds.Contains(img.PublicId))
+                                .ToList();
+
+        foreach (var img in imagesToDelete)
+        {
+            var result = await _imageUploader.DeleteImageAsync(img.PublicId);
+            if (result.IsSuccess)
+            {
+                await _unitOfWork.PostImage.RemoveAsync(img);
+            }
+            else
+            {
+                throw new BadRequestException(result.ErrorMessage);
+            }
+        }
+
+        //  upload ảnh mới
+        foreach (var imgDto in postDto.ImageFiles)
+        {
+            var imageResult = await _imageUploader.UploadImageAsync(imgDto);
+            if (!imageResult.IsSuccess)
+                throw new BadRequestException(imageResult.ErrorMessage);
+
+            var postImage = new PostImage
+            {
+                PostId = postFromDb.PostId,
+                ImageUrl = imageResult.Url,
+                PublicId = imageResult.PublicId
+            };
+            await _unitOfWork.PostImage.AddAsync(postImage);
+        }
+
+        // update thumbnail
+        var updatedImages = await _unitOfWork.PostImage.GetAllAsync(queryImage);
+        if (postDto.ThumbnailIndex < 0 || postDto.ThumbnailIndex >= updatedImages.Count())
+        {
+            postDto.ThumbnailIndex = 0;
+        }
+
+        var thumb = updatedImages.ElementAtOrDefault(postDto.ThumbnailIndex);
+        postFromDb.ThumbnailUrl = thumb?.ImageUrl;
+
 
         await _unitOfWork.Post.UpdateAsync(postFromDb);
         await _unitOfWork.SaveAsync();
@@ -168,19 +308,35 @@ public class PostAPIController : ControllerBase
 
     [HttpDelete]
     //[Authorize(Roles = SD.AdminRole)]
-    public async Task<ActionResult<ResponseDto>> Delete(string id)
+    public async Task<ActionResult<ResponseDto>> Delete(Guid id)
     {
-        var post = await _unitOfWork.Post.GetAsync(c => c.PostId.ToString() == id);
+        var post = await _unitOfWork.Post.GetAsync(c => c.PostId == id);
         if (post == null)
         {
             throw new PostNotFoundException(id);
         }
 
+        // xóa ảnh trên cloud
+        var queryImage = new QueryParameters<PostImage>();
+        queryImage.Filters.Add(img => img.PostId == id);
+
+        var existingImages = await _unitOfWork.PostImage
+            .GetAllAsync(queryImage);
+
+        foreach (var img in existingImages)
+        {
+            var result = await _imageUploader.DeleteImageAsync(img.PublicId);
+            if (!result.IsSuccess)
+            {
+                throw new BadRequestException(result.ErrorMessage);
+            }
+        }
+
+        // xóa post và post images
         await _unitOfWork.Post.RemoveAsync(post);
         await _unitOfWork.SaveAsync();
 
         return Ok(_response);
     }
-
 }
 

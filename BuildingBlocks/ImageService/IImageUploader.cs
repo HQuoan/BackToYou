@@ -3,6 +3,6 @@
 namespace ImageService;
 public interface IImageUploader
 {
-    Task<string> UploadImageAsync(IFormFile file);
-    Task<bool> DeleteImageAsync(string publicId);
+    Task<ImageUploadResult> UploadImageAsync(IFormFile file);
+    Task<ImageUploadResult> DeleteImageAsync(string publicId);
 }
