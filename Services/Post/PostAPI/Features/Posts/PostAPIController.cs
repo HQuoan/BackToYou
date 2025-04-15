@@ -1,5 +1,4 @@
-﻿using BuildingBlocks.Dtos;
-using ImageService;
+﻿using ImageService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PostAPI.Features.Posts.Dtos;
@@ -88,24 +87,27 @@ public class PostAPIController : ControllerBase
         Post post;
         bool isAdmin = User.IsInRole(SD.AdminRole);
 
-        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
 
         if (isAdmin)
         {
             post = await _unitOfWork.Post.GetAsync(c => c.PostId == id, includeProperties: "Category,PostImages");
         }   
-        else if (userIdClaim != null)
-        {
-            if (!Guid.TryParse(userIdClaim.Value, out Guid userId))
-            {
-                throw new BadRequestException("Invalid or missing user ID claim.");
-            }
-
-            post = await _unitOfWork.Post.GetAsync(c => c.PostId == id && c.UserId == userId, includeProperties: "Category,PostImages");
-        }
         else
         {
             post = await _unitOfWork.Post.GetAsync(c => c.PostId == id && c.PostStatus == PostStatus.Approved, includeProperties: "Category,PostImages");
+
+            if (post.PostStatus != PostStatus.Approved) {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+                if (!Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    throw new BadRequestException("Invalid or missing user ID claim.");
+                }
+
+                if(userId != post.UserId)
+                {
+                    throw new ForbiddenException();
+                }
+            }
         }
 
         if (post == null)
@@ -125,23 +127,27 @@ public class PostAPIController : ControllerBase
         Post post;
         bool isAdmin = User.IsInRole(SD.AdminRole);
 
-        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
         if (isAdmin)
         {
             post = await _unitOfWork.Post.GetAsync(c => c.Slug == slug, includeProperties: "Category,PostImages");
         }
-        else if (userIdClaim != null)
-        {
-            if (!Guid.TryParse(userIdClaim.Value, out Guid userId))
-            {
-                throw new BadRequestException("Invalid or missing user ID claim.");
-            }
-
-            post = await _unitOfWork.Post.GetAsync(c => c.Slug == slug && c.UserId == userId, includeProperties: "Category,PostImages");
-        }
         else
         {
             post = await _unitOfWork.Post.GetAsync(c => c.Slug == slug && c.PostStatus == PostStatus.Approved, includeProperties: "Category,PostImages");
+
+            if (post.PostStatus != PostStatus.Approved)
+            {
+                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+                if (!Guid.TryParse(userIdClaim.Value, out Guid userId))
+                {
+                    throw new BadRequestException("Invalid or missing user ID claim.");
+                }
+
+                if (userId != post.UserId)
+                {
+                    throw new ForbiddenException();
+                }
+            }
         }
 
         if (post == null)
