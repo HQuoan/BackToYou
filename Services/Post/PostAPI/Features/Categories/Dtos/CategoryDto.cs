@@ -4,7 +4,7 @@ public class CategoryDto : BaseEntity
 {
     public Guid CategoryId { get; set; }
 
-    [Required]
+    //[Required]
     public string Name { get; set; }
 
     public string? Slug { get; set; }

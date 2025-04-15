@@ -1,5 +1,4 @@
 using Auth.API;
-using AutoMapper;
 using BuildingBlocks.Exceptions.Handler;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 

@@ -6,6 +6,7 @@ public class PostUpdateDto
     public Guid CategoryId { get; set; }
     public string Title { get; set; }
     public string Slug { get; set; }
+    public string ThumbnailUrl { get; set; }
     public string Description { get; set; }
     public Location Location { get; set; }
     public PostType PostType { get; set; }

@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PostAPI.Features.Categories;
-using PostAPI.Features.Posts;
 
 namespace PostAPI.Data;
 public class AppDbContext : DbContext

@@ -3,6 +3,7 @@ using Microsoft.OpenApi.Models;
 using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text.Json.Serialization;
+using ImageService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -70,6 +71,9 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 
+    // Add this line to support IFormFile
+    //options.OperationFilter<SwaggerFileOperationFilter>();
+
     // Đường dẫn đến tệp XML
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -83,6 +87,7 @@ builder.AddAppAuthentication();
 builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IImageUploader, CloudinaryUploader>();
 
 var app = builder.Build();
 

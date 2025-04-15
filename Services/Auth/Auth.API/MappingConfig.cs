@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-
-namespace Auth.API;
+﻿namespace Auth.API;
 
 public class MappingConfig
 {

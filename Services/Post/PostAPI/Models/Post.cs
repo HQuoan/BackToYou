@@ -1,7 +1,6 @@
-﻿using PostAPI.Features.Categories;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace PostAPI.Features.Posts;
+namespace PostAPI.Models;
 
 public class Post : BaseEntity
 {
@@ -16,6 +15,8 @@ public class Post : BaseEntity
     [Required]
     public string Title { get; set; }
     public string Slug { get; set; }
+    [Required]
+    public string ThumbnailUrl { get; set; }
     [Required]
     public string Description { get; set; }
     public Location Location { get; set; }

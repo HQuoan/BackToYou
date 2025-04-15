@@ -1,5 +1,4 @@
-﻿using PostAPI.Features.Categories;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace PostAPI.Features.Categories.Queries;
 

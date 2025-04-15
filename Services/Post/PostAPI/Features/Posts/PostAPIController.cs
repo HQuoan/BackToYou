@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ImageService;
+using Microsoft.AspNetCore.Mvc;
 using PostAPI.Features.Posts.Dtos;
 using PostAPI.Features.Posts.Queries;
 
@@ -7,14 +8,16 @@ namespace PostAPI.Features.Posts;
 [ApiController]
 public class PostAPIController : ControllerBase
 {
+    private readonly IImageUploader _imageUploader;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private ResponseDto _response;
-    public PostAPIController(IUnitOfWork unitOfWork, IMapper mapper)
+    public PostAPIController(IUnitOfWork unitOfWork, IMapper mapper, IImageUploader imageUploader)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _response = new();
+        _imageUploader = imageUploader;
     }
 
     [HttpGet]
@@ -46,7 +49,7 @@ public class PostAPIController : ControllerBase
 
     [HttpGet]
     [Route("{id}")]
-    public async Task<ActionResult<ResponseDto>> Get(string id)
+    public async Task<ActionResult<ResponseDto>> GetById(string id)
     {
         Post post;
         bool isAdmin = User.IsInRole(SD.AdminRole);
@@ -61,7 +64,32 @@ public class PostAPIController : ControllerBase
 
         if (post == null)
         {
-            throw new NotFoundException($"Post with ID: {id} not found.");
+            throw new PostNotFoundException(id);
+        }
+
+        _response.Result = _mapper.Map<PostDto>(post);
+
+        return Ok(_response);
+    }
+
+    [HttpGet]
+    [Route("by-slug/{slug}")]
+    public async Task<ActionResult<ResponseDto>> GetBySlug(string slug)
+    {
+        Post post;
+        bool isAdmin = User.IsInRole(SD.AdminRole);
+        if (isAdmin)
+        {
+            post = await _unitOfWork.Post.GetAsync(c => c.Slug == slug, includeProperties: "Category,PostImages");
+        }
+        else
+        {
+            post = await _unitOfWork.Post.GetAsync(c => c.Slug == slug && c.PostStatus == PostStatus.Resolved, includeProperties: "Category,PostImages");
+        }
+
+        if (post == null)
+        {
+            throw new PostNotFoundException(slug);
         }
 
         _response.Result = _mapper.Map<PostDto>(post);
@@ -71,7 +99,8 @@ public class PostAPIController : ControllerBase
 
 
     [HttpPost]
-    public async Task<ActionResult<ResponseDto>> Post([FromBody] PostCreateDto postDto)
+    [Consumes("multipart/form-data")] // Bắt buộc để dùng IFormFile
+    public async Task<ActionResult<ResponseDto>> Post([FromForm] PostCreateDto postDto)
     {
         Post post = _mapper.Map<Post>(postDto);
         post.PostStatus = PostStatus.Pending;
@@ -80,11 +109,38 @@ public class PostAPIController : ControllerBase
         post.Slug = SlugGenerator.GenerateSlug(post.Title);
 
         await _unitOfWork.Post.AddAsync(post);
+
+        if (postDto.ImageFiles == null || !(postDto.ImageFiles.Any()))
+        {
+            throw new BadRequestException("Post require images");
+        }
+
+        // upload images
+        int i = 0;
+        if(postDto.ThumbnailIndex > postDto.ImageFiles.Count ||  postDto.ThumbnailIndex < 0)
+            postDto.ThumbnailIndex = 0;
+
+        foreach (var imgDto in postDto.ImageFiles)
+        {
+            var imageUrl = await _imageUploader.UploadImageAsync(imgDto);
+            var postImage = new PostImage
+            {
+                PostId = post.PostId,
+                ImageUrl = imageUrl,
+            };
+            await _unitOfWork.PostImage.AddAsync(postImage);
+
+            if(i == postDto.ThumbnailIndex)
+                post.ThumbnailUrl = imageUrl;
+
+            i++;
+        }
+
         await _unitOfWork.SaveAsync();
 
         _response.Result = _mapper.Map<PostDto>(post);
 
-        return CreatedAtAction(nameof(Get), new {id = post.PostId}, _response);
+        return CreatedAtAction(nameof(GetById), new { id = post.PostId }, _response);
     }
 
     [HttpPut]
