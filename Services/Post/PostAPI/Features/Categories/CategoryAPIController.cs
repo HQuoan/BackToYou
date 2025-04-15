@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using PostAPI.Features.Categories.Dtos;
 using PostAPI.Features.Categories.Queries;
 
@@ -77,22 +76,8 @@ public class CategoryAPIController : ControllerBase
         // Generate slug
         category.Slug = SlugGenerator.GenerateSlug(category.Name);
 
-
-        try
-        {
-            await _unitOfWork.Category.AddAsync(category);
-            await _unitOfWork.SaveAsync();
-        }
-        catch (DbUpdateException ex)
-        {
-            if (Util.IsUniqueConstraintViolation(ex))
-            {
-                var duplicateField = Util.ExtractDuplicateField(ex);
-                throw new DuplicateKeyException(duplicateField);
-            }
-
-            throw;
-        }
+        await _unitOfWork.Category.AddAsync(category);
+        await _unitOfWork.SaveAsync();
 
         _response.Result = _mapper.Map<CategoryDto>(category);
 
@@ -114,22 +99,8 @@ public class CategoryAPIController : ControllerBase
 
         cateFromDb.Slug = SlugGenerator.GenerateSlug(categoryDto.Name);
 
-
-        try
-        {
-            await _unitOfWork.Category.UpdateAsync(cateFromDb);
-            await _unitOfWork.SaveAsync();
-        }
-        catch (DbUpdateException ex)
-        {
-            if (Util.IsUniqueConstraintViolation(ex))
-            {
-                var duplicateField = Util.ExtractDuplicateField(ex);
-                throw new DuplicateKeyException(duplicateField);
-            }
-
-            throw;
-        }
+        await _unitOfWork.Category.UpdateAsync(cateFromDb);
+        await _unitOfWork.SaveAsync();
 
         _response.Result = _mapper.Map<CategoryDto>(cateFromDb);
 
@@ -143,7 +114,7 @@ public class CategoryAPIController : ControllerBase
         var category = await _unitOfWork.Category.GetAsync(c => c.CategoryId == id);
         if (category == null)
         {
-            throw new NotFoundException($"Category with ID: {id} not found.");
+            throw new CategoryNotFoundException(id);
         }
 
         await _unitOfWork.Category.RemoveAsync(category);

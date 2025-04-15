@@ -1,13 +1,15 @@
 ﻿using BuildingBlocks.Dtos;
+using BuildingBlocks.Utilities;
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace BuildingBlocks.Exceptions.Handler;
-public class CustomExceptionHandler
-    (ILogger<CustomExceptionHandler> logger)
+
+public class CustomExceptionHandler(ILogger<CustomExceptionHandler> logger)
     : IExceptionHandler
 {
     public async ValueTask<bool> TryHandleAsync(HttpContext context, Exception exception, CancellationToken cancellationToken)
@@ -16,44 +18,46 @@ public class CustomExceptionHandler
             "Error Message: {exceptionMessage}, Time of occurrence {time}",
             exception.Message, DateTime.UtcNow);
 
-        (string Detail, string Title, int StatusCode) details = exception switch
+        (string Detail, string Title, int StatusCode) details;
+
+        // Xử lý riêng DbUpdateException để kiểm tra ràng buộc duy nhất
+        if (exception is DbUpdateException dbEx && Util.IsUniqueConstraintViolation(dbEx))
         {
-            InternalServerException =>
-            (
+            var duplicateField = Util.ExtractDuplicateField(dbEx);
+            exception = new DuplicateKeyException(duplicateField);
+        }
+
+        details = exception switch
+        {
+            InternalServerException => (
                 exception.Message,
-                exception.GetType().Name,
-                context.Response.StatusCode = StatusCodes.Status500InternalServerError
-            ),
-            ValidationException =>
-            (
+                nameof(InternalServerException),
+                StatusCodes.Status500InternalServerError),
+
+            ValidationException => (
                 exception.Message,
-                exception.GetType().Name,
-                context.Response.StatusCode = StatusCodes.Status400BadRequest
-            ),
-            BadRequestException =>
-            (
+                nameof(ValidationException),
+                StatusCodes.Status400BadRequest),
+
+            BadRequestException => (
                 exception.Message,
-                exception.GetType().Name,
-                context.Response.StatusCode = StatusCodes.Status400BadRequest
-            ),
-            NotFoundException =>
-            (
+                nameof(BadRequestException),
+                StatusCodes.Status400BadRequest),
+
+            NotFoundException => (
                 exception.Message,
-                exception.GetType().Name,
-                context.Response.StatusCode = StatusCodes.Status404NotFound
-            ),
-            DuplicateKeyException =>
-            (
+                nameof(NotFoundException),
+                StatusCodes.Status404NotFound),
+
+            DuplicateKeyException => (
                 exception.Message,
+                nameof(DuplicateKeyException),
+                StatusCodes.Status409Conflict),
+
+            _ => (
+                $"{exception.Message}{Environment.NewLine}{exception.InnerException}",
                 exception.GetType().Name,
-                context.Response.StatusCode = StatusCodes.Status409Conflict
-            ),
-            _ =>
-            (
-                $"{exception.Message} {Environment.NewLine} {exception.InnerException}",
-                exception.GetType().Name,
-                context.Response.StatusCode = StatusCodes.Status500InternalServerError
-            )
+                StatusCodes.Status500InternalServerError)
         };
 
         var problemDetails = new ProblemDetails
@@ -71,13 +75,16 @@ public class CustomExceptionHandler
             problemDetails.Extensions.Add("ValidationErrors", validationException.Errors);
         }
 
-        if (exception is DuplicateKeyException dupEx && dupEx.PropertyName != null)
+        if (exception is DuplicateKeyException dupEx && dupEx.PropertyName is not null)
         {
             problemDetails.Extensions.Add("DuplicateField", dupEx.PropertyName);
         }
 
+        context.Response.StatusCode = details.StatusCode;
+        await context.Response.WriteAsJsonAsync(
+            new ResponseDto { Result = problemDetails, IsSuccess = false },
+            cancellationToken: cancellationToken);
 
-        await context.Response.WriteAsJsonAsync(new ResponseDto { Result = problemDetails, IsSuccess = false}, cancellationToken: cancellationToken);
         return true;
     }
 }

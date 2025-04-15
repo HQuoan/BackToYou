@@ -79,21 +79,8 @@ public class PostAPIController : ControllerBase
         // Generate slug
         post.Slug = SlugGenerator.GenerateSlug(post.Title);
 
-        try
-        {
-            await _unitOfWork.Post.AddAsync(post);
-            await _unitOfWork.SaveAsync();
-        }
-        catch (DbUpdateException ex)
-        {
-            if (Util.IsUniqueConstraintViolation(ex))
-            {
-                var duplicateField = Util.ExtractDuplicateField(ex);
-                throw new DuplicateKeyException(duplicateField);
-            }
-
-            throw;
-        }
+        await _unitOfWork.Post.AddAsync(post);
+        await _unitOfWork.SaveAsync();
 
         _response.Result = _mapper.Map<PostDto>(post);
 
@@ -115,21 +102,8 @@ public class PostAPIController : ControllerBase
         // Cập nhật các thuộc tính của movieFromDb từ movieDto
         _mapper.Map(postDto, postFromDb);
 
-        try
-        {
-            await _unitOfWork.Post.UpdateAsync(postFromDb);
-            await _unitOfWork.SaveAsync();
-        }
-        catch (DbUpdateException ex)
-        {
-            if (Util.IsUniqueConstraintViolation(ex))
-            {
-                var duplicateField = Util.ExtractDuplicateField(ex);
-                throw new DuplicateKeyException(duplicateField);
-            }
-
-            throw;
-        }
+        await _unitOfWork.Post.UpdateAsync(postFromDb);
+        await _unitOfWork.SaveAsync();
 
         _response.Result = _mapper.Map<PostDto>(postFromDb);
 
