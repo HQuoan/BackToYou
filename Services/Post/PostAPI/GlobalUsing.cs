@@ -2,7 +2,6 @@
 global using AutoMapper;
 global using PostAPI.Data;
 global using PostAPI.Models;
-global using PostAPI.Models.Dtos;
 global using PostAPI;
 global using PostAPI.Repositories;
 global using PostAPI.Exceptions;
@@ -15,4 +14,5 @@ global using BuildingBlocks.Exceptions;
 global using BuildingBlocks.Utilities;
 global using BuildingBlocks.Models;
 global using BuildingBlocks.Enums;
+global using BuildingBlocks.Repositories;
 global using System.ComponentModel.DataAnnotations;

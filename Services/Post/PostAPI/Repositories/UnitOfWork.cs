@@ -1,4 +1,6 @@
 ﻿using PostAPI.Features.Categories;
+using PostAPI.Features.Comments;
+using PostAPI.Features.PostImages;
 using PostAPI.Features.Posts;
 
 namespace PostAPI.Repositories;
@@ -9,6 +11,7 @@ public class UnitOfWork : IUnitOfWork
     public ICategoryRepository Category { get; private set; }
     public IPostRepository Post { get; private set; }
     public IPostImageRepository PostImage { get; private set; }
+    public ICommentRepository Comment { get; private set; }
 
     public UnitOfWork(AppDbContext db)
     {
@@ -16,6 +19,7 @@ public class UnitOfWork : IUnitOfWork
         Category = new CategoryRepository(_db);
         Post = new PostRepository(_db);
         PostImage = new PostImageRepository(_db);
+        Comment = new CommentRepository(_db);
     }
     public async Task SaveAsync()
     {

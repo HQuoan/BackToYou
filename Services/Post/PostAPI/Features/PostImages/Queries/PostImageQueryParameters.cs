@@ -1,4 +1,4 @@
-﻿namespace PostAPI.Features.Posts.Queries;
+﻿namespace PostAPI.Features.PostImages.Queries;
 
 public class PostImageQueryParameters : BaseQueryParameters
 {

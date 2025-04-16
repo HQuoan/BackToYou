@@ -23,14 +23,14 @@ public class PostAPIController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<ResponseDto>> Get([FromQuery] PostQueryParameters? queryParameters)
+    public async Task<ActionResult<ResponseDto>> Get([FromQuery] CommentQueryParameters? queryParameters)
     {
         //if (!User.IsInRole(SD.AdminRole))
         //{
         //    queryParameters.PostStatus = PostStatus.Resolved;
         //}
 
-        var query = PostFeatures.Build(queryParameters);
+        var query = CommentFeatures.Build(queryParameters);
         query.IncludeProperties = "Category,PostImages";
 
         IEnumerable<Post> posts = await _unitOfWork.Post.GetAllAsync(query);
@@ -51,7 +51,7 @@ public class PostAPIController : ControllerBase
 
     [HttpGet("me")]
     [Authorize]
-    public async Task<ActionResult<ResponseDto>> GetMyPosts([FromQuery] PostQueryParameters? queryParameters)
+    public async Task<ActionResult<ResponseDto>> GetMyPosts([FromQuery] CommentQueryParameters? queryParameters)
     {
         var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
         if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
@@ -60,7 +60,7 @@ public class PostAPIController : ControllerBase
         }
         queryParameters.UserId = userId;
 
-        var query = PostFeatures.Build(queryParameters);
+        var query = CommentFeatures.Build(queryParameters);
         query.IncludeProperties = "Category,PostImages";
 
         IEnumerable<Post> posts = await _unitOfWork.Post.GetAllAsync(query);

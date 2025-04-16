@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace PostAPI.Features.Posts.Queries;
+namespace PostAPI.Features.PostImages.Queries;
 
 public static class PostImageFeatures
 {

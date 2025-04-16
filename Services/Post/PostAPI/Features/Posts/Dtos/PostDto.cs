@@ -1,4 +1,6 @@
 ﻿using PostAPI.Features.Categories.Dtos;
+using PostAPI.Features.Comments.Dtos;
+using PostAPI.Features.PostImages.Dtos;
 
 namespace PostAPI.Features.Posts.Dtos;
 public class PostDto : BaseEntity

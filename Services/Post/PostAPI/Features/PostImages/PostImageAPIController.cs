@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PostAPI.Features.Posts.Dtos;
 using PostAPI.Features.Posts.Queries;
 
-namespace PostAPI.Features.Posts;
+namespace PostAPI.Features.PostImages;
 [Route("images")]
 [ApiController]
 public class PostImageAPIController : ControllerBase
@@ -20,14 +20,14 @@ public class PostImageAPIController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<ResponseDto>> Get([FromQuery] PostQueryParameters? queryParameters)
+    public async Task<ActionResult<ResponseDto>> Get([FromQuery] CommentQueryParameters? queryParameters)
     {
         //if (!User.IsInRole(SD.AdminRole))
         //{
         //    queryParameters.PostStatus = PostStatus.Resolved;
         //}
 
-        var query = PostFeatures.Build(queryParameters);
+        var query = CommentFeatures.Build(queryParameters);
         query.IncludeProperties = "Category,PostImages";
 
         IEnumerable<Post> posts = await _unitOfWork.Post.GetAllAsync(query);

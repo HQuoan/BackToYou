@@ -1,4 +1,4 @@
-﻿namespace PostAPI.Features.Posts.Dtos;
+﻿namespace PostAPI.Features.PostImages.Dtos;
 
 public class PostImageDto
 {
