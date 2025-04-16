@@ -26,4 +26,5 @@ public class Post : BaseEntity
 
     public ICollection<PostImage> PostImages { get; set; }
     public ICollection<Comment> Comments { get; set; }  
+    public ICollection<Follower> Followers { get; set; }
 }

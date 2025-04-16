@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace PostAPI.Data;
+﻿namespace PostAPI.Data;
 public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
@@ -11,6 +9,8 @@ public class AppDbContext : DbContext
     public DbSet<Post> Posts { get; set; }
     public DbSet<PostImage> PostImages { get; set; }
     public DbSet<Comment> Comments { get; set; }
+    public DbSet<Follower> Followers { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -50,12 +50,19 @@ public class AppDbContext : DbContext
             .HasOne(c => c.Post)
             .WithMany(p => p.Comments)
             .HasForeignKey(c => c.PostId)
-            .OnDelete(DeleteBehavior.Cascade);  // Tương tự, xóa comment khi xóa Post
+            .OnDelete(DeleteBehavior.Cascade);  // xóa comment khi xóa Post
 
         // Foreign key cho PostImage -> Post
         builder.Entity<PostImage>()
             .HasOne(pi => pi.Post)
             .WithMany(p => p.PostImages)
+            .HasForeignKey(pi => pi.PostId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Foreign key cho Follower -> Post
+        builder.Entity<Follower>()
+            .HasOne(pi => pi.Post)
+            .WithMany(p => p.Followers)
             .HasForeignKey(pi => pi.PostId)
             .OnDelete(DeleteBehavior.Cascade);
 

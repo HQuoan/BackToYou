@@ -25,10 +25,10 @@ public class PostAPIController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<ResponseDto>> Get([FromQuery] CommentQueryParameters? queryParameters)
     {
-        //if (!User.IsInRole(SD.AdminRole))
-        //{
-        //    queryParameters.PostStatus = PostStatus.Resolved;
-        //}
+        if (!User.IsInRole(SD.AdminRole))
+        {
+            queryParameters.PostStatus = PostStatus.Approved;
+        }
 
         var query = CommentFeatures.Build(queryParameters);
         query.IncludeProperties = "Category,PostImages";
@@ -162,15 +162,16 @@ public class PostAPIController : ControllerBase
 
 
     [HttpPost]
+    [Authorize]
     [Consumes("multipart/form-data")] // Bắt buộc để dùng IFormFile
     public async Task<ActionResult<ResponseDto>> Post([FromForm] PostCreateDto postDto)
     {
-        //var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-        //if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
-        //{
-        //    throw new BadRequestException("Invalid or missing user ID claim.");
-        //}
-        //postDto.UserId = userId;
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+        {
+            throw new BadRequestException("Invalid or missing user ID claim.");
+        }
+        postDto.UserId = userId;
 
         Post post = _mapper.Map<Post>(postDto);
         post.PostStatus = PostStatus.Pending;
@@ -210,6 +211,13 @@ public class PostAPIController : ControllerBase
 
             i++;
         }
+
+        // create follower 
+        await _unitOfWork.Follower.AddAsync(new Follower
+        {
+            PostId = post.PostId,
+            UserId = userId
+        });
 
         await _unitOfWork.SaveAsync();
 

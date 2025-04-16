@@ -1,5 +1,6 @@
 ﻿using PostAPI.Features.Categories.Dtos;
 using PostAPI.Features.Comments.Dtos;
+using PostAPI.Features.Followers.Dtos;
 using PostAPI.Features.PostImages.Dtos;
 using PostAPI.Features.Posts.Dtos;
 
@@ -25,12 +26,9 @@ public class MappingConfig
             config.CreateMap<Comment, CommentCreateDto>().ReverseMap();
             config.CreateMap<Comment, CommentUpdateDto>().ReverseMap();
 
+            config.CreateMap<Follower, FollowerDto>().ReverseMap();
+            config.CreateMap<Follower, FollowerCreateDto>().ReverseMap();
 
-            // Áp dụng điều kiện chung cho tất cả các thuộc tính
-            //config.ForAllPropertyMaps(
-            //    pm => true, // Điều kiện áp dụng cho tất cả các property maps
-            //    (pm, opts) => opts.Condition((src, dest, srcMember, destMember, context) => srcMember != null)
-            //);
         });
 
         return mappingConfig;

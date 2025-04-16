@@ -1,5 +1,6 @@
 ﻿using PostAPI.Features.Categories;
 using PostAPI.Features.Comments;
+using PostAPI.Features.Followers;
 using PostAPI.Features.PostImages;
 using PostAPI.Features.Posts;
 
@@ -11,5 +12,6 @@ public interface IUnitOfWork
     IPostRepository Post { get; }
     IPostImageRepository PostImage { get; }
     ICommentRepository Comment { get; }
+    IFollowerRepository Follower { get; }
     Task SaveAsync();
 }

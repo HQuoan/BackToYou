@@ -26,9 +26,9 @@ public class CommentAPIController : ControllerBase
     public async Task<ActionResult<ResponseDto>> Get([FromQuery] CommentQueryParameters queryParameters)
     {
         var query = CommentFeatures.Build(queryParameters);
-        IEnumerable<Comment> categories = await _unitOfWork.Comment.GetAllAsync(query);
+        IEnumerable<Comment> comments = await _unitOfWork.Comment.GetAllAsync(query);
 
-        _response.Result = _mapper.Map<IEnumerable<CommentDto>>(categories);
+        _response.Result = _mapper.Map<IEnumerable<CommentDto>>(comments);
 
         int totalItems = await _unitOfWork.Comment.CountAsync(query);
         _response.Pagination = new PaginationDto
@@ -46,46 +46,46 @@ public class CommentAPIController : ControllerBase
     [Route("{id}")]
     public async Task<ActionResult<ResponseDto>> GetById(Guid id)
     {
-        var category = await _unitOfWork.Comment.GetAsync(c => c.CommentId == id);
-        if (category == null)
+        var comment = await _unitOfWork.Comment.GetAsync(c => c.CommentId == id);
+        if (comment == null)
         {
             throw new CommentNotFoundException(id);
         }
 
-        _response.Result = _mapper.Map<CommentDto>(category);
+        _response.Result = _mapper.Map<CommentDto>(comment);
         return Ok(_response);
     }
 
     [HttpPost]
     [Authorize]
-    public async Task<ActionResult<ResponseDto>> Post([FromBody] CommentCreateDto categoryDto)
+    public async Task<ActionResult<ResponseDto>> Post([FromBody] CommentCreateDto commentDto)
     {
-        Comment category = _mapper.Map<Comment>(categoryDto);
+        Comment comment = _mapper.Map<Comment>(commentDto);
 
         var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
         if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
         {
             throw new BadRequestException("Invalid or missing user ID claim.");
         }
-        category.UserId = userId;
+        comment.UserId = userId;
 
 
-        await _unitOfWork.Comment.AddAsync(category);
+        await _unitOfWork.Comment.AddAsync(comment);
         await _unitOfWork.SaveAsync();
 
-        _response.Result = _mapper.Map<CommentDto>(category);
+        _response.Result = _mapper.Map<CommentDto>(comment);
 
-        return CreatedAtAction(nameof(GetById), new { id = category.CommentId }, _response);
+        return CreatedAtAction(nameof(GetById), new { id = comment.CommentId }, _response);
     }
 
     [HttpPut]
     [Authorize]
-    public async Task<ActionResult<ResponseDto>> Put([FromBody] CommentUpdateDto categoryDto)
+    public async Task<ActionResult<ResponseDto>> Put([FromBody] CommentUpdateDto commentDto)
     {
-        Comment cateFromDb = await _unitOfWork.Comment.GetAsync(c => c.CommentId == categoryDto.CommentId);
+        Comment cateFromDb = await _unitOfWork.Comment.GetAsync(c => c.CommentId == commentDto.CommentId);
         if (cateFromDb == null)
         {
-            throw new CommentNotFoundException(categoryDto.CommentId);
+            throw new CommentNotFoundException(commentDto.CommentId);
         }
 
         var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
@@ -99,7 +99,7 @@ public class CommentAPIController : ControllerBase
             throw new ForbiddenException();
         }
 
-        _mapper.Map(categoryDto, cateFromDb);
+        _mapper.Map(commentDto, cateFromDb);
 
         await _unitOfWork.Comment.UpdateAsync(cateFromDb);
         await _unitOfWork.SaveAsync();
@@ -113,8 +113,8 @@ public class CommentAPIController : ControllerBase
     [Authorize]
     public async Task<ActionResult> Delete(Guid id)
     {
-        var category = await _unitOfWork.Comment.GetAsync(c => c.CommentId == id);
-        if (category == null)
+        var comment = await _unitOfWork.Comment.GetAsync(c => c.CommentId == id);
+        if (comment == null)
         {
             throw new CommentNotFoundException(id);
         }
@@ -127,12 +127,12 @@ public class CommentAPIController : ControllerBase
             throw new BadRequestException("Invalid or missing user ID claim.");
         }
 
-        if (!isAdmin && userId != category.UserId)
+        if (!isAdmin && userId != comment.UserId)
         {
             throw new ForbiddenException();
         }
 
-        await _unitOfWork.Comment.RemoveAsync(category);
+        await _unitOfWork.Comment.RemoveAsync(comment);
         await _unitOfWork.SaveAsync();
 
         return Ok(_response);
