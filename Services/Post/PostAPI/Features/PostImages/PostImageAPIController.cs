@@ -1,10 +1,9 @@
-﻿using Azure;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using PostAPI.Features.Posts.Dtos;
 using PostAPI.Features.Posts.Queries;
 
 namespace PostAPI.Features.PostImages;
-[Route("images")]
+[Route("post-images")]
 [ApiController]
 public class PostImageAPIController : ControllerBase
 {

@@ -1,6 +1,4 @@
-﻿using BuildingBlocks.Repositories;
-
-namespace PostAPI.Features.Posts;
+﻿namespace PostAPI.Features.Posts;
 
 public class PostRepository : Repository<Post>, IPostRepository
 {

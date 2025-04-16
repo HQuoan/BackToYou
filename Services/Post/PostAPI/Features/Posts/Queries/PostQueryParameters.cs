@@ -1,6 +1,6 @@
 ﻿namespace PostAPI.Features.Posts.Queries;
 
-public class CommentQueryParameters : BaseQueryParameters
+public class PostQueryParameters : BaseQueryParameters
 {
     public Guid? UserId { get; set; }
     public Guid? CategoryId { get; set; }

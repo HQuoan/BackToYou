@@ -19,6 +19,7 @@ public class MappingConfig
             config.CreateMap<Post, PostDto>().ReverseMap();
             config.CreateMap<Post, PostCreateDto>().ReverseMap();
             config.CreateMap<Post, PostUpdateDto>().ReverseMap();
+            config.CreateMap<Post, PostUpdateLabelDto>().ReverseMap();
 
             config.CreateMap<PostImage, PostImageDto>().ReverseMap();
 

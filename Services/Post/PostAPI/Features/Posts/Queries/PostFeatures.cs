@@ -2,13 +2,13 @@
 
 namespace PostAPI.Features.Posts.Queries;
 
-public static class CommentFeatures
+public static class PostFeatures
 {
-    public static List<Expression<Func<Post, bool>>> Filtering(CommentQueryParameters queryParameters)
+    public static List<Expression<Func<Post, bool>>> Filtering(PostQueryParameters queryParameters)
     {
         var filters = new List<Expression<Func<Post, bool>>>();
 
-        var properties = typeof(CommentQueryParameters).GetProperties();
+        var properties = typeof(PostQueryParameters).GetProperties();
 
         foreach (var prop in properties)
         {
@@ -17,27 +17,27 @@ public static class CommentFeatures
             {
                 switch (prop.Name)
                 {
-                    case nameof(CommentQueryParameters.UserId):
+                    case nameof(PostQueryParameters.UserId):
                         filters.Add(m => m.UserId == (Guid)value);
                         break;
 
-                    case nameof(CommentQueryParameters.CategoryId):
+                    case nameof(PostQueryParameters.CategoryId):
                         filters.Add(m => m.CategoryId == (Guid)value);
                         break;
 
-                    case nameof(CommentQueryParameters.Slug):
+                    case nameof(PostQueryParameters.Slug):
                         filters.Add(m => m.Slug.ToLower().Contains(((string)value).ToLower()));
                         break;
 
-                    case nameof(CommentQueryParameters.PostType):
+                    case nameof(PostQueryParameters.PostType):
                         filters.Add(m => m.PostType == (PostType)value);
                         break;
 
-                    case nameof(CommentQueryParameters.PostLabel):
+                    case nameof(PostQueryParameters.PostLabel):
                         filters.Add(m => m.PostLabel == (PostLabel)value);
                         break;
 
-                    case nameof(CommentQueryParameters.PostStatus):
+                    case nameof(PostQueryParameters.PostStatus):
                         filters.Add(m => m.PostStatus == (PostStatus)value);
                         break;
 
@@ -49,7 +49,7 @@ public static class CommentFeatures
     }
 
 
-    public static Func<IQueryable<Post>, IOrderedQueryable<Post>>? Sorting(CommentQueryParameters queryParameters)
+    public static Func<IQueryable<Post>, IOrderedQueryable<Post>>? Sorting(PostQueryParameters queryParameters)
     {
         Func<IQueryable<Post>, IOrderedQueryable<Post>>? orderByFunc = null;
 
@@ -76,7 +76,7 @@ public static class CommentFeatures
         return orderByFunc;
     }
 
-    public static QueryParameters<Post> Build(CommentQueryParameters queryParameters)
+    public static QueryParameters<Post> Build(PostQueryParameters queryParameters)
     {
         return new QueryParameters<Post>
         {

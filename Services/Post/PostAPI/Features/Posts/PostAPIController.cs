@@ -23,15 +23,15 @@ public class PostAPIController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<ResponseDto>> Get([FromQuery] CommentQueryParameters? queryParameters)
+    public async Task<ActionResult<ResponseDto>> Get([FromQuery] PostQueryParameters? queryParameters)
     {
         if (!User.IsInRole(SD.AdminRole))
         {
             queryParameters.PostStatus = PostStatus.Approved;
         }
 
-        var query = CommentFeatures.Build(queryParameters);
-        query.IncludeProperties = "Category,PostImages";
+        var query = PostFeatures.Build(queryParameters);
+        query.IncludeProperties = "Category,PostImages,PostLabel";
 
         IEnumerable<Post> posts = await _unitOfWork.Post.GetAllAsync(query);
 
@@ -51,7 +51,7 @@ public class PostAPIController : ControllerBase
 
     [HttpGet("me")]
     [Authorize]
-    public async Task<ActionResult<ResponseDto>> GetMyPosts([FromQuery] CommentQueryParameters? queryParameters)
+    public async Task<ActionResult<ResponseDto>> GetMyPosts([FromQuery] PostQueryParameters? queryParameters)
     {
         var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
         if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
@@ -60,8 +60,8 @@ public class PostAPIController : ControllerBase
         }
         queryParameters.UserId = userId;
 
-        var query = CommentFeatures.Build(queryParameters);
-        query.IncludeProperties = "Category,PostImages";
+        var query = PostFeatures.Build(queryParameters);
+        query.IncludeProperties = "Category,PostImages,PostLabel";
 
         IEnumerable<Post> posts = await _unitOfWork.Post.GetAllAsync(query);
 
@@ -90,11 +90,11 @@ public class PostAPIController : ControllerBase
 
         if (isAdmin)
         {
-            post = await _unitOfWork.Post.GetAsync(c => c.PostId == id, includeProperties: "Category,PostImages");
+            post = await _unitOfWork.Post.GetAsync(c => c.PostId == id, includeProperties: "Category,PostImages,PostLabel");
         }   
         else
         {
-            post = await _unitOfWork.Post.GetAsync(c => c.PostId == id && c.PostStatus == PostStatus.Approved, includeProperties: "Category,PostImages");
+            post = await _unitOfWork.Post.GetAsync(c => c.PostId == id && c.PostStatus == PostStatus.Approved, includeProperties: "Category,PostImages,PostLabel");
 
             if (post.PostStatus != PostStatus.Approved) {
                 var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
@@ -129,11 +129,11 @@ public class PostAPIController : ControllerBase
 
         if (isAdmin)
         {
-            post = await _unitOfWork.Post.GetAsync(c => c.Slug == slug, includeProperties: "Category,PostImages");
+            post = await _unitOfWork.Post.GetAsync(c => c.Slug == slug, includeProperties: "Category,PostImages,PostLabel");
         }
         else
         {
-            post = await _unitOfWork.Post.GetAsync(c => c.Slug == slug && c.PostStatus == PostStatus.Approved, includeProperties: "Category,PostImages");
+            post = await _unitOfWork.Post.GetAsync(c => c.Slug == slug && c.PostStatus == PostStatus.Approved, includeProperties: "Category,PostImages,PostLabel");
 
             if (post.PostStatus != PostStatus.Approved)
             {
@@ -175,6 +175,18 @@ public class PostAPIController : ControllerBase
 
         Post post = _mapper.Map<Post>(postDto);
         post.PostStatus = PostStatus.Pending;
+
+        if(post.PostLabelId == Guid.Parse(SD.PostLabel_Priority_Id))
+        {
+            // goi api ktra vi tien
+            post.PostLabelId = Guid.Parse(SD.PostLabel_Priority_Id);
+
+        }
+        else
+        {
+            post.PostLabelId = Guid.Parse(SD.PostLabel_Normal_Id);
+
+        }
 
         // Generate slug
         post.Slug = SlugGenerator.GenerateSlug(post.Title);
@@ -320,7 +332,25 @@ public class PostAPIController : ControllerBase
         return Ok(_response);
     }
 
-    [HttpDelete]
+    [HttpPut]
+    [Authorize(Roles = SD.AdminRole)]
+    public async Task<ActionResult<ResponseDto>> UpdatePostLabel([FromBody] PostUpdateLabel postDto)
+    {
+        Post postFromDb = await _unitOfWork.Post.GetAsync(c => c.PostId == postDto.PostId);
+        if (postFromDb == null)
+            throw new PostNotFoundException(postDto.PostId);
+
+        _mapper.Map(postDto, postFromDb);
+
+        await _unitOfWork.Post.UpdateAsync(postFromDb);
+        await _unitOfWork.SaveAsync();
+
+        _response.Result = _mapper.Map<PostDto>(postFromDb);
+
+        return Ok(_response);
+    }
+
+        [HttpDelete]
     //[Authorize(Roles = SD.AdminRole)]
     public async Task<ActionResult<ResponseDto>> Delete(Guid id)
     {

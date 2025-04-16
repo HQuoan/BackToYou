@@ -11,7 +11,7 @@ public class Post : BaseEntity
     [Required]
     public Guid CategoryId { get; set; }
     [ForeignKey(nameof(CategoryId))]
-    public Category? Category { get; set; }
+    public Category Category { get; set; }
     [Required]
     public string Title { get; set; }
     public string Slug { get; set; }
@@ -20,8 +20,10 @@ public class Post : BaseEntity
     [Required]
     public string Description { get; set; }
     public Location Location { get; set; }
+    public Guid PostLabelId { get; set; }
+    [ForeignKey(nameof(PostLabelId))]
+    public PostLabel PostLabel { get; set; }
     public PostType PostType { get; set; }
-    public PostLabel PostLabel { get; set; } = PostLabel.Nomal;
     public PostStatus PostStatus { get; set; } = PostStatus.Pending;
 
     public ICollection<PostImage> PostImages { get; set; }

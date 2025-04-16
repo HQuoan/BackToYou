@@ -8,13 +8,13 @@ using System.Security.Claims;
 namespace PostAPI.Features.Comments;
 [Route("comments")]
 [ApiController]
-public class CommentAPIController : ControllerBase
+public class PostLabelAPIController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private ResponseDto _response;
 
-    public CommentAPIController(IUnitOfWork unitOfWork, IMapper mapper)
+    public PostLabelAPIController(IUnitOfWork unitOfWork, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;

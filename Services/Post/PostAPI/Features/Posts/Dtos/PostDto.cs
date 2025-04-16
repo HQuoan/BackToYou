@@ -15,7 +15,8 @@ public class PostDto : BaseEntity
     public string Description { get; set; }
     public Location Location { get; set; }
     public PostType PostType { get; set; }
-    public PostLabel PostLabel { get; set; } 
+    public Guid PostLabelId { get; set; }
+    public PostLabel PostLabel { get; set; }
     public PostStatus PostStatus { get; set; }
 
     public ICollection<PostImageDto>? PostImages { get; set; }
