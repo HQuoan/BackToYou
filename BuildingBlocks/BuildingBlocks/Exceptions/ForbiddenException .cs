@@ -5,4 +5,5 @@ public class ForbiddenException : Exception
         : base(message)
     {
     }
+
 }
