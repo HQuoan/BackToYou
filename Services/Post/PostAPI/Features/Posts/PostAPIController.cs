@@ -332,7 +332,7 @@ public class PostAPIController : ControllerBase
         return Ok(_response);
     }
 
-    [HttpPut]
+    [HttpPut("/post-label")]
     [Authorize(Roles = SD.AdminRole)]
     public async Task<ActionResult<ResponseDto>> UpdatePostLabel([FromBody] PostUpdateLabel postDto)
     {

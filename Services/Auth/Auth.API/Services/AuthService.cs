@@ -245,7 +245,7 @@ public class AuthService : IAuthService
         var user = await _userManager.FindByEmailAsync(resetPasswordDto.Email);
         if (user == null)
         {
-            throw new BadRequestException("User not found.");
+            throw new UserNotFoundException(resetPasswordDto.Email);
         }
 
         // Reset mật khẩu
@@ -268,7 +268,8 @@ public class AuthService : IAuthService
             if (!_roleManager.RoleExistsAsync(roleName).GetAwaiter().GetResult())
             {
                 //create role if it does not exit
-                _roleManager.CreateAsync(new IdentityRole(roleName)).GetAwaiter().GetResult();
+                //_roleManager.CreateAsync(new IdentityRole(roleName)).GetAwaiter().GetResult();
+                throw new BadRequestException("Role does not exist.");
             }
             await _userManager.AddToRoleAsync(user, roleName);
 

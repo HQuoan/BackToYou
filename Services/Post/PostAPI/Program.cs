@@ -23,7 +23,6 @@ IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -31,7 +30,6 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
-// Learn more about configuring Swagger/OpenAPI 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -71,9 +69,6 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 
-    // Add this line to support IFormFile
-    //options.OperationFilter<SwaggerFileOperationFilter>();
-
     // Đường dẫn đến tệp XML
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -85,6 +80,9 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.AddAppAuthentication();
 builder.Services.AddAuthorization();
+
+builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IImageUploader, CloudinaryUploader>();

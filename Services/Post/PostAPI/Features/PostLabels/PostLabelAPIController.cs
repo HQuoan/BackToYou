@@ -6,13 +6,13 @@ using PostAPI.Features.PostLabels.Queries;
 namespace PostLabelAPI.Features.PostLabels;
 [Route("post-labels")]
 [ApiController]
-public class PostLabelLabelAPIController : ControllerBase
+public class PostLabelAPIController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private ResponseDto _response;
 
-    public PostLabelLabelAPIController(IUnitOfWork unitOfWork, IMapper mapper)
+    public PostLabelAPIController(IUnitOfWork unitOfWork, IMapper mapper)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;

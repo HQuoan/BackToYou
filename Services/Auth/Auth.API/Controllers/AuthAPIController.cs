@@ -27,15 +27,8 @@ public class AuthAPIController : ControllerBase
     [HttpGet("confirm-email")]
     public async Task<IActionResult> ConfirmEmail(string userId, string token)
     {
-        try
-        {
-            var result = await _authService.ConfirmEmail(userId, token);
-            return Ok(new { message = "Email confirmed successfully." });
-        }
-        catch (ApplicationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        var result = await _authService.ConfirmEmail(userId, token);
+        return Ok(new { message = "Email confirmed successfully." });
     }
 
     [HttpPost("login")]
@@ -44,9 +37,7 @@ public class AuthAPIController : ControllerBase
         var loginResponse = await _authService.Login(model);
         if (loginResponse.User == null)
         {
-            _response.IsSuccess = false;
-            _response.Message = "Username or password is incorrect";
-            return BadRequest(_response);
+            throw new BadRequestException("Username or password is incorrect");
         }
         _response.Result = loginResponse;
         return Ok(_response);
@@ -58,62 +49,47 @@ public class AuthAPIController : ControllerBase
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var result = await _authService.ChangePassword(userId, changePasswordDto);
-        if (result)
+        if (!result)
         {
-            return Ok(new { Message = "Password changed successfully." });
+            throw new BadRequestException("Password change failed.");
         }
-        return BadRequest(new { Message = "Password change failed." });
+
+        return Ok(new { Message = "Password changed successfully." });
     }
 
     [HttpPost("forgot-password")]
     public async Task<IActionResult> ForgotPassword(string email)
     {
-        try
+        var result = await _authService.ForgotPassword(email);
+        if (!result)
         {
-            var result = await _authService.ForgotPassword(email);
-            if (result)
-            {
-                return Ok(new { Message = "Password reset link sent to your email." });
-            }
-            else
-            {
-                return BadRequest(new { Message = "Failed to send reset password email." });
-            }
+            throw new BadRequestException("Failed to send reset password email.");
         }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
+
+        return Ok(new { Message = "Password reset link sent to your email." });
     }
 
     [HttpPost("reset-password")]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
     {
-        try
+        var result = await _authService.ResetPassword(resetPasswordDto);
+        if (!result)
         {
-            var result = await _authService.ResetPassword(resetPasswordDto);
-            if (result)
-            {
-                return Ok(new { Message = "Password reset successfully." });
-            }
-            return BadRequest(new { Message = "Password reset failed." });
+            throw new BadRequestException("Password reset failed.");
         }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
+
+        return Ok(new { Message = "Password reset successfully." });
+
     }
 
     [HttpPost("AssignRole")]
-    [Authorize(Roles = SD.AdminRole)]
+   // [Authorize(Roles = SD.AdminRole)]
     public async Task<IActionResult> AssignRole([FromBody] AssignRoleDto model)
     {
         var assignRoleSuccessful = await _authService.AssignRole(model.Email, model.Role.ToUpper());
         if (!assignRoleSuccessful)
         {
-            _response.IsSuccess = false;
-            _response.Message = "Error encountered";
-            return BadRequest(_response);
+            throw new BadRequestException("Error encountered");
         }
         return Ok(_response);
     }
