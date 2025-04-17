@@ -24,8 +24,8 @@ public class PaymentWithStripe : IPaymentMethod
                 Currency = "usd",
                 ProductData = new SessionLineItemPriceDataProductDataOptions
                 {
-                    Name = "Name test",
-                    Description = "Description test",
+                    Name = "BackToYou Wallet Top-up",
+                    Description = $"Recharge balance for BackToYou account - ${receipt.Amount}",
                 }
             },
             Quantity = 1

@@ -1,8 +1,4 @@
-﻿using Auth.API.Models;
-using BuildingBlocks.Utilities;
-using Microsoft.AspNetCore.Identity;
-
-namespace Auth.API.Data;
+﻿namespace Auth.API.Data;
 
 public class RoleInitializer
 {

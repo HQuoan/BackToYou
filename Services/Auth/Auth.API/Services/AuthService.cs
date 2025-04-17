@@ -40,7 +40,7 @@ public class AuthService : IAuthService
             {
                 // Tạo token và link xác nhận
                 var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                string callBackUrl = $"{_apiSettings.BaseUrl}/api/auth/confirm-email";
+                string callBackUrl = _apiSettings.ConfirmEmailUrl;
                 var confirmationLink = $"{callBackUrl}?userId={user.Id}&token={Uri.EscapeDataString(token)}";
 
                 // Gửi email
@@ -100,10 +100,10 @@ public class AuthService : IAuthService
             return new LoginResponseDto() { User = null, Token = "" };
         }
 
-        //if (!user.EmailConfirmed)
-        //{
-        //    throw new BadRequestException("Please confirm your email to login.");
-        //}
+        if (!user.EmailConfirmed)
+        {
+            throw new BadRequestException("Please confirm your email to login.");
+        }
 
         LoginResponseDto loginResponseDto = new LoginResponseDto();
 

@@ -17,18 +17,22 @@ public class PaymentWithPayOS : IPaymentMethod
         PayOS payOS = new PayOS(_payOSOptions.ClientId, _payOSOptions.ApiKey, _payOSOptions.ChecksumKey);
 
         var item = new ItemData(
-            "Name",
+            "BackToYou Wallet Top-up",
             1,
             1000
         );
 
+        //string currentDate = DateTime.Now.ToString("ddMMyy");
+        //long orderCode = long.Parse($"{receipt.ReceiptId.ToString()}{currentDate}");
+
         string currentDate = DateTime.Now.ToString("ddMMyy");
-        long orderCode = long.Parse($"{receipt.ReceiptId.ToString()}{currentDate}");
+        int randomPart = new Random().Next(100000, 999999);
+        long orderCode = long.Parse($"{randomPart}{currentDate}");
 
         PaymentData paymentData = new PaymentData(
             orderCode,
             1000,
-            "Name",
+            receipt.Email,
             new List<ItemData> { item },
             paymentRequestDto.CancelUrl,
             paymentRequestDto.ApprovedUrl

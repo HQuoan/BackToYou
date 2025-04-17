@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PostAPI.Features.Posts.Dtos;
-using PostAPI.Features.Posts.Queries;
+using PostAPI.Features.PostImages.Dtos;
+using PostAPI.Features.PostImages.Queries;
 
 namespace PostAPI.Features.PostImages;
 [Route("post-images")]
@@ -19,21 +19,21 @@ public class PostImageAPIController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<ResponseDto>> Get([FromQuery] CommentQueryParameters? queryParameters)
+    public async Task<ActionResult<ResponseDto>> Get([FromQuery] PostImageQueryParameters? queryParameters)
     {
         //if (!User.IsInRole(SD.AdminRole))
         //{
         //    queryParameters.PostStatus = PostStatus.Resolved;
         //}
 
-        var query = CommentFeatures.Build(queryParameters);
+        var query = PostImageFeatures.Build(queryParameters);
         query.IncludeProperties = "Category,PostImages";
 
-        IEnumerable<Post> posts = await _unitOfWork.Post.GetAllAsync(query);
+        IEnumerable<PostImage> postImages = await _unitOfWork.PostImage.GetAllAsync(query);
 
-        _response.Result = _mapper.Map<IEnumerable<PostDto>>(posts);
+        _response.Result = _mapper.Map<IEnumerable<PostImageDto>>(postImages);
 
-        int totalItems = await _unitOfWork.Post.CountAsync(query);
+        int totalItems = await _unitOfWork.PostImage.CountAsync(query);
         _response.Pagination = new PaginationDto
         {
             TotalItems = totalItems,

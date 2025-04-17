@@ -51,7 +51,7 @@ public static class PostLabelFeatures
                    ? (q => q.OrderByDescending(m => m.Price))
                    : q => q.OrderBy(m => m.Price),
 
-                _ => q => q.OrderByDescending(m => m.PostLableId)
+                _ => q => q.OrderByDescending(m => m.PostLabelId)
             };
         }
 
