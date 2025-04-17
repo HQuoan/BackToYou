@@ -4,6 +4,9 @@ using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text.Json.Serialization;
 using ImageService;
+using PostAPI.Services.IServices;
+using PostAPI.Services;
+using BuildingBlocks.Interceptors;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -83,9 +86,14 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<BackendApiAuthenticationHttpClientHandler>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IImageUploader, CloudinaryUploader>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+
+builder.Services.AddHttpClient(SD.HttpClient_Payment, u => u.BaseAddress = new Uri(builder.Configuration["ServiceUrls:PaymentAPI"]));
 
 var app = builder.Build();
 

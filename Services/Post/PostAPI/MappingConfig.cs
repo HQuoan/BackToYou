@@ -3,6 +3,7 @@ using PostAPI.Features.Comments.Dtos;
 using PostAPI.Features.Followers.Dtos;
 using PostAPI.Features.PostImages.Dtos;
 using PostAPI.Features.Posts.Dtos;
+using PostAPI.Features.PostSettings.Dtos;
 
 namespace PostAPI;
 
@@ -19,7 +20,12 @@ public class MappingConfig
             config.CreateMap<Post, PostDto>().ReverseMap();
             config.CreateMap<Post, PostCreateDto>().ReverseMap();
             config.CreateMap<Post, PostUpdateDto>().ReverseMap();
-            config.CreateMap<Post, PostUpdateLabelDto>().ReverseMap();
+            config.CreateMap<Post, PostUpdateLabelAndStatus>().ReverseMap();
+            
+
+            config.CreateMap<PostSetting, PostSettingDto>().ReverseMap();
+            config.CreateMap<PostSetting, PostSettingCreateDto>().ReverseMap();
+            config.CreateMap<PostSetting, PostSettingUpdateDto>().ReverseMap();
 
             config.CreateMap<PostImage, PostImageDto>().ReverseMap();
 

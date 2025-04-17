@@ -18,6 +18,8 @@ public static class SD
     public const string Status_Session_Created = "Session_Created";
     public const string Status_Approved = "Approved";
 
-    public const string PostLabel_Normal_Id = "FA4E6BA0-6A98-4118-AE3D-FADC5EF5EEEA";
-    public const string PostLabel_Priority_Id = "CA24C18F-5C82-45DB-ABC2-19F13CA223B5";
+    public const string PostLabel_Priority_Price = "10000";
+
+    public const string HttpClient_Payment = "Payment";
+
 }

@@ -20,11 +20,10 @@ public class Post : BaseEntity
     [Required]
     public string Description { get; set; }
     public Location Location { get; set; }
-    public Guid PostLabelId { get; set; }
-    [ForeignKey(nameof(PostLabelId))]
-    public PostLabel PostLabel { get; set; }
+    public PostLabel PostLabel { get; set; } = PostLabel.Normal;
     public PostType PostType { get; set; }
     public PostStatus PostStatus { get; set; } = PostStatus.Pending;
+    public decimal Price { get; set; } = decimal.Zero;
 
     public ICollection<PostImage> PostImages { get; set; }
     public ICollection<Comment> Comments { get; set; }  

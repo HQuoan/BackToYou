@@ -12,8 +12,7 @@ public class PostCreateDto : IValidatableObject
     public string Description { get; set; }
     public Location Location { get; set; }
     public PostType PostType { get; set; }
-    [DefaultValue("FA4E6BA0-6A98-4118-AE3D-FADC5EF5EEEA")]
-    public Guid PostLabelId { get; set; }
+    public PostLabel PostLabel { get; set; }
     public List<IFormFile> ImageFiles { get; set; }
     public int ThumbnailIndex { get; set; } = 0;
 

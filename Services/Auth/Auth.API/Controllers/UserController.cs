@@ -121,7 +121,7 @@ public class UserController : ControllerBase
         // Kiểm tra quyền truy cập
         if (!User.IsInRole(SD.AdminRole) && targetId != userId)
         {
-            throw new UnauthorizedAccessException("You are not allowed to access data that does not belong to you.");
+            throw new ForbiddenException("You are not allowed to access data that does not belong to you.");
         }
 
         // Tìm người dùng theo targetId
@@ -149,7 +149,7 @@ public class UserController : ControllerBase
 
         if (!User.IsInRole(SD.AdminRole) && (userEmail != null && userEmail != email))
         {
-            throw new UnauthorizedAccessException("You are not allowed to access data that does not belong to you.");
+            throw new ForbiddenException("You are not allowed to access data that does not belong to you.");
         }
 
         var user = await _userManager.FindByEmailAsync(email);
@@ -176,13 +176,13 @@ public class UserController : ControllerBase
 
         if (targetId == null)
         {
-            throw new BadHttpRequestException("Please fill out id or log in.");
+            throw new BadRequestException("Please fill out id or log in.");
         }
 
         // Kiểm tra quyền truy cập
         if (!User.IsInRole(SD.AdminRole) && targetId != userId)
         {
-            throw new UnauthorizedAccessException("You are not allowed to access data that does not belong to you.");
+            throw new ForbiddenException("You are not allowed to access data that does not belong to you.");
         }
 
         // Tìm người dùng theo targetId
@@ -191,7 +191,7 @@ public class UserController : ControllerBase
 
         if (user == null)
         {
-            throw new NotFoundException($"User with ID: {userInformation.Id} not found.");
+            throw new UserNotFoundException(userInformation.Id);
         }
 
         user.FullName = userInformation.FullName;
@@ -238,7 +238,6 @@ public class UserController : ControllerBase
     public async Task<IActionResult> UploadAvatar(IFormFile file, string pictureName, string? folder = null)
     {
        
-
         return Ok(_response);
     }
 

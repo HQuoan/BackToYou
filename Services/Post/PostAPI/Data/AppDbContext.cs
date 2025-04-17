@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace PostAPI.Data;
+﻿namespace PostAPI.Data;
 public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
@@ -9,7 +7,7 @@ public class AppDbContext : DbContext
     }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Post> Posts { get; set; }
-    public DbSet<PostLabel> PostLabels { get; set; }
+    public DbSet<PostSetting> PostSettings { get; set; }
     public DbSet<PostImage> PostImages { get; set; }
     public DbSet<Comment> Comments { get; set; }
     public DbSet<Follower> Followers { get; set; }
@@ -26,15 +24,8 @@ public class AppDbContext : DbContext
             .HasIndex(c => c.Name)
             .IsUnique();
 
-        builder.Entity<PostLabel>()
-             .Property(p => p.Price)
-             .HasPrecision(18, 2); // 18 chữ số, 2 số sau dấu phẩy
-
-        builder.Entity<PostLabel>().HasData(
-            new PostLabel { PostLabelId = new Guid(SD.PostLabel_Normal_Id), Name = "Normal" },
-            new PostLabel { PostLabelId = new Guid(SD.PostLabel_Priority_Id), Name = "Priority" , Price = 10000},
-            new PostLabel { PostLabelId = new Guid("F08CA90E-390B-4B22-92D6-0865E1FB9023"), Name = "Found" },
-            new PostLabel { PostLabelId = new Guid("B21957F3-D71B-461C-A82B-C4D60D0E854B"), Name = "Fake" }
+        builder.Entity<PostSetting>().HasData(
+            new PostSetting { PostSettingId = new Guid("B21957F3-D71B-461C-A82B-C4D60D0E854B"), Name = nameof(SD.PostLabel_Priority_Price), Value = SD.PostLabel_Priority_Price }
          );
 
         builder.Entity<Post>()
@@ -42,6 +33,9 @@ public class AppDbContext : DbContext
            .IsUnique();
 
         builder.Entity<Post>().Property(p => p.PostType)
+            .HasConversion<string>();
+
+        builder.Entity<Post>().Property(p => p.PostLabel)
             .HasConversion<string>();
 
         builder.Entity<Post>().Property(p => p.PostStatus)

@@ -83,7 +83,7 @@ public class AuthAPIController : ControllerBase
     }
 
     [HttpPost("AssignRole")]
-   // [Authorize(Roles = SD.AdminRole)]
+    [Authorize(Roles = SD.AdminRole)]
     public async Task<IActionResult> AssignRole([FromBody] AssignRoleDto model)
     {
         var assignRoleSuccessful = await _authService.AssignRole(model.Email, model.Role.ToUpper());

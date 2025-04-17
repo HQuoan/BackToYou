@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PaymentAPI.APIFeatures;
 using System.Security.Claims;
 
 namespace PaymentAPI.Controllers;
@@ -195,12 +194,14 @@ public class ReceiptAPIController : ControllerBase
             throw new BadRequestException("Invalid or missing user ID claim.");
         }
 
-        if (User.IsInRole("ADMIN") || (userId == receipt.UserId && receipt.Status == SD.Status_Pending))
+        if (!(User.IsInRole(SD.AdminRole) || (userId == receipt.UserId && receipt.Status == SD.Status_Pending)))
         {
-            await _unitOfWork.Receipt.RemoveAsync(receipt);
-            await _unitOfWork.SaveAsync();
+            throw new ForbiddenException();
         }
 
-        return NoContent();
+        await _unitOfWork.Receipt.RemoveAsync(receipt);
+        await _unitOfWork.SaveAsync();
+
+        return Ok(_response);
     }
 }

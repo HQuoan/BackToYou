@@ -1,0 +1,58 @@
+﻿using CloudinaryDotNet;
+using Newtonsoft.Json;
+using PostAPI.Features.Posts.Dtos;
+using PostAPI.Services.IServices;
+using System.Text;
+
+namespace PostAPI.Services;
+
+public class PaymentService : IPaymentService
+{
+    private readonly IHttpClientFactory _httpClientFactory;
+
+    public PaymentService(IHttpClientFactory httpClientFactory)
+    {
+        _httpClientFactory = httpClientFactory;
+    }
+
+    public async Task<bool> Refund(RefundDto refundDto)
+    {
+        var client = _httpClientFactory.CreateClient(SD.HttpClient_Payment);
+
+        var content = new StringContent(
+            JsonConvert.SerializeObject(refundDto),
+            Encoding.UTF8,
+            "application/json");
+
+        var response = await client.PutAsync("/wallets/refund", content);
+
+        if (!response.IsSuccessStatusCode)
+            throw new BadRequestException("Refund request failed.");
+
+        var apiContent = await response.Content.ReadAsStringAsync();
+        var resp = JsonConvert.DeserializeObject<ResponseDto>(apiContent);
+
+        if (resp == null || !resp.IsSuccess)
+            throw new BadRequestException("Refund was not successful.");
+
+        return true;
+    }
+
+    public async Task<bool> SubtractBalance(decimal amount)
+    {
+        var client = _httpClientFactory.CreateClient(SD.HttpClient_Payment);
+        var response = await client.GetAsync($"/wallets/subtract-balance?amount={amount}");
+
+        if (!response.IsSuccessStatusCode)
+            throw new BadRequestException("Subtract balance request failed.");
+
+        var apiContent = await response.Content.ReadAsStringAsync();
+        var resp = JsonConvert.DeserializeObject<ResponseDto>(apiContent);
+
+        if (resp == null || !resp.IsSuccess)
+            throw new BadRequestException("Balance subtraction was not successful.");
+
+        return true;
+    }
+
+}

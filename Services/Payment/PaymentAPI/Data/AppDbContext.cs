@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PaymentAPI.Models;
-using System.Reflection.Emit;
 
 namespace PaymentAPI.Data;
 public class AppDbContext : DbContext

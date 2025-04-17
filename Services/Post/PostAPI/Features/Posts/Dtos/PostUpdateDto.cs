@@ -8,8 +8,7 @@ public class PostUpdateDto
     public string Description { get; set; }
     public Location Location { get; set; }
     public PostType PostType { get; set; }
-    public PostStatus PostStatus { get; set; }
-
+    public PostLabel PostLabel { get; set; }
     public List<string> RetainedImagePublicIds { get; set; } = new();
     public List<IFormFile>? ImageFiles { get; set; }
     public int ThumbnailIndex { get; set; } = 0;

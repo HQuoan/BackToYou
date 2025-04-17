@@ -2,7 +2,7 @@
 using PostAPI.Features.Comments;
 using PostAPI.Features.Followers;
 using PostAPI.Features.PostImages;
-using PostAPI.Features.PostLabels;
+using PostAPI.Features.PostSettings;
 using PostAPI.Features.Posts;
 
 namespace PostAPI.Repositories;
@@ -12,7 +12,7 @@ public class UnitOfWork : IUnitOfWork
     private readonly AppDbContext _db;
     public ICategoryRepository Category { get; private set; }
     public IPostRepository Post { get; private set; }
-    public IPostLabelRepository PostLabel { get; private set; }
+    public IPostSettingRepository PostSetting { get; private set; }
     public IPostImageRepository PostImage { get; private set; }
     public ICommentRepository Comment { get; private set; }
     public IFollowerRepository Follower { get; private set; }
@@ -25,7 +25,7 @@ public class UnitOfWork : IUnitOfWork
         PostImage = new PostImageRepository(_db);
         Comment = new CommentRepository(_db);
         Follower = new FollowerRepository(_db);
-        PostLabel = new PostLabelRepository(_db);
+        PostSetting = new PostSettingRepository(_db);
     }
     public async Task SaveAsync()
     {

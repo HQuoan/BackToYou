@@ -15,9 +15,9 @@ public class PostDto : BaseEntity
     public string Description { get; set; }
     public Location Location { get; set; }
     public PostType PostType { get; set; }
-    public Guid PostLabelId { get; set; }
     public PostLabel PostLabel { get; set; }
     public PostStatus PostStatus { get; set; }
+    public decimal? Price { get; set; }
 
     public ICollection<PostImageDto>? PostImages { get; set; }
     public ICollection<CommentDto>? Comments { get; set; }

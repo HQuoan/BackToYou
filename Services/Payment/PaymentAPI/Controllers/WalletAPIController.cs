@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace PaymentAPI.Controllers;
 
@@ -23,9 +24,9 @@ public class WalletAPIController : ControllerBase
     public async Task<ActionResult<ResponseDto>> Get([FromQuery] WalletQueryParameters queryParameters)
     {
         var query = WalletFeatures.Build(queryParameters);
-        IEnumerable<Wallet> comments = await _unitOfWork.Wallet.GetAllAsync(query);
+        IEnumerable<Wallet> wallets = await _unitOfWork.Wallet.GetAllAsync(query);
 
-        _response.Result = _mapper.Map<IEnumerable<WalletDto>>(comments);
+        _response.Result = _mapper.Map<IEnumerable<WalletDto>>(wallets);
 
         int totalItems = await _unitOfWork.Wallet.CountAsync(query);
         _response.Pagination = new PaginationDto
@@ -39,36 +40,108 @@ public class WalletAPIController : ControllerBase
         return Ok(_response);
     }
 
+    [HttpGet("balance")]
+    [Authorize()]
+    public async Task<ActionResult<ResponseDto>> GetBalance()
+    {
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+        {
+            throw new BadRequestException("Invalid or missing user ID claim.");
+        }
+
+        var wallet = await _unitOfWork.Wallet.GetAsync(c => c.UserId == userId);
+
+        _response.Result = wallet is null ? 0 : wallet.Balance;
+        return Ok(_response);
+    }
+
     [HttpGet]
     [Route("{id}")]
     public async Task<ActionResult<ResponseDto>> GetById(Guid id)
     {
-        var comment = await _unitOfWork.Wallet.GetAsync(c => c.WalletId == id);
-        if (comment == null)
+        var wallet = await _unitOfWork.Wallet.GetAsync(c => c.WalletId == id);
+        if (wallet == null)
         {
             throw new WalletNotFoundException(id);
         }
 
-        _response.Result = _mapper.Map<WalletDto>(comment);
+        _response.Result = _mapper.Map<WalletDto>(wallet);
         return Ok(_response);
     }
 
     [HttpPut]
     [Authorize(Roles = SD.AdminRole)]
-    public async Task<ActionResult<ResponseDto>> Put([FromBody] WalletDto commentDto)
+    public async Task<ActionResult<ResponseDto>> Put([FromBody] WalletDto walletDto)
     {
-        Wallet cateFromDb = await _unitOfWork.Wallet.GetAsync(c => c.WalletId == commentDto.WalletId);
-        if (cateFromDb == null)
+        Wallet walletFromDb = await _unitOfWork.Wallet.GetAsync(c => c.WalletId == walletDto.WalletId);
+        if (walletFromDb == null)
         {
-            throw new WalletNotFoundException(commentDto.WalletId);
+            throw new WalletNotFoundException(walletDto.WalletId);
         }
 
-        _mapper.Map(commentDto, cateFromDb);
+        _mapper.Map(walletDto, walletFromDb);
 
-        await _unitOfWork.Wallet.UpdateAsync(cateFromDb);
+        await _unitOfWork.Wallet.UpdateAsync(walletFromDb);
         await _unitOfWork.SaveAsync();
 
-        _response.Result = _mapper.Map<WalletDto>(cateFromDb);
+        _response.Result = _mapper.Map<WalletDto>(walletFromDb);
+
+        return Ok(_response);
+    }
+
+    [HttpPut("subtract-balance")]
+    [Authorize]
+    public async Task<ActionResult<ResponseDto>> SubtractBalance([FromQuery] decimal amount)
+    {
+        if (amount <= 0)
+            throw new BadRequestException("Amount must be greater than zero.");
+
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+        {
+            throw new BadRequestException("Invalid or missing user ID claim.");
+        }
+
+        Wallet walletFromDb = await _unitOfWork.Wallet.GetAsync(c => c.UserId == userId);
+        if (walletFromDb == null)
+        {
+            throw new WalletNotFoundException(userId);
+        }
+
+        if (walletFromDb.Balance < amount)
+            throw new BadRequestException("Insufficient balance.");
+
+        walletFromDb.Balance -= amount;
+
+
+        await _unitOfWork.Wallet.UpdateAsync(walletFromDb);
+        await _unitOfWork.SaveAsync();
+
+        _response.Result = _mapper.Map<WalletDto>(walletFromDb);
+
+        return Ok(_response);
+    }
+
+    [HttpPut("refund")]
+    [Authorize(Roles = SD.AdminRole)]
+    public async Task<ActionResult<ResponseDto>> Refund([FromBody] RefundDto refundDto)
+    {
+        if (refundDto.Amount <= 0)
+            throw new BadRequestException("Amount must be greater than zero.");
+
+        Wallet walletFromDb = await _unitOfWork.Wallet.GetAsync(c => c.UserId == refundDto.UserId);
+        if (walletFromDb == null)
+        {
+            throw new WalletNotFoundException(refundDto.UserId);
+        }
+
+        walletFromDb.Balance += refundDto.Amount;
+
+        await _unitOfWork.Wallet.UpdateAsync(walletFromDb);
+        await _unitOfWork.SaveAsync();
+
+        _response.Result = _mapper.Map<WalletDto>(walletFromDb);
 
         return Ok(_response);
     }
@@ -77,13 +150,13 @@ public class WalletAPIController : ControllerBase
     [Authorize(Roles = SD.AdminRole)]
     public async Task<ActionResult> Delete(Guid id)
     {
-        var comment = await _unitOfWork.Wallet.GetAsync(c => c.WalletId == id);
-        if (comment == null)
+        var wallet = await _unitOfWork.Wallet.GetAsync(c => c.WalletId == id);
+        if (wallet == null)
         {
             throw new WalletNotFoundException(id);
         }
 
-        await _unitOfWork.Wallet.RemoveAsync(comment);
+        await _unitOfWork.Wallet.RemoveAsync(wallet);
         await _unitOfWork.SaveAsync();
 
         return Ok(_response);

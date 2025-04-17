@@ -1,8 +1,11 @@
 ﻿using ImageService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using PostAPI.Features.Posts.Dtos;
 using PostAPI.Features.Posts.Queries;
+using PostAPI.Models;
+using PostAPI.Services.IServices;
 using System.Security.Claims;
 
 namespace PostAPI.Features.Posts;
@@ -10,16 +13,18 @@ namespace PostAPI.Features.Posts;
 [ApiController]
 public class PostAPIController : ControllerBase
 {
+    private readonly IPaymentService _paymentService;
     private readonly IImageUploader _imageUploader;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private ResponseDto _response;
-    public PostAPIController(IUnitOfWork unitOfWork, IMapper mapper, IImageUploader imageUploader)
+    public PostAPIController(IUnitOfWork unitOfWork, IMapper mapper, IImageUploader imageUploader, IPaymentService paymentService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _response = new();
         _imageUploader = imageUploader;
+        _paymentService = paymentService;
     }
 
     [HttpGet]
@@ -91,19 +96,20 @@ public class PostAPIController : ControllerBase
         if (isAdmin)
         {
             post = await _unitOfWork.Post.GetAsync(c => c.PostId == id, includeProperties: "Category,PostImages,PostLabel");
-        }   
+        }
         else
         {
             post = await _unitOfWork.Post.GetAsync(c => c.PostId == id && c.PostStatus == PostStatus.Approved, includeProperties: "Category,PostImages,PostLabel");
 
-            if (post.PostStatus != PostStatus.Approved) {
+            if (post.PostStatus != PostStatus.Approved)
+            {
                 var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
                 if (!Guid.TryParse(userIdClaim.Value, out Guid userId))
                 {
                     throw new BadRequestException("Invalid or missing user ID claim.");
                 }
 
-                if(userId != post.UserId)
+                if (userId != post.UserId)
                 {
                     throw new ForbiddenException();
                 }
@@ -176,17 +182,31 @@ public class PostAPIController : ControllerBase
         Post post = _mapper.Map<Post>(postDto);
         post.PostStatus = PostStatus.Pending;
 
-        if(post.PostLabelId == Guid.Parse(SD.PostLabel_Priority_Id))
+        // check post type fee
+        if (postDto.PostLabel == PostLabel.Priority)
         {
-            // goi api ktra vi tien
-            post.PostLabelId = Guid.Parse(SD.PostLabel_Priority_Id);
+            // trừ tiền
+            var fee = await _unitOfWork.PostSetting.GetAsync(p => p.Name == nameof(SD.PostLabel_Priority_Price));
+            if(fee == null)
+            {
+                throw new NotFoundException("Not found fee");
+            }
 
+            if (!decimal.TryParse(fee.Value, out var feeAmount))
+            {
+                throw new BadRequestException("Invalid fee value format");
+            }
+
+            await _paymentService.SubtractBalance(feeAmount);
+            post.PostLabel = PostLabel.Priority;
+            post.Price = feeAmount;
         }
         else
         {
-            post.PostLabelId = Guid.Parse(SD.PostLabel_Normal_Id);
-
+            post.PostLabel = PostLabel.Normal;
+            post.Price = 0; 
         }
+
 
         // Generate slug
         post.Slug = SlugGenerator.GenerateSlug(post.Title);
@@ -200,13 +220,14 @@ public class PostAPIController : ControllerBase
 
         // upload images
         int i = 0;
-        if(postDto.ThumbnailIndex >= postDto.ImageFiles.Count ||  postDto.ThumbnailIndex < 0)
+        if (postDto.ThumbnailIndex >= postDto.ImageFiles.Count || postDto.ThumbnailIndex < 0)
             postDto.ThumbnailIndex = 0;
 
         foreach (var imgDto in postDto.ImageFiles)
         {
             var imageResult = await _imageUploader.UploadImageAsync(imgDto);
-            if (!imageResult.IsSuccess) {
+            if (!imageResult.IsSuccess)
+            {
                 throw new BadRequestException(imageResult.ErrorMessage);
             }
 
@@ -239,15 +260,19 @@ public class PostAPIController : ControllerBase
     }
 
     [HttpPut]
-    //[Authorize(Roles = SD.AdminRole)]
+    [Authorize]
     public async Task<ActionResult<ResponseDto>> Put([FromBody] PostUpdateDto postDto)
     {
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+        {
+            throw new BadRequestException("Invalid or missing user ID claim.");
+        }
+
         if ((!postDto.RetainedImagePublicIds?.Any() ?? true) && (postDto.ImageFiles == null || !postDto.ImageFiles.Any()))
         {
             throw new BadRequestException("Post must contain at least one image.");
         }
-
-        bool isAdmin = User.IsInRole(SD.AdminRole);
 
         Post postFromDb = await _unitOfWork.Post.GetAsync(c => c.PostId == postDto.PostId);
         if (postFromDb == null)
@@ -255,16 +280,34 @@ public class PostAPIController : ControllerBase
             throw new PostNotFoundException(postDto.PostId);
         }
 
-        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+        if (postFromDb.PostStatus != PostStatus.Pending)
+            throw new BadRequestException("Can't update post poststatus different pending");
+
+        // check post type fee
+        if (postDto.PostLabel == PostLabel.Priority && postFromDb.PostLabel == PostLabel.Normal)
         {
-            throw new ForbiddenException();
+            // trừ tiền
+            var fee = await _unitOfWork.PostSetting.GetAsync(p => p.Name == nameof(SD.PostLabel_Priority_Price));
+            if (fee == null)
+            {
+                throw new NotFoundException("Not found fee");
+            }
+
+            if (!decimal.TryParse(fee.Value, out var feeAmount))
+            {
+                throw new BadRequestException("Invalid fee value format");
+            }
+
+            await _paymentService.SubtractBalance(feeAmount);
+            postFromDb.PostLabel = PostLabel.Priority;
+            postFromDb.Price = feeAmount;
         }
-        
-        if(!isAdmin || userId != postFromDb.UserId)
+        else
         {
-            throw new BadRequestException("Invalid or missing user ID claim.");
+            postFromDb.PostLabel = PostLabel.Normal;
+            postFromDb.Price = 0;
         }
+
 
 
         postFromDb.Slug = SlugGenerator.GenerateSlug(postDto.Title);
@@ -332,13 +375,20 @@ public class PostAPIController : ControllerBase
         return Ok(_response);
     }
 
-    [HttpPut("/post-label")]
+    [HttpPut("/post-label-status")]
     [Authorize(Roles = SD.AdminRole)]
-    public async Task<ActionResult<ResponseDto>> UpdatePostLabel([FromBody] PostUpdateLabel postDto)
+    public async Task<ActionResult<ResponseDto>> UpdatePostUpdateLabelAndStatus([FromBody] PostUpdateLabelAndStatus postDto)
     {
         Post postFromDb = await _unitOfWork.Post.GetAsync(c => c.PostId == postDto.PostId);
         if (postFromDb == null)
             throw new PostNotFoundException(postDto.PostId);
+
+        // check trường hợp rejected thì trả tiền (nếu là priority)
+        if(postDto.PostStatus == PostStatus.Rejected && postFromDb.PostLabel == PostLabel.Priority)
+        {
+            // trả lại tiền
+            await _paymentService.Refund(new RefundDto { UserId = postFromDb.UserId, Amount = postFromDb.Price});
+        }
 
         _mapper.Map(postDto, postFromDb);
 
@@ -350,7 +400,7 @@ public class PostAPIController : ControllerBase
         return Ok(_response);
     }
 
-        [HttpDelete]
+    [HttpDelete]
     //[Authorize(Roles = SD.AdminRole)]
     public async Task<ActionResult<ResponseDto>> Delete(Guid id)
     {
