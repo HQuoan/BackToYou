@@ -1,10 +1,8 @@
 ﻿using ImageService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
 using PostAPI.Features.Posts.Dtos;
 using PostAPI.Features.Posts.Queries;
-using PostAPI.Models;
 using PostAPI.Services.IServices;
 using System.Security.Claims;
 
@@ -36,7 +34,7 @@ public class PostAPIController : ControllerBase
         }
 
         var query = PostFeatures.Build(queryParameters);
-        query.IncludeProperties = "Category,PostImages,PostLabel";
+        query.IncludeProperties = "Category,PostImages";
 
         IEnumerable<Post> posts = await _unitOfWork.Post.GetAllAsync(query);
 
@@ -66,7 +64,7 @@ public class PostAPIController : ControllerBase
         queryParameters.UserId = userId;
 
         var query = PostFeatures.Build(queryParameters);
-        query.IncludeProperties = "Category,PostImages,PostLabel";
+        query.IncludeProperties = "Category,PostImages";
 
         IEnumerable<Post> posts = await _unitOfWork.Post.GetAllAsync(query);
 
@@ -95,11 +93,11 @@ public class PostAPIController : ControllerBase
 
         if (isAdmin)
         {
-            post = await _unitOfWork.Post.GetAsync(c => c.PostId == id, includeProperties: "Category,PostImages,PostLabel");
+            post = await _unitOfWork.Post.GetAsync(c => c.PostId == id, includeProperties: "Category,PostImages");
         }
         else
         {
-            post = await _unitOfWork.Post.GetAsync(c => c.PostId == id && c.PostStatus == PostStatus.Approved, includeProperties: "Category,PostImages,PostLabel");
+            post = await _unitOfWork.Post.GetAsync(c => c.PostId == id && c.PostStatus == PostStatus.Approved, includeProperties: "Category,PostImages");
 
             if (post.PostStatus != PostStatus.Approved)
             {
@@ -135,11 +133,11 @@ public class PostAPIController : ControllerBase
 
         if (isAdmin)
         {
-            post = await _unitOfWork.Post.GetAsync(c => c.Slug == slug, includeProperties: "Category,PostImages,PostLabel");
+            post = await _unitOfWork.Post.GetAsync(c => c.Slug == slug, includeProperties: "Category,PostImages");
         }
         else
         {
-            post = await _unitOfWork.Post.GetAsync(c => c.Slug == slug && c.PostStatus == PostStatus.Approved, includeProperties: "Category,PostImages,PostLabel");
+            post = await _unitOfWork.Post.GetAsync(c => c.Slug == slug && c.PostStatus == PostStatus.Approved, includeProperties: "Category,PostImages");
 
             if (post.PostStatus != PostStatus.Approved)
             {

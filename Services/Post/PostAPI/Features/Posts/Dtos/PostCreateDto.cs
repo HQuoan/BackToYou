@@ -4,7 +4,7 @@ namespace PostAPI.Features.Posts.Dtos;
 public class PostCreateDto : IValidatableObject
 {
     public Guid UserId { get; set; }
-    [DefaultValue("227f875a-22e0-4c73-4781-08dd7b3e0244")]
+    [DefaultValue("7949a277-3644-484f-e1ba-08dd7f4ce512")]
     public Guid CategoryId { get; set; }
     [DefaultValue("Tìm đồ")]
     public string Title { get; set; }
