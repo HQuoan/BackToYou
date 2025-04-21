@@ -1,0 +1,27 @@
+.header-content-overlay {
+  margin-top: -300px;
+  z-index: 10;
+  position: relative;
+}
+
+.min-height-600{
+  min-height: 600px;
+}
+
+
+.navbar.scrolled {
+  position: fixed;
+  background-image: url('../images/templatemo-wave-header.jpg'), linear-gradient(#348CD2, #FFFFFF);;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.sidebar-block {
+  border: 2px solid var(--primary-color);
+  border-radius: var(--border-radius-medium);
+  padding: 30px;
+}

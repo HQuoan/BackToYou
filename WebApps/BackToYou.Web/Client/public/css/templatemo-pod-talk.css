@@ -266,13 +266,15 @@ main {
 -----------------------------------------*/
 .navbar {
   background-color: transparent;
+  /* background-color: #00CC99; */
   position: absolute;
   top: 0;
   right: 0;
   left: 0;
-  z-index: 9;
+  z-index: 999;
   padding-top: 20px;
   padding-bottom: 20px;
+  transition: all 0.3s ease-in-out;
 }
 
 .navbar .navbar-brand,
@@ -288,6 +290,15 @@ main {
   width: 120px;
   height: auto;
 }
+
+/* .custom-logo-image {
+  display: inline-block;
+  border: 4px solid #000;
+  border-radius: 50%;        
+  padding: 4px;
+  margin: 5px;
+} */
+
 
 .navbar-brand,
 .navbar-brand:hover {
