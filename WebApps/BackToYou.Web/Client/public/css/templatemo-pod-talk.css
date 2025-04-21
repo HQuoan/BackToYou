@@ -266,7 +266,6 @@ main {
 -----------------------------------------*/
 .navbar {
   background-color: transparent;
-  /* background-color: #00CC99; */
   position: absolute;
   top: 0;
   right: 0;
@@ -274,7 +273,10 @@ main {
   z-index: 999;
   padding-top: 20px;
   padding-bottom: 20px;
-  transition: all 0.3s ease-in-out;
+
+  opacity: 1;
+  transform: translateY(5px);
+  transition: all 0.75s ease-in-out;
 }
 
 .navbar .navbar-brand,

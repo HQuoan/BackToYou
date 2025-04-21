@@ -11,21 +11,24 @@ function Header() {
   };
 
   useEffect(() => {
+    const navbar = document.querySelector(".navbar");
+  
     const handleScroll = () => {
-      const navbar = document.querySelector(".navbar");
-      if (window.scrollY > 50) {
+      if (window.scrollY > 200) {
+        navbar.classList.add("hidden");
         navbar.classList.add("scrolled");
       } else {
         navbar.classList.remove("scrolled");
+        navbar.classList.remove("hidden");
       }
     };
-
+  
+    handleScroll(); // Đảm bảo navbar đúng trạng thái ngay khi mount
+  
     window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+  
 
   return (
     <nav className="navbar navbar-expand-lg">
