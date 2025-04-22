@@ -1,7 +1,18 @@
-﻿namespace PostAPI.Features.Categories.Dtos;
+﻿using FluentValidation;
+
+namespace PostAPI.Features.Categories.Dtos;
 
 public class CategoryCreateDto
 {
-    [Required]
     public string Name { get; set; }
 }
+
+public class CategoryCreateDtoValidator : AbstractValidator<CategoryCreateDto>
+{
+    public CategoryCreateDtoValidator()
+    {
+        RuleFor(x => x.Name).NotEmpty();
+    }
+}
+
+

@@ -15,12 +15,16 @@ public class AppDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<Receipt>()
-       .Property(r => r.Amount)
-       .HasPrecision(18, 2); // 18 chữ số, 2 số sau dấu phẩy
+           .Property(r => r.Amount)
+           .HasPrecision(18, 2); // 18 chữ số, 2 số sau dấu phẩy
 
         modelBuilder.Entity<Wallet>()
             .Property(w => w.Balance)
             .HasPrecision(18, 2);
+
+        modelBuilder.Entity<Wallet>()
+          .HasIndex(c => c.UserId)
+          .IsUnique();
 
     }
 }

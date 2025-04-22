@@ -4,35 +4,49 @@ using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text.Json.Serialization;
 using ImageService;
-using PostAPI.Services.IServices;
-using PostAPI.Services;
-using BuildingBlocks.Interceptors;
-
+using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// --- Configure Services ---
 
+// DbContext & Interceptors
 builder.Services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
-
 builder.Services.AddDbContext<AppDbContext>((sp, options) =>
 {
     options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-// Configure AutoMapper
+// AutoMapper
 IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+// Controllers & FluentValidation
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<ValidationFilter>();
+})
+.AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+})
+.ConfigureApiBehaviorOptions(options =>
+{
+    options.SuppressModelStateInvalidFilter = true; // Tắt validation mặc định của ASP.NET Core
+});
 
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    });
+builder.Services.AddFluentValidationAutoValidation(fv =>
+{
+    fv.DisableDataAnnotationsValidation = true; // Tắt validation từ DataAnnotations
+})
+.AddFluentValidationClientsideAdapters();
 
+// Add Validators from Assembly
+builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
+
+// 5. Swagger & API Documentation
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -49,6 +63,7 @@ builder.Services.AddSwaggerGen(options =>
         },
     });
 
+    // JWT Authentication
     options.AddSecurityDefinition(name: JwtBearerDefaults.AuthenticationScheme, securityScheme: new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -72,7 +87,7 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 
-    // Đường dẫn đến tệp XML
+    // XML Documentation
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     if (File.Exists(xmlPath))
@@ -81,25 +96,36 @@ builder.Services.AddSwaggerGen(options =>
     }
 });
 
+// Authentication & Authorization
 builder.AddAppAuthentication();
 builder.Services.AddAuthorization();
 
+// Exception Handling
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
+// HttpContext & HTTP Client
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<BackendApiAuthenticationHttpClientHandler>();
 
+// Application Services
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IImageUploader, CloudinaryUploader>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 
+// HttpClient Configuration for External Services
 builder.Services.AddHttpClient(SD.HttpClient_Payment, u => u.BaseAddress = new Uri(builder.Configuration["ServiceUrls:PaymentAPI"]));
 
 var app = builder.Build();
 
+// --- Middleware Configuration ---
+
+// Request Logging
+app.UseMiddleware<RequestLoggingMiddleware>();
+
+// Apply Migrations
 ApplyMigration();
 
-// Configure the HTTP request pipeline.
+// HTTP Request Pipeline Configuration
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -107,16 +133,17 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
+// Global Exception Handler
 app.UseExceptionHandler(options => { });
 
 app.Run();
 
+// Migration Helper
 void ApplyMigration()
 {
     using (var scope = app.Services.CreateScope())
@@ -129,4 +156,3 @@ void ApplyMigration()
         }
     }
 }
-

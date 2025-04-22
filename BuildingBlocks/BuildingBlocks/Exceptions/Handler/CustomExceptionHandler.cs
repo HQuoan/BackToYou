@@ -77,7 +77,12 @@ public class CustomExceptionHandler(ILogger<CustomExceptionHandler> logger)
 
         if (exception is ValidationException validationException)
         {
-            problemDetails.Extensions.Add("ValidationErrors", validationException.Errors);
+            var errors = validationException.Errors.Select(e => new
+            {
+                e.PropertyName,
+                e.ErrorMessage
+            });
+            problemDetails.Extensions.Add("ValidationErrors", errors);
         }
 
         if (exception is DuplicateKeyException dupEx && dupEx.PropertyName is not null)
