@@ -26,7 +26,8 @@ public class JwtTokenGenerator : IJwtTokenGenerator
         new Claim(JwtRegisteredClaimNames.Email, applicationUser.Email),
         new Claim(JwtRegisteredClaimNames.Sub, applicationUser.Id),
         new Claim(JwtRegisteredClaimNames.Name, applicationUser.FullName),
-        new Claim("Avatar", applicationUser.Avatar??"")
+        new Claim("Avatar", applicationUser.Avatar??""),
+        new Claim("ShortName", applicationUser.ShortName??""),
       };
 
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));

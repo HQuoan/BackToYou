@@ -1,4 +1,5 @@
 ﻿using Auth.API.Exceptions;
+using BuildingBlocks.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -195,6 +196,7 @@ public class UserController : ControllerBase
         }
 
         user.FullName = userInformation.FullName;
+        user.ShortName = userInformation.FullName.ToShortName();
         user.Avatar = userInformation.Avatar;
         user.Sex = userInformation.Sex;
         user.DateOfBirth = userInformation.DateOfBirth;

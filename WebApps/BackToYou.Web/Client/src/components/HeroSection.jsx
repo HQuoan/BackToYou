@@ -3,57 +3,22 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import "./HeroSection.css"; // Import custom CSS
+import "./HeroSection.css";
+import mockPosts from "../data/mockPosts";
+import PostTypeBadge from "../ui/PostTypeBadge ";
 
-const carouselItems = [
-  {
-    image:
-      "images/profile/smiling-business-woman-with-folded-hands-against-white-wall-toothy-smile-crossed-arms.jpg",
-    name: "Candice",
-    verified: true,
-    badges: ["Storytelling", "Business"],
-    social: ["bi-twitter", "bi-facebook"],
-  },
-  {
-    image:
-      "images/profile/handsome-asian-man-listening-music-through-headphones.jpg",
-    name: "William",
-    verified: true,
-    badges: ["Creative", "Design"],
-    social: ["bi-twitter", "bi-facebook", "bi-pinterest"],
-  },
-  {
-    image: "images/profile/cute-smiling-woman-outdoor-portrait.jpg",
-    name: "Taylor",
-    verified: false,
-    badges: ["Modeling", "Fashion"],
-    social: ["bi-twitter", "bi-facebook", "bi-pinterest"],
-  },
-  {
-    image: "images/profile/man-portrait.jpg",
-    name: "Nick",
-    verified: false,
-    badges: ["Acting"],
-    social: ["bi-instagram", "bi-youtube"],
-  },
-  {
-    image: "images/profile/woman-posing-black-dress-medium-shot.jpg",
-    name: "Elsa",
-    verified: true,
-    badges: ["Influencer"],
-    social: ["bi-instagram", "bi-youtube"],
-  },
-  {
-    image:
-      "images/profile/smart-attractive-asian-glasses-male-standing-smile-with-freshness-joyful-casual-blue-shirt-portrait-white-background.jpg",
-    name: "Chan",
-    verified: false,
-    badges: ["Education"],
-    social: ["bi-linkedin", "bi-whatsapp"],
-  },
+const social = [
+  // "bi-twitter",
+  "bi-person-fill",
+  "bi-facebook",
+  "bi-whatsapp",
+  // "bi-pinterest",
+  // "bi-messenger",
+  // "bi-instagram",
+  // "bi-youtube",
+  // "bi-linkedin",
 ];
 
-// Swiper configuration to match Owl Carousel behavior
 const swiperOptions = {
   slidesPerView: 2,
   centeredSlides: true,
@@ -72,8 +37,8 @@ const swiperOptions = {
       slidesPerView: 4,
     },
   },
-  // modules: [ Navigation],
-  modules: [Autoplay, Navigation],
+  modules: [ Navigation],
+  // modules: [Autoplay, Navigation],
 };
 
 const handleSwiperHover = (swiper) => {
@@ -92,7 +57,18 @@ const handleSwiperHover = (swiper) => {
   });
 };
 
+// Duplicate mockPosts if needed for looping effect
+const getCarouselPosts = (posts, minSlides = 6) => {
+  if (posts.length === 0) return [];
+  if (posts.length >= minSlides) return posts;
+
+  const repeatCount = Math.ceil(minSlides / posts.length);
+  return Array(repeatCount).fill(posts).flat().slice(0, minSlides);
+};
+
 const HeroSection = () => {
+  const carouselPosts = getCarouselPosts(mockPosts);
+
   return (
     <section className="hero-section">
       <div className="container">
@@ -108,53 +84,55 @@ const HeroSection = () => {
               </a>
             </div>
 
-            <Swiper
-              className="owl-carousel owl-theme"
-              {...swiperOptions}
-              onSwiper={handleSwiperHover}
-            >
-              {carouselItems.map((item, index) => (
-                <SwiperSlide
-                  className="owl-carousel-info-wrap item"
-                  key={index}
-                >
-                  <img
-                    src={item.image}
-                    className="owl-carousel-image img-fluid"
-                    alt={item.name}
-                  />
-                  <div className="owl-carousel-info">
-                    <h4 className="mb-2">
-                      {item.name}
-                      {item.verified && (
-                        <img
-                          src="images/verified.png"
-                          className="owl-carousel-verified-image img-fluid"
-                          alt="verified"
-                        />
-                      )}
-                    </h4>
-                    {item.badges.map((badge, idx) => (
-                      <span className="badge" key={idx}>
-                        {badge}
+            {carouselPosts.length === 0 ? (
+              <p className="text-white text-center">Chưa có bài viết nào</p>
+            ) : (
+              <Swiper
+                className="owl-carousel owl-theme"
+                {...swiperOptions}
+                onSwiper={handleSwiperHover}
+              >
+                {carouselPosts.map((post, index) => (
+                  <SwiperSlide
+                    className="owl-carousel-info-wrap item"
+                    key={index}
+                  >
+                    <img
+                      src={post.thumbnailUrl}
+                      className="owl-carousel-image img-fluid"
+                      alt={post.title}
+                    />
+                    <div className="owl-carousel-info">
+                      <h4 className="mb-2 line-clamp-carousel-title">{post.title}</h4>
+                      <div className="d-flex align-items-center">
+                        <PostTypeBadge type={post.postType} />
+                        <span className="badge badge-category d-flex align-items-center mb-1">
+                          <i className="bi-box me-1"></i>
+                          {post.category?.name}
+                        </span>
+                      </div>
+                      <span className="badge">
+                        <i className="bi-geo-alt me-1"></i>
+                        {post.location.ward}, {post.location.district}
                       </span>
-                    ))}
-                  </div>
-                  <div className="social-share">
-                    <ul className="social-icon">
-                      {item.social.map((icon, idx) => (
-                        <li className="social-icon-item" key={idx}>
-                          <a
-                            href="#"
-                            className={`social-icon-link ${icon}`}
-                          ></a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
+                      
+                    </div>
+                    <div className="social-share">
+                      <ul className="social-icon">
+                        {social.map((icon, idx) => (
+                          <li className="social-icon-item" key={idx}>
+                            <a
+                              href="#"
+                              className={`social-icon-link ${icon}`}
+                            ></a>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            )}
           </div>
         </div>
       </div>

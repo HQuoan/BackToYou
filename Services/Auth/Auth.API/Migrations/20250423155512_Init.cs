@@ -31,6 +31,7 @@ namespace Auth.API.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ShortName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Sex = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Avatar = table.Column<string>(type: "nvarchar(max)", nullable: true),

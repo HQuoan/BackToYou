@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Auth.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250417060112_Init")]
+    [Migration("20250423155512_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -99,6 +99,10 @@ namespace Auth.API.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Sex")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ShortName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

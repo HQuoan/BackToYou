@@ -1,4 +1,5 @@
 ﻿using Auth.API.Exceptions;
+using BuildingBlocks.Extensions;
 using Microsoft.Extensions.Options;
 
 namespace Auth.API.Services;
@@ -28,6 +29,7 @@ public class AuthService : IAuthService
             NormalizedEmail = registrationRequestDto.Email.ToUpper(),
             PhoneNumber = registrationRequestDto.PhoneNumber,
             FullName = registrationRequestDto.FullName,
+            ShortName = registrationRequestDto.FullName.ToShortName(),
             UserName = registrationRequestDto.Email,
             Sex = registrationRequestDto.Sex,
             DateOfBirth = registrationRequestDto.DateOfBirth,
@@ -68,6 +70,7 @@ public class AuthService : IAuthService
                     Id = user.Id,
                     Email = user.Email,
                     FullName = user.FullName,
+                    ShortName = user.ShortName,
                     PhoneNumber = user.PhoneNumber,
                     DateOfBirth = user.DateOfBirth,
                     Sex = user.Sex.ToString(),
@@ -117,6 +120,7 @@ public class AuthService : IAuthService
             PhoneNumber = user.PhoneNumber,
             Email = user.Email,
             FullName = user.FullName,
+            ShortName = user.ShortName,
             Avatar = user.Avatar,
             Sex = user.Sex.ToString(),
             DateOfBirth = user.DateOfBirth,

@@ -1,4 +1,4 @@
-import Topics from "../ui/Topics";
+import Categories from "../ui/Categories";
 
 function Contact() {
   return (
@@ -8,7 +8,7 @@ function Contact() {
         <div className="container">
         <h1>Contact page</h1>
         </div>
-        <Topics />
+        <Categories />
       </section>
     </>
   );

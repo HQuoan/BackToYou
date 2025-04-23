@@ -31,6 +31,7 @@ public class RoleInitializer
                 Id = "4986f53c-a2db-4b71-80df-404bcad5413a",
                 UserName = adminEmail,
                 FullName = "Admin",
+                ShortName = "admin",
                 Email = adminEmail,
                 Avatar = null,
                 NormalizedEmail = adminEmail.ToUpper(),

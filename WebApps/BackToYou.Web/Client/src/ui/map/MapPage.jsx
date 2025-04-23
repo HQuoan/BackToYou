@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import mockPosts from './mockPosts';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -10,6 +9,7 @@ import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
 import MapLogic from './MapLogic';
 import FlyToButton from './FlyToButton';
+import mockPosts from '../../data/mockPosts';
 
 // L.Icon.Default.mergeOptions({
 //   iconRetinaUrl: markerIcon2x,
@@ -80,7 +80,7 @@ export default function MapPage() {
         {mockPosts.map((post) => (
           <Marker
             key={post.postId}
-            position={[post.latitude, post.longitude]}
+            position={[post.location.latitude, post.location.longitude]}
             icon={post.thumbnailUrl ? createAvatarIcon(post.thumbnailUrl) : undefined}
           >
             <Popup>

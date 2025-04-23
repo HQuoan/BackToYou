@@ -6,7 +6,8 @@ namespace Auth.API.Models;
 public class ApplicationUser : IdentityUser, IBaseEntity
 {
     [Required]
-    public string FullName { get; set; } = default!;
+    public string FullName { get; set; }
+    public string ShortName { get; set; }
     [Required]
     public DateTime DateOfBirth { get; set; }
     [Required]
