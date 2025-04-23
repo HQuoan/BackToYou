@@ -175,10 +175,10 @@ public class PostAPIController : ControllerBase
         {
             throw new BadRequestException("Invalid or missing user ID claim.");
         }
-        postDto.UserId = userId;
 
         Post post = _mapper.Map<Post>(postDto);
         post.PostStatus = PostStatus.Pending;
+        post.UserId = userId;
 
         // check post type fee
         if (postDto.PostLabel == PostLabel.Priority)
@@ -267,10 +267,10 @@ public class PostAPIController : ControllerBase
             throw new BadRequestException("Invalid or missing user ID claim.");
         }
 
-        if ((!postDto.RetainedImagePublicIds?.Any() ?? true) && (postDto.ImageFiles == null || !postDto.ImageFiles.Any()))
-        {
-            throw new BadRequestException("Post must contain at least one image.");
-        }
+        //if ((!postDto.RetainedImagePublicIds?.Any() ?? true) && (postDto.ImageFiles == null || !postDto.ImageFiles.Any()))
+        //{
+        //    throw new BadRequestException("Post must contain at least one image.");
+        //}
 
         Post postFromDb = await _unitOfWork.Post.GetAsync(c => c.PostId == postDto.PostId);
         if (postFromDb == null)

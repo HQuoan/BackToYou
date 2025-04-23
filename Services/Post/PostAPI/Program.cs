@@ -46,7 +46,7 @@ builder.Services.AddFluentValidationAutoValidation(fv =>
 // Add Validators from Assembly
 builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 
-// 5. Swagger & API Documentation
+// Swagger & API Documentation
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {

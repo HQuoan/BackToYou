@@ -13,3 +13,4 @@ global using Auth.API.Models.Dtos;
 global using EmailService;
 global using Auth.API.APIFeatures;
 global using AutoMapper;
+global using FluentValidation;

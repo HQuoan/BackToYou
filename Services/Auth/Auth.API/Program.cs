@@ -1,30 +1,38 @@
 ﻿using Auth.API;
 using BuildingBlocks.Exceptions.Handler;
 using BuildingBlocks.Extensions;
+using BuildingBlocks.Middlewares;
+using FluentValidation.AspNetCore;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add services to the container
 
+// Scoped Services
 builder.Services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
+builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IEmailService, EmailService.EmailService>();
 
+// DbContext Configuration
 builder.Services.AddDbContext<AppDbContext>((sp, options) =>
 {
     options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-// Configure AutoMapper
+// AutoMapper Configuration
 IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-
-// Configure Identity
+// Identity Configuration
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.Password.RequireDigit = true;
@@ -39,13 +47,34 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
 
-
+// App Settings & Jwt Configuration
 builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("ApiSettings:JwtOptions"));
 
-// Add services
-builder.Services.AddControllers();
+// FluentValidation Configuration
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<ValidationFilter>();
+})
+.AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+})
+.ConfigureApiBehaviorOptions(options =>
+{
+    options.SuppressModelStateInvalidFilter = true; // Disable default validation
+});
 
+builder.Services.AddFluentValidationAutoValidation(fv =>
+{
+    fv.DisableDataAnnotationsValidation = true; // Disable DataAnnotations validation
+})
+.AddFluentValidationClientsideAdapters();
+
+// Add Validators from Assembly
+builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
+
+// Swagger Configuration
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -53,7 +82,6 @@ builder.Services.AddSwaggerGen(options =>
     {
         Title = "Auth Management API",
         Version = "v1",
-        Description = "",
         Contact = new OpenApiContact
         {
             Name = "Support Team",
@@ -62,10 +90,11 @@ builder.Services.AddSwaggerGen(options =>
         },
     });
 
-    options.AddSecurityDefinition(name: JwtBearerDefaults.AuthenticationScheme, securityScheme: new OpenApiSecurityScheme
+    // JWT Bearer Authorization
+    options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Description = "Enter the Bearer Authorization string as following: `Bearer Generated-JWT-Token`",
+        Description = "Enter the Bearer Authorization string as: `Bearer Generated-JWT-Token`",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
         Scheme = JwtBearerDefaults.AuthenticationScheme
@@ -85,7 +114,7 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 
-    // Đường dẫn đến tệp XML
+    // XML Documentation
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     if (File.Exists(xmlPath))
@@ -94,22 +123,19 @@ builder.Services.AddSwaggerGen(options =>
     }
 });
 
-
+// Authentication & Authorization
 builder.AddAppAuthentication();
 builder.Services.AddAuthorization();
 
+// Exception Handler
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
-
-builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IEmailService, EmailService.EmailService>();
 
 var app = builder.Build();
 
-// Apply migrations
+// Apply Migrations
 ApplyMigration();
 
-//Seed roles
+// Seed Roles
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -123,7 +149,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Configure the HTTP request pipeline.
+// HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -131,23 +157,20 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.UseExceptionHandler(options => { });
 
 app.Run();
 
+// Apply migrations
 void ApplyMigration()
 {
     using (var scope = app.Services.CreateScope())
     {
         var _db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-        if (_db.Database.GetPendingMigrations().Count() > 0)
+        if (_db.Database.GetPendingMigrations().Any())
         {
             _db.Database.Migrate();
         }

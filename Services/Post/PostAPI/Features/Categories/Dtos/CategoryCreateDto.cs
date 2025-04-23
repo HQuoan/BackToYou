@@ -1,6 +1,4 @@
-﻿using FluentValidation;
-
-namespace PostAPI.Features.Categories.Dtos;
+﻿namespace PostAPI.Features.Categories.Dtos;
 
 public class CategoryCreateDto
 {

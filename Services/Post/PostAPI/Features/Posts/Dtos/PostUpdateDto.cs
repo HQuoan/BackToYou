@@ -12,26 +12,26 @@ public class PostUpdateDto
     public List<string> RetainedImagePublicIds { get; set; } = new();
     public List<IFormFile>? ImageFiles { get; set; }
     public int ThumbnailIndex { get; set; } = 0;
+}
 
-    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+public class PostUpdateDtoValidator : AbstractValidator<PostUpdateDto>
+{
+    public PostUpdateDtoValidator()
     {
-        if (ImageFiles == null || ImageFiles.Count < 1)
-        {
-            yield return new ValidationResult("At least one image is required.", new[] { nameof(ImageFiles) });
-        }
+        RuleFor(x => x.PostId).NotEmpty();
+        RuleFor(x => x.CategoryId).NotEmpty();
+        RuleFor(x => x.Title).NotEmpty();
+        RuleFor(x => x.Description).NotEmpty();
 
-        if (ImageFiles.Count > 3)
-        {
-            yield return new ValidationResult("A maximum of 3 images is allowed.", new[] { nameof(ImageFiles) });
-        }
+        RuleFor(x => x)
+            .Must(x =>
+                (x.RetainedImagePublicIds != null && x.RetainedImagePublicIds.Any()) ||
+                (x.ImageFiles != null && x.ImageFiles.Any()))
+            .WithMessage("Post must contain at least one image.");
 
-        var allowedTypes = new[] { "image/jpeg", "image/png", "image/jpg", "image/webp" };
-        foreach (var file in ImageFiles)
+        When(x => x.ImageFiles != null && x.ImageFiles.Any(), () =>
         {
-            if (!allowedTypes.Contains(file.ContentType.ToLower()))
-            {
-                yield return new ValidationResult($"The file '{file.FileName}' is not a valid image format.", new[] { nameof(ImageFiles) });
-            }
-        }
+            RuleForEach(x => x.ImageFiles).SetValidator(new ImageFileValidator());
+        });
     }
 }

@@ -1,35 +1,54 @@
-﻿using BuildingBlocks.Enums.Interceptors;
-using BuildingBlocks.Exceptions.Handler;
-using BuildingBlocks.Extensions;
+﻿using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.OpenApi.Models;
-using PaymentAPI;
-using PaymentAPI.Repositories;
-using PaymentAPI.Services;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Configure services
 builder.Services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
-
 builder.Services.AddDbContext<AppDbContext>((sp, options) =>
 {
     options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-// Configure AutoMapper
+// AutoMapper
 IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+// Exception Handler
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
-builder.Services.AddControllers();
+// Controllers & FluentValidation
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<ValidationFilter>();
+})
+.AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+})
+.ConfigureApiBehaviorOptions(options =>
+{
+    options.SuppressModelStateInvalidFilter = true; // Disable default validation
+});
 
+// FluentValidation Configuration
+builder.Services.AddFluentValidationAutoValidation(fv =>
+{
+    fv.DisableDataAnnotationsValidation = true; // Disable DataAnnotations validation
+})
+.AddFluentValidationClientsideAdapters();
+
+// Add Validators from Assembly
+builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
+
+// Swagger Configuration
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -37,7 +56,6 @@ builder.Services.AddSwaggerGen(options =>
     {
         Title = "Payment Management API",
         Version = "v1",
-        Description = "",
         Contact = new OpenApiContact
         {
             Name = "Support Team",
@@ -46,10 +64,11 @@ builder.Services.AddSwaggerGen(options =>
         },
     });
 
-    options.AddSecurityDefinition(name: JwtBearerDefaults.AuthenticationScheme, securityScheme: new OpenApiSecurityScheme
+    // JWT Bearer Authorization
+    options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Description = "Enter the Bearer Authorization string as following: `Bearer Generated-JWT-Token`",
+        Description = "Enter the Bearer Authorization string as: `Bearer Generated-JWT-Token`",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
         Scheme = JwtBearerDefaults.AuthenticationScheme
@@ -69,7 +88,7 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 
-    // Đường dẫn đến tệp XML
+    // XML Documentation
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     if (File.Exists(xmlPath))
@@ -78,26 +97,30 @@ builder.Services.AddSwaggerGen(options =>
     }
 });
 
+// Authentication & Authorization
 builder.AddAppAuthentication();
 builder.Services.AddAuthorization();
 
+// Stripe & PayOS Configuration
 Stripe.StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:SecretKey").Get<string>();
 builder.Services.Configure<PayOSOptions>(builder.Configuration.GetSection("PayOS"));
 
+// Scoped Services
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
 builder.Services.AddScoped<IEmailService, EmailService.EmailService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 
+// Payment Methods
 builder.Services.AddScoped<IPaymentMethodFactory, PaymentMethodFactory>();
 builder.Services.AddScoped<IPaymentMethod, PaymentWithStripe>();
 builder.Services.AddScoped<IPaymentMethod, PaymentWithPayOS>();
 
 var app = builder.Build();
 
+// Apply Migrations
 ApplyMigration();
 
-// Configure the HTTP request pipeline.
+// HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -105,26 +128,22 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.UseExceptionHandler(options => { });
 
 app.Run();
+
+// Apply migrations
 void ApplyMigration()
 {
     using (var scope = app.Services.CreateScope())
     {
         var _db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-        if (_db.Database.GetPendingMigrations().Count() > 0)
+        if (_db.Database.GetPendingMigrations().Any())
         {
             _db.Database.Migrate();
         }
     }
 }
-
-
