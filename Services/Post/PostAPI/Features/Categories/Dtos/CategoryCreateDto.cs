@@ -11,7 +11,7 @@ public class CategoryCreateDtoValidator : AbstractValidator<CategoryCreateDto>
     {
         RuleFor(x => x.Name)
             .NotEmpty()
-            .MaximumLength(18)
+            .MaximumLength(17)
             .WithMessage("The category name cannot be longer than 18 characters.");
     }
 }

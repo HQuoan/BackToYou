@@ -1,12 +1,11 @@
-import HeroSection from '../components/HeroSection';
-import Topics from '../ui/Categories';
+import PriorityPostsSlider from '../ui/PriorityPostsSlider';
 import Trending from '../ui/RecentPosts';
 import Categories from '../ui/Categories';
 
 function Homepage() {
   return(
     <>
-      <HeroSection />
+      <PriorityPostsSlider />
       <Categories />
       <Trending />
     </>

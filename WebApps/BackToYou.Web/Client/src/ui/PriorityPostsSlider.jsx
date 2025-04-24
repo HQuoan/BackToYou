@@ -3,9 +3,9 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import "./HeroSection.css";
+import "./PriorityPostsSlider.css";
 import mockPosts from "../data/mockPosts";
-import PostTypeBadge from "../ui/PostTypeBadge ";
+import PostTypeBadge from "./PostTypeBadge ";
 
 const social = [
   // "bi-twitter",
@@ -66,7 +66,7 @@ const getCarouselPosts = (posts, minSlides = 6) => {
   return Array(repeatCount).fill(posts).flat().slice(0, minSlides);
 };
 
-const HeroSection = () => {
+const PriorityPostsSlider = () => {
   const carouselPosts = getCarouselPosts(mockPosts);
 
   return (
@@ -140,4 +140,4 @@ const HeroSection = () => {
   );
 };
 
-export default HeroSection;
+export default PriorityPostsSlider;
