@@ -4,9 +4,9 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AppLayout from "./ui/AppLayout";
 import Contact from "./pages/Contact";
-import MapPage from "./ui/map/MapPage";
 import SearchPage from "./pages/SearchPage";
 import Homepage from "./pages/HomePage";
+import MapPage from "./pages/MapPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {

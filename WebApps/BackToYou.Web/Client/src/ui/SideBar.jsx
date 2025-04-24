@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import "./SideBar.css";
 
 const categories = [
   { name: "Giấy tờ tùy thân", image: "/images/topics/giay-to.jpg" },
@@ -29,10 +30,10 @@ function SideBar() {
     register,
     handleSubmit,
     reset,
-    watch,
+    // watch,
   } = useForm({ defaultValues });
 
-  const filters = watch();
+  // const filters = watch();
 
   const onSubmit = (data) => {
     const from = new Date(data.fromDate);

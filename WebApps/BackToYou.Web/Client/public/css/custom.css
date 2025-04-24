@@ -75,6 +75,10 @@
   margin-right: 5px;
 }
 
+.map .badge {
+  font-size: 1rem;
+}
+
 .badge-category {
   background-color: #FF7F50;
 }

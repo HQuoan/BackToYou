@@ -3,13 +3,14 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
-import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
-import markerIcon from 'leaflet/dist/images/marker-icon.png';
+// import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+// import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
 import MapLogic from './MapLogic';
 import FlyToButton from './FlyToButton';
 import mockPosts from '../../data/mockPosts';
+import PostCard from '../PostCard';
 
 // L.Icon.Default.mergeOptions({
 //   iconRetinaUrl: markerIcon2x,
@@ -17,15 +18,15 @@ import mockPosts from '../../data/mockPosts';
 //   shadowUrl: markerShadow,
 // });
 
-const defaultIcon = new L.Icon({
-  iconRetinaUrl: markerIcon2x,
-  iconUrl: markerIcon,
-  shadowUrl: markerShadow,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
+// const defaultIcon = new L.Icon({
+//   iconRetinaUrl: markerIcon2x,
+//   iconUrl: markerIcon,
+//   shadowUrl: markerShadow,
+//   iconSize: [25, 41],
+//   iconAnchor: [12, 41],
+//   popupAnchor: [1, -34],
+//   shadowSize: [41, 41]
+// });
 
 const redIcon = new L.Icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
@@ -58,15 +59,15 @@ const createAvatarIcon = (imgUrl) => {
   });
 };
 
-export default function MapPage() {
+export default function Map() {
   const [showBackButton, setShowBackButton] = useState(false);
 
   return (
-    <div className='container' style={{ position: 'relative' }}>
+    <div className="container map" style={{ position: 'relative' }}>
       <MapContainer
         center={userPosition}
-        zoom={14}
-        style={{ height: '100vh', width: '100%' }}
+        zoom={5}
+        style={{ height: '80vh', width: '100%' }}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
@@ -84,13 +85,7 @@ export default function MapPage() {
             icon={post.thumbnailUrl ? createAvatarIcon(post.thumbnailUrl) : undefined}
           >
             <Popup>
-              <strong>{post.title}</strong><br />
-              {post.thumbnailUrl && (
-                <>
-                  <img src={post.thumbnailUrl} alt={post.title} width="100%" /><br />
-                </>
-              )}
-              {post.description}
+               <PostCard  post={post} />
             </Popup>
           </Marker>
         ))}

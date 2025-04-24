@@ -6,7 +6,7 @@ function SearchPage() {
   return (
     <>
       <div className="site-header"></div>
-     
+
       <div className="container header-content-overlay">
         {/* <div className="row">
           <header className=" d-flex flex-column justify-content-center align-items-center">
@@ -16,16 +16,20 @@ function SearchPage() {
           </header>
         </div> */}
         <div className="row min-height-600 bg-white shadow rounded p-3">
+          <div className="row min-height-600 bg-white shadow rounded p-3">
           <div className="col-md-3">
             <SideBar />
           </div>
           <div className="col-md-9">
             <div className="row">
               {mockPosts.map((item, i) => (
-                <PostCard key={i} post={item} />
+                <div className="col-lg-4 col-6 mb-4" key={i}>
+                  <PostCard post={item} />
+                </div>
               ))}
             </div>
           </div>
+        </div>
         </div>
       </div>
     </>

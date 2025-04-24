@@ -14,7 +14,7 @@ export default function FlyToButton({ userPosition, show }) {
       onClick={flyToUser}
       style={{
         position: 'absolute',
-        bottom: 20,
+        top: 20,
         right: 20,
         zIndex: 1000,
         padding: '10px 15px',

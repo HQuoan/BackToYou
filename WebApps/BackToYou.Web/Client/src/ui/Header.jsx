@@ -36,11 +36,6 @@ function Header() {
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink to="/map" className="nav-link">
-                Map
-              </NavLink>
-            </li>
-            <li className="nav-item">
               <NavLink to="/search" className="nav-link">
                 Search
               </NavLink>
@@ -48,6 +43,11 @@ function Header() {
             <li className="nav-item">
               <NavLink to="/ai-search" className="nav-link">
                 AI Search
+              </NavLink>
+            </li>
+            <li className="nav-item">
+              <NavLink to="/map" className="nav-link">
+                Map
               </NavLink>
             </li>
             <li className="nav-item">

@@ -1,0 +1,26 @@
+.scrollable-sidebar {
+  max-height: 80vh;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.scrollable-sidebar::-webkit-scrollbar {
+  width: 8px; /* độ rộng thanh scroll dọc */
+}
+
+.scrollable-sidebar::-webkit-scrollbar-track {
+  background: transparent; /* nền track trong suốt */
+}
+
+.scrollable-sidebar::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.3); /* màu thanh cuộn */
+  border-radius: 4px;
+}
+
+.scrollable-sidebar:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.4); /* hover đậm hơn chút */
+}
+
+
+
+
