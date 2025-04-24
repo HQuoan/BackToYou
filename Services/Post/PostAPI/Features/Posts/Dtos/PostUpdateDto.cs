@@ -9,6 +9,7 @@ public class PostUpdateDto
     public Location Location { get; set; }
     public PostType PostType { get; set; }
     public PostLabel PostLabel { get; set; }
+    public DateTime LostOrFoundDate { get; set; }
     public List<string> RetainedImagePublicIds { get; set; } = new();
     public List<IFormFile>? ImageFiles { get; set; }
     public int ThumbnailIndex { get; set; } = 0;
@@ -22,6 +23,11 @@ public class PostUpdateDtoValidator : AbstractValidator<PostUpdateDto>
         RuleFor(x => x.CategoryId).NotEmpty();
         RuleFor(x => x.Title).NotEmpty();
         RuleFor(x => x.Description).NotEmpty();
+
+        RuleFor(x => x.LostOrFoundDate)
+           .NotEmpty().WithMessage("Date is required.")
+           .LessThanOrEqualTo(DateTime.Now).WithMessage("Date cannot be in the future.")
+           .GreaterThan(DateTime.Now.AddMonths(-6)).WithMessage("Date cannot be more than 6 months ago.");
 
         RuleFor(x => x)
             .Must(x =>

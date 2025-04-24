@@ -1,5 +1,4 @@
-﻿using PostAPI.Features.Categories.Dtos;
-using PostAPI.Features.Comments.Dtos;
+﻿using PostAPI.Features.Comments.Dtos;
 using PostAPI.Features.PostImages.Dtos;
 
 namespace PostAPI.Features.Posts.Dtos;
@@ -17,6 +16,7 @@ public class PostDto : BaseEntity
     public PostType PostType { get; set; }
     public PostLabel PostLabel { get; set; }
     public PostStatus PostStatus { get; set; }
+    public DateTime LostOrFoundDate { get; set; }
     public decimal? Price { get; set; }
 
     public ICollection<PostImageDto>? PostImages { get; set; }

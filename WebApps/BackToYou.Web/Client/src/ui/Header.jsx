@@ -1,18 +1,13 @@
-import { Link, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import Logo from "./Logo";
 import SearchForm from "./SearchForm";
 import { useEffect } from "react";
 
 function Header() {
-  const location = useLocation();
-
-  const getLinkClass = (path) => {
-    return location.pathname === path ? "nav-link active" : "nav-link";
-  };
 
   useEffect(() => {
     const navbar = document.querySelector(".navbar");
-  
+
     const handleScroll = () => {
       if (window.scrollY > 200) {
         navbar.classList.add("hidden");
@@ -22,13 +17,11 @@ function Header() {
         navbar.classList.remove("hidden");
       }
     };
-  
-    handleScroll(); // Đảm bảo navbar đúng trạng thái ngay khi mount
-  
+
+    handleScroll();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-  
 
   return (
     <nav className="navbar navbar-expand-lg">
@@ -38,29 +31,29 @@ function Header() {
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-lg-auto">
             <li className="nav-item">
-              <Link className={getLinkClass("/")} to="/">
+              <NavLink to="/" className="nav-link">
                 Home
-              </Link>
+              </NavLink>
             </li>
             <li className="nav-item">
-              <Link className={getLinkClass("/map")} to="/map">
+              <NavLink to="/map" className="nav-link">
                 Map
-              </Link>
+              </NavLink>
             </li>
             <li className="nav-item">
-              <Link className={getLinkClass("/search")} to="/search">
+              <NavLink to="/search" className="nav-link">
                 Search
-              </Link>
+              </NavLink>
             </li>
             <li className="nav-item">
-              <Link className={getLinkClass("/ai-search")} to="/ai-search">
+              <NavLink to="/ai-search" className="nav-link">
                 AI Search
-              </Link>
+              </NavLink>
             </li>
             <li className="nav-item">
-              <Link className={getLinkClass("/contact")} to="/contact">
+              <NavLink to="/contact" className="nav-link">
                 Contact
-              </Link>
+              </NavLink>
             </li>
             <li className="nav-item dropdown">
               <a
@@ -73,14 +66,14 @@ function Header() {
               </a>
               <ul className="dropdown-menu dropdown-menu-light">
                 <li>
-                  <a className="dropdown-item" href="/listing-page">
+                  <NavLink to="/listing-page" className="dropdown-item">
                     Listing Page
-                  </a>
+                  </NavLink>
                 </li>
                 <li>
-                  <a className="dropdown-item" href="/detail-page">
+                  <NavLink to="/detail-page" className="dropdown-item">
                     Detail Page
-                  </a>
+                  </NavLink>
                 </li>
               </ul>
             </li>

@@ -261,12 +261,6 @@ public class PostAPIController : ControllerBase
     [Authorize]
     public async Task<ActionResult<ResponseDto>> Put([FromBody] PostUpdateDto postDto)
     {
-        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
-        {
-            throw new BadRequestException("Invalid or missing user ID claim.");
-        }
-
         //if ((!postDto.RetainedImagePublicIds?.Any() ?? true) && (postDto.ImageFiles == null || !postDto.ImageFiles.Any()))
         //{
         //    throw new BadRequestException("Post must contain at least one image.");
@@ -278,8 +272,22 @@ public class PostAPIController : ControllerBase
             throw new PostNotFoundException(postDto.PostId);
         }
 
+        // Kiểm tra quyền truy cập
+        //var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        //if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+        //{
+        //    throw new BadRequestException("Invalid or missing user ID claim.");
+        //}
+
+        //bool isAdmin = User.IsInRole(SD.AdminRole);
+        //if (!isAdmin && postFromDb.UserId != userId)
+        //{
+        //    throw new ForbiddenException("You are not allowed to access data that does not belong to you.");
+        //}
+
+
         if (postFromDb.PostStatus != PostStatus.Pending)
-            throw new BadRequestException("Can't update post poststatus different pending");
+            throw new BadRequestException("Can't update post status different pending");
 
         // check post type fee
         if (postDto.PostLabel == PostLabel.Priority && postFromDb.PostLabel == PostLabel.Normal)

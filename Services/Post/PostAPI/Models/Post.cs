@@ -23,6 +23,7 @@ public class Post : BaseEntity
     public PostLabel PostLabel { get; set; } = PostLabel.Normal;
     public PostType PostType { get; set; }
     public PostStatus PostStatus { get; set; } = PostStatus.Pending;
+    public DateTime LostOrFoundDate { get; set; } = DateTime.Now;
     public decimal Price { get; set; } = decimal.Zero;
 
     public ICollection<PostImage> PostImages { get; set; }

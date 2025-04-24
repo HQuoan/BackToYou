@@ -62,3 +62,60 @@
   -webkit-line-clamp: 2;
   min-height: 2.5em;
 }
+
+
+/* --custom-btn-bg-color:          #0066CC; */
+
+.badge {
+  background-color: var(--custom-btn-bg-color, #007bff);
+  font-family: var(--title-font-family, 'Montserrat', sans-serif);
+  border-radius: var(--border-radius-large, 20px);
+  color: var(--white-color, #ffffff);
+  padding-bottom: 5px;
+  margin-right: 5px;
+}
+
+.badge-category {
+  background-color: #FF7F50;
+}
+
+.badge-location {
+  background-color: #0066CC;
+}
+
+.badge-lost {
+  background-color: #FF4D4D; /* đỏ nhẹ - biểu thị khẩn cấp/mất mát */
+}
+
+.badge-found {
+  background-color: #00B894; /* xanh ngọc - biểu thị tích cực/đã nhặt được */
+}
+
+.badge-lost-or-found-date {
+  background-color: #4D90FE;
+}
+
+
+.border-btn-custom {
+  background: transparent;
+  border: 2px solid #FF7F50;
+  color: #FF7F50;
+}
+
+.border-btn-custom:hover {
+  border-color: #FF4D4D;
+  color: #ffffff;
+  background: #FF4D4D;
+}
+
+
+.cursor-pointer input,
+.cursor-pointer label,
+.cursor-pointer select {
+  cursor: pointer;
+}
+
+
+select.form-select {
+  cursor: pointer;
+}

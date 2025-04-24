@@ -1,29 +1,28 @@
 import mockPosts from "../data/mockPosts";
-import RecentPostCard from "../ui/RecentPostCard";
+import PostCard from "../ui/PostCard";
 import SideBar from "../ui/SideBar";
 
 function SearchPage() {
   return (
     <>
       <div className="site-header"></div>
-      <div className="container header-content-overlay" >
-        <div className="row min-height-600 bg-white shadow rounded p-3" >
-          <div className="col-md-3" >
+     
+      <div className="container header-content-overlay">
+        {/* <div className="row">
+          <header className=" d-flex flex-column justify-content-center align-items-center">
+            <div className="col-lg-12 col-12 text-center">
+              <h2 className="mb-0 text-white">Contact Page</h2>
+            </div>
+          </header>
+        </div> */}
+        <div className="row min-height-600 bg-white shadow rounded p-3">
+          <div className="col-md-3">
             <SideBar />
           </div>
           <div className="col-md-9">
             <div className="row">
-              {/* <PostCard />
-              <PostCard />
-              <PostCard />
-              <PostCard />
-              <PostCard />
-              <PostCard />
-              <PostCard />
-              <PostCard />
-              <PostCard /> */}
-            {mockPosts.map((item, i) => (
-                <RecentPostCard key={i} post={item} />
+              {mockPosts.map((item, i) => (
+                <PostCard key={i} post={item} />
               ))}
             </div>
           </div>
@@ -32,7 +31,6 @@ function SearchPage() {
     </>
   );
 }
-
 
 export default SearchPage;
 

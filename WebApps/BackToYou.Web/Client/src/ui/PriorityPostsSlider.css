@@ -60,32 +60,7 @@
   max-height: 180px;
 }
 
-/* --custom-btn-bg-color:          #0066CC; */
 
-.badge {
-  background-color: var(--custom-btn-bg-color, #007bff);
-  font-family: var(--title-font-family, 'Montserrat', sans-serif);
-  border-radius: var(--border-radius-large, 20px);
-  color: var(--white-color, #ffffff);
-  padding-bottom: 5px;
-  margin-right: 5px;
-}
-
-.badge-category {
-  background-color: #FF7F50;
-}
-
-.badge-location {
-  background-color: #0066CC;
-}
-
-.badge-lost {
-  background-color: #FF4D4D; /* đỏ nhẹ - biểu thị khẩn cấp/mất mát */
-}
-
-.badge-found {
-  background-color: #00B894; /* xanh ngọc - biểu thị tích cực/đã nhặt được */
-}
 
 .owl-carousel-info-wrap .social-share,
 .team-thumb .social-share {
