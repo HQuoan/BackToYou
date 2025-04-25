@@ -16,3 +16,12 @@
   right: 0;
   margin: 15px;
 }
+
+.custom-block .post-label-block{
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 0.75rem;
+  margin-top: 5px;
+  margin-right: 5px;
+}

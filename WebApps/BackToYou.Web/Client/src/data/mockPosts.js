@@ -25,7 +25,7 @@ const mockPosts = [
       "streetAddress": "Tạp hóa cô Dung"
     },
     "postType": "Lost",
-    "postLabel": "Normal",
+    "postLabel": "Priority",
     "postStatus": "Pending",
     "price": 0,
     "postImages": [

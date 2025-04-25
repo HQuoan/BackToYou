@@ -100,6 +100,29 @@
 }
 
 
+
+.post-label-block {
+  display: inline-block;
+  background-color: var(--highlight-color, #ff9800); /* màu cam nổi bật */
+  color: var(--white-color, #ffffff);
+  font-family: var(--title-font-family, 'Montserrat', sans-serif);
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 4px 12px;
+  border-radius: var(--border-radius-large, 20px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+
+.owl-carousel-info-wrap .post-label-block{
+  position: absolute;
+  right: 0;
+  top: 0;
+  margin-top: 10px;
+  margin-right: 10px;
+}
+
+
 .border-btn-custom {
   background: transparent;
   border: 2px solid #FF7F50;

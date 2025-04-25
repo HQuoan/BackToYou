@@ -6,6 +6,9 @@ import "swiper/css/navigation";
 import "./PriorityPostsSlider.css";
 import mockPosts from "../data/mockPosts";
 import PostTypeBadge from "./PostTypeBadge ";
+import PriorityLabel from "./PriorityLabel";
+
+const POST_LABEL_PRIORITY = import.meta.env.VITE_POST_LABEL_PRIORITY;
 
 const social = [
   // "bi-twitter",
@@ -115,8 +118,10 @@ const PriorityPostsSlider = () => {
                         <i className="bi-geo-alt me-1"></i>
                         {post.location.ward}, {post.location.district}
                       </span>
-                      
                     </div>
+                    {
+                     post.postLabel === POST_LABEL_PRIORITY && <PriorityLabel/>
+                    }
                     <div className="social-share">
                       <ul className="social-icon">
                         {social.map((icon, idx) => (

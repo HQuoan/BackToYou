@@ -2,6 +2,9 @@ import { formatDistanceToNow } from "date-fns";
 import vi from "date-fns/locale/vi";
 import PostTypeBadge from "./PostTypeBadge ";
 import "./PostCard.css";
+import PriorityLabel from './PriorityLabel';
+
+const POST_LABEL_PRIORITY = import.meta.env.VITE_POST_LABEL_PRIORITY;
 
 const PostCard = ({ post }) => {
   return (
@@ -57,14 +60,17 @@ const PostCard = ({ post }) => {
           </span>
         </div>
       </div>
-      <div className="social-share d-flex flex-column ms-auto">
+      
+      {post.postLabel === POST_LABEL_PRIORITY && <PriorityLabel/>}
+
+      {/* <div className="social-share d-flex flex-column ms-auto">
         <a href="#" className="badge ms-auto">
           <i className="bi-person-fill"></i>
         </a>
         <a href="#" className="badge ms-auto">
           <i className="bi-bookmark"></i>
         </a>
-      </div>
+      </div> */}
     </div>
   );
 };
