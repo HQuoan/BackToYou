@@ -16,6 +16,10 @@
   color: var(--secondary-color);
 }
 
+.text-primary-custom {
+  color: var(--primary-color);
+}
+
 
 .navbar.scrolled {
   position: fixed;

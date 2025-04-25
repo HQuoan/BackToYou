@@ -8,8 +8,6 @@ import mockPosts from "../data/mockPosts";
 import PostTypeBadge from "./PostTypeBadge ";
 import PriorityLabel from "./PriorityLabel";
 
-const POST_LABEL_PRIORITY = import.meta.env.VITE_POST_LABEL_PRIORITY;
-
 const social = [
   // "bi-twitter",
   "bi-person-fill",
@@ -119,9 +117,7 @@ const PriorityPostsSlider = () => {
                         {post.location.ward}, {post.location.district}
                       </span>
                     </div>
-                    {
-                     post.postLabel === POST_LABEL_PRIORITY && <PriorityLabel/>
-                    }
+                    <PriorityLabel postLabel={post.postLabel}/>
                     <div className="social-share">
                       <ul className="social-icon">
                         {social.map((icon, idx) => (

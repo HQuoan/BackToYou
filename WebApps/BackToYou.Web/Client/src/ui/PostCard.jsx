@@ -4,8 +4,6 @@ import PostTypeBadge from "./PostTypeBadge ";
 import "./PostCard.css";
 import PriorityLabel from './PriorityLabel';
 
-const POST_LABEL_PRIORITY = import.meta.env.VITE_POST_LABEL_PRIORITY;
-
 const PostCard = ({ post }) => {
   return (
     <div className="custom-block custom-block-full pb-3">
@@ -61,7 +59,7 @@ const PostCard = ({ post }) => {
         </div>
       </div>
       
-      {post.postLabel === POST_LABEL_PRIORITY && <PriorityLabel/>}
+      <PriorityLabel postLabel={post.postLabel}/>
 
       {/* <div className="social-share d-flex flex-column ms-auto">
         <a href="#" className="badge ms-auto">

@@ -789,12 +789,13 @@ main {
 }
 
 .custom-block-top .badge {
-  background-color: var(--secondary-color);
   color: var(--white-color);
   display: inline-block;
   vertical-align: middle;
-  height: 26.64px;
   line-height: 20px;
+  font-size: 0.875rem;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 
 .custom-block-bottom a:hover span {

@@ -74,7 +74,7 @@ const mockPosts = [
       "streetAddress": "Công viên 29/3"
     },
     "postType": "Lost",
-    "postLabel": "Urgent",
+    "postLabel": "Priority",
     "postStatus": "Pending",
     "price": 0,
     "postImages": [
