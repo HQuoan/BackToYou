@@ -28,12 +28,12 @@ function AuthLayout ({ crumb, children }) {
           </p>
 
           <div className="border rounded p-3 mb-4 text-center">
-            <img 
+            {/* <img 
               src="your-image-link.png" 
               alt="Chia sẻ nỗi lo" 
               className="img-fluid mb-3" 
               style={{ maxHeight: '100px' }}
-            />
+            /> */}
             <h5 className="text-black-custom mb-2">SAN SẺ NỖI LO</h5>
             <a href="https://backtoyou.io.vn" className="text-primary-custom fw-bold">Truy cập: www.backtoyou.io.vn</a>
 
