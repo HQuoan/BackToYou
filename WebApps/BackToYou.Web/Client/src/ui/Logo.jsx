@@ -1,6 +1,8 @@
+import { Link } from "react-router-dom";
+
 function Logo() {
   return (
-    <a className="navbar-brand me-lg-5 me-0" href="/">
+    <Link  to="/" className="navbar-brand me-lg-5 me-0">
       <div className="custom-logo-image">
         <img
           src="/images/logo2.png"
@@ -8,7 +10,7 @@ function Logo() {
           alt="logo"
         />
       </div>
-    </a>
+    </Link>
   );
 }
 

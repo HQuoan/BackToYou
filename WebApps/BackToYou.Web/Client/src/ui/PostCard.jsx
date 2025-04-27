@@ -2,25 +2,26 @@ import { formatDistanceToNow } from "date-fns";
 import vi from "date-fns/locale/vi";
 import PostTypeBadge from "./PostTypeBadge ";
 import "./PostCard.css";
-import PriorityLabel from './PriorityLabel';
+import PriorityLabel from "./PriorityLabel";
+import { Link } from "react-router-dom";
 
 const PostCard = ({ post }) => {
   return (
     <div className="custom-block custom-block-full pb-3">
       <div className="custom-block-image-wrap">
-        <a href="/detail-page">
+        <Link to={`/${post.slug}`} state={{ post }}>
           <img
             src={post.thumbnailUrl}
             className="custom-block-image post-card img-fluid"
             alt={post.title}
           />
-        </a>
+        </Link>
       </div>
       <div className="custom-block-info">
-        <h6 className="mb-2 line-clamp-1">
-          <a href="/detail-page" className="d-block">
+        <h6 className="mb-2">
+          <Link to={`/${post.slug}`} state={{ post }} className="line-clamp-1">
             {post.title}
-          </a>
+          </Link>
         </h6>
 
         <p className="mb-2 line-clamp-2">{post.description}</p>
@@ -58,8 +59,8 @@ const PostCard = ({ post }) => {
           </span>
         </div>
       </div>
-      
-      <PriorityLabel postLabel={post.postLabel}/>
+
+      <PriorityLabel postLabel={post.postLabel} />
 
       {/* <div className="social-share d-flex flex-column ms-auto">
         <a href="#" className="badge ms-auto">

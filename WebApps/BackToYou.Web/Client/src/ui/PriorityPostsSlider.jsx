@@ -7,6 +7,7 @@ import "./PriorityPostsSlider.css";
 import mockPosts from "../data/mockPosts";
 import PostTypeBadge from "./PostTypeBadge ";
 import PriorityLabel from "./PriorityLabel";
+import { Link } from "react-router-dom";
 
 const social = [
   // "bi-twitter",
@@ -38,7 +39,7 @@ const swiperOptions = {
       slidesPerView: 4,
     },
   },
-  modules: [ Navigation],
+  modules: [Navigation],
   // modules: [Autoplay, Navigation],
 };
 
@@ -80,9 +81,10 @@ const PriorityPostsSlider = () => {
               <p className="text-white">
                 Lost something? Let’s bring it back to you.
               </p>
-              <a href="#section_2" className="btn custom-btn smoothscroll mt-3">
+              {/* <a href="#section_2" className="btn custom-btn smoothscroll mt-3">
                 Start searching
-              </a>
+              </a> */}
+              <Link to="/search" className="btn custom-btn smoothscroll mt-3">Start searching</Link>
             </div>
 
             {carouselPosts.length === 0 ? (
@@ -98,13 +100,20 @@ const PriorityPostsSlider = () => {
                     className="owl-carousel-info-wrap item"
                     key={index}
                   >
-                    <img
-                      src={post.thumbnailUrl}
-                      className="owl-carousel-image img-fluid"
-                      alt={post.title}
-                    />
+                    <Link to={`/${post.slug}`} state={{ post }}>
+                      <img
+                        src={post.thumbnailUrl}
+                        className="owl-carousel-image img-fluid"
+                        alt={post.title}
+                      />
+                    </Link>
+
                     <div className="owl-carousel-info">
-                      <h4 className="mb-2 line-clamp-carousel-title">{post.title}</h4>
+                      <h4 className="mb-2 ">
+                        <Link className="line-clamp-carousel-title" to={`/${post.slug}`} state={{ post }}>
+                          {post.title}
+                        </Link>
+                      </h4>
                       <div className="d-flex align-items-center">
                         <PostTypeBadge type={post.postType} />
                         <span className="badge badge-category d-flex align-items-center mb-1">
@@ -117,7 +126,7 @@ const PriorityPostsSlider = () => {
                         {post.location.ward}, {post.location.district}
                       </span>
                     </div>
-                    <PriorityLabel postLabel={post.postLabel}/>
+                    <PriorityLabel postLabel={post.postLabel} />
                     <div className="social-share">
                       <ul className="social-icon">
                         {social.map((icon, idx) => (

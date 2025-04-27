@@ -7,6 +7,9 @@ import Contact from "./pages/Contact";
 import SearchPage from "./pages/SearchPage";
 import Homepage from "./pages/HomePage";
 import MapPage from "./pages/MapPage";
+import Detail from "./pages/Detail";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,15 +27,16 @@ function App() {
         <Routes>
           <Route element={<AppLayout />}>
             <Route index element={<Homepage />} />
-
             <Route path="search" element={<SearchPage />} />
             <Route path="ai-search" element={<MapPage />} />
             <Route path="map" element={<MapPage />} />
             <Route path="contact" element={<Contact />} />
+            <Route path="/:slug" element={<Detail />} />
           </Route>
 
-          {/* <Route path="login" element={<Login />} />
-          <Route path="*" element={<PageNotFound />} /> */}
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+          {/* <Route path="*" element={<PageNotFound />} /> */}
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

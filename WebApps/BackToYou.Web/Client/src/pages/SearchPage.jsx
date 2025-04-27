@@ -28,16 +28,3 @@ function SearchPage() {
 }
 
 export default SearchPage;
-
-{
-  /* <>
-      <div className="site-header">
-        
-      </div>
-      <section className="latest-podcast-section section-padding pb-0">
-        <div className="container">
-          <h1>Contact page</h1>
-        </div>
-      </section>
-    </> */
-}

@@ -1,10 +1,9 @@
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import Logo from "./Logo";
 import SearchForm from "./SearchForm";
 import { useEffect } from "react";
 
 function Header() {
-
   useEffect(() => {
     const navbar = document.querySelector(".navbar");
 
@@ -79,12 +78,12 @@ function Header() {
             </li>
           </ul>
           <div className="ms-4">
-            <a
-              href="#section_3"
+            <Link
+              to="/login"
               className="btn custom-btn custom-border-btn smoothscroll"
             >
-              Sign in
-            </a>
+              Đăng nhập
+            </Link>
           </div>
         </div>
       </div>

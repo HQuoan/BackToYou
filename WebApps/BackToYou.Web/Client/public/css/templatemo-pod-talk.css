@@ -22,7 +22,8 @@ https://templatemo.com/tm-584-pod-talk
   --border-color:                 #7fffd4;
   --link-hover-color:             #0066CC;
 
-  --body-font-family:             'Montserrat', sans-serif;
+  /* --body-font-family:             'Montserrat', sans-serif; */
+  --body-font-family:             'Poppins', sans-serif;
   --title-font-family:            'Sono', sans-serif;
 
   --h1-font-size:                 58px;
@@ -48,6 +49,7 @@ https://templatemo.com/tm-584-pod-talk
 body {
   background-color: var(--white-color);
   font-family: var(--body-font-family); 
+  /* font-family: "Poppins", sans-serif; */
 }
 
 

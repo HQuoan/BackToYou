@@ -216,7 +216,7 @@ public class PostAPIController : ControllerBase
             throw new BadRequestException("Post require images");
         }
 
-        // upload images
+        // upload images to Cloudinary
         int i = 0;
         if (postDto.ThumbnailIndex >= postDto.ImageFiles.Count || postDto.ThumbnailIndex < 0)
             postDto.ThumbnailIndex = 0;

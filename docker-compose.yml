@@ -11,6 +11,15 @@ services:
     #     build:
     #       context: .
     #       dockerfile: ApiGateways/YarpApiGateway/Dockerfile
+    ai.service:
+        build:
+          context: ./AIService
+          dockerfile: Dockerfile
+        container_name: ai.service
+        ports:
+          - "8000:8000"
+        restart: always
+
 
 volumes:
   sqlserver:

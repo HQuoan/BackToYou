@@ -1,25 +1,26 @@
 import { formatDistanceToNow } from "date-fns";
 import vi from "date-fns/locale/vi";
 import PostTypeBadge from "./PostTypeBadge ";
+import { Link } from "react-router-dom";
 
 const RecentPostCard = ({ post }) => {
   return (
     <div className="col-lg-4 col-12 mb-4 mb-lg-4">
       <div className="custom-block custom-block-full pb-3">
         <div className="custom-block-image-wrap">
-          <a href="/detail-page">
+          <Link to={`/${post.slug}`} state={{ post }}>
             <img
               src={post.thumbnailUrl}
               className="custom-block-image img-fluid"
               alt={post.title}
             />
-          </a>
+          </Link>
         </div>
         <div className="custom-block-info">
-          <h5 className="mb-2 line-clamp-1">
-            <a href="/detail-page" className="d-block">
+          <h5 className="mb-2">
+            <Link to={`/${post.slug}`} state={{ post }} className="line-clamp-1">
               {post.title}
-            </a>
+            </Link>
           </h5>
 
           <p className="mb-2 line-clamp-2">{post.description}</p>
@@ -33,8 +34,8 @@ const RecentPostCard = ({ post }) => {
           </div>
 
           <span className="badge mb-2">
-                <i className="bi-geo-alt me-1"></i>
-                {post.location.ward}, {post.location.district}
+            <i className="bi-geo-alt me-1"></i>
+            {post.location.ward}, {post.location.district}
           </span>
 
           <div className="text-success d-flex justify-content-between mt-1">
@@ -50,8 +51,6 @@ const RecentPostCard = ({ post }) => {
               })}
             </span>
           </div>
-
-          
         </div>
         <div className="social-share d-flex flex-column ms-auto">
           <a href="#" className="badge ms-auto">

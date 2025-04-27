@@ -53,6 +53,14 @@
   overflow: hidden;
 }
 
+.login-page{
+  background: linear-gradient(to bottom, #e0e7ff, #c3d7f5);
+}
+
+.login-page h{
+  font-family: var(--body-font-family);
+}
+
 .line-clamp-1 {
   -webkit-line-clamp: 1;
 }
@@ -60,6 +68,10 @@
 .line-clamp-2 {
   -webkit-line-clamp: 2;
   min-height: 3em;
+}
+
+.map .line-clamp-2{
+  min-height: 2.5em;
 }
 
 .line-clamp-carousel-title {
@@ -77,6 +89,8 @@
   color: var(--white-color, #ffffff);
   padding-bottom: 5px;
   margin-right: 5px;
+
+  cursor: pointer;
 }
 
 .map .badge {
