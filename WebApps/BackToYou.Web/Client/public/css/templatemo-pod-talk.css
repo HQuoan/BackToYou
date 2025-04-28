@@ -228,6 +228,15 @@ main {
   color: var(--white-color);
 }
 
+.btn2{
+  background: var(--custom-btn-bg-hover-color);
+}
+
+.btn2:hover{
+  background: var(--custom-btn-bg-color);
+}
+
+
 .custom-border-btn {
   background: transparent;
   border: 2px solid var(--custom-btn-bg-color);

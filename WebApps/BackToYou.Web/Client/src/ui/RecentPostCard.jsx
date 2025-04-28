@@ -39,10 +39,10 @@ const RecentPostCard = ({ post }) => {
           </span>
 
           <div className="text-success d-flex justify-content-between mt-1">
-            <span>
-              <i className="bi-person-fill me-1"></i>
-              {post.createdBy}
-            </span>
+          <span>
+            <i className="bi-person-fill me-1"></i>
+            {post.createdBy.split(':')[0]}
+          </span>
             <span>
               <i className="bi-clock me-2"></i>
               {formatDistanceToNow(new Date(post.createdAt), {

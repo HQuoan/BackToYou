@@ -10,4 +10,5 @@ public interface IAuthService
     Task<bool> ResetPassword(ResetPasswordDto resetPasswordDto);
     Task<bool> AssignRole(string email, string roleName);
     Task<LoginResponseDto> SignInWithGoogle(string token);
+    Task<LoginResponseDto> SignInWithFacebook(string token);
 }

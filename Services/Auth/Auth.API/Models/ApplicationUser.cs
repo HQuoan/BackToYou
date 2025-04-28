@@ -15,6 +15,8 @@ public class ApplicationUser : IdentityUser, IBaseEntity
     public string? Avatar { get; set; }
     public int CoinBalance { get; set; } = default!;
     public float ReputationScore { get; set; } = default!;
+    public string? FacebookId { get; set; }
+    public string? GoogleId { get; set; }
 
     [NotMapped]
     public string? Role { get; set; }

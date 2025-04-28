@@ -1,6 +1,8 @@
 ﻿using Auth.API.Exceptions;
 using BuildingBlocks.Extensions;
+using Google.Apis.Auth;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace Auth.API.Services;
 
@@ -75,6 +77,8 @@ public class AuthService : IAuthService
                     DateOfBirth = user.DateOfBirth,
                     Sex = user.Sex.ToString(),
                     Role = SD.CustomerRole,
+                    GoogleId = user.GoogleId,
+                    FacebookId = user.FacebookId,
                 };
 
                 return userDto;
@@ -125,6 +129,8 @@ public class AuthService : IAuthService
             Sex = user.Sex.ToString(),
             DateOfBirth = user.DateOfBirth,
             Role = string.Join(", ", roles),
+            GoogleId = user.GoogleId,
+            FacebookId = user.FacebookId,
         };
 
 
@@ -283,118 +289,235 @@ public class AuthService : IAuthService
         return false;
     }
 
-    public Task<LoginResponseDto> SignInWithGoogle(string token)
+
+    public async Task<LoginResponseDto> SignInWithGoogle(string token)
     {
-        throw new NotImplementedException();
+
+        // Xác thực mã token từ Google
+        var payload = await VerifyGoogleToken(token);
+        if (payload == null)
+        {
+            throw new BadRequestException("Invalid Google token.");
+        }
+
+        if (string.IsNullOrEmpty(payload.Email))
+        {
+            throw new BadRequestException("Unable to retrieve user email.");
+        }
+
+        // Kiểm tra nếu user đã tồn tại trong database, nếu không, tạo mới
+        var user = await _userManager.FindByEmailAsync(payload.Email);
+
+        if (user == null)
+        {
+            var fullName = payload.Name ?? payload.Email.Split('@')[0];
+            user = new ApplicationUser
+            {
+                GoogleId = payload.JwtId,
+                Email = payload.Email,
+                NormalizedEmail = payload.Email.ToUpper(),
+                UserName = payload.Email,
+                FullName = fullName,
+                ShortName = fullName.ToShortName(),
+                Avatar = payload.Picture,
+                Sex = SD.Male,
+                DateOfBirth = new DateTime(2000, 1, 1),
+                EmailConfirmed = true,
+            };
+
+            var result = await _userManager.CreateAsync(user);
+            if (!result.Succeeded)
+            {
+                throw new BadRequestException($"Failed to register Google user: {string.Join("; ", result.Errors.Select(e => e.Description))}");
+            }
+
+            await _userManager.AddToRoleAsync(user, SD.CustomerRole);
+
+            EmailRequest emailRequest = new EmailRequest()
+            {
+                To = user.Email,
+                Subject = "Register Successfully!",
+                Message = $"Register Successfully!"
+            };
+
+            var emailResponse = await _emailService.SendEmailAsync(emailRequest);
+        }
+
+        // Lấy các vai trò của user
+        var roles = await _userManager.GetRolesAsync(user);
+
+        // Tạo token JWT
+        LoginResponseDto loginResponseDto = new LoginResponseDto();
+        var tokenRespone = _jwtTokenGenerator.GenerateToken(user, roles);
+
+
+        UserDto userDto = new()
+        {
+            Id = user.Id,
+            PhoneNumber = user.PhoneNumber,
+            Email = user.Email,
+            FullName = user.FullName,
+            ShortName = user.ShortName,
+            Avatar = user.Avatar,
+            Sex = user.Sex.ToString(),
+            DateOfBirth = user.DateOfBirth,
+            Role = string.Join(", ", roles),
+            GoogleId = user.GoogleId,
+            FacebookId = user.FacebookId,
+        };
+
+        loginResponseDto.User = userDto;
+        loginResponseDto.Token = tokenRespone;
+
+        return loginResponseDto;
+    }
+
+    private async Task<GoogleJsonWebSignature.Payload> VerifyGoogleToken(string token)
+    {
+        try
+        {
+            var validPayload = await GoogleJsonWebSignature.ValidateAsync(token);
+
+            // Kiểm tra token hợp lệ bằng ClientId và Audience
+            if (validPayload != null && validPayload.Issuer.ToString() == "https://accounts.google.com" && validPayload.Audience.ToString() == _apiSettings.Google.ClientId)
+            {
+                return validPayload;
+            }
+            return null;
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
     }
 
 
-    //public async Task<LoginResponseDto> SignInWithGoogle(string token)
-    //{
+    public async Task<LoginResponseDto> SignInWithFacebook(string accessToken)
+    {
+        // Verify Facebook access token
+        var userInfo = await VerifyFacebookToken(accessToken);
+        if (userInfo == null || string.IsNullOrEmpty(userInfo.Email))
+        {
+            throw new BadRequestException("Invalid Facebook token or unable to retrieve user email.");
+        }
 
-    //    // Xác thực mã token từ Google
-    //    var payload = await VerifyGoogleToken(token);
-    //    if (payload == null)
-    //    {
-    //        throw new UnauthorizedAccessException("Invalid Google token.");
-    //    }
+        // Check if user exists in the database, if not, create a new one
+        var user = await _userManager.FindByEmailAsync(userInfo.Email);
+        if (user == null)
+        {
+            var fullName = userInfo.Name ?? userInfo.Email.Split('@')[0];
+            user = new ApplicationUser
+            {
+                Email = userInfo.Email,
+                NormalizedEmail = userInfo.Email.ToUpper(),
+                UserName = userInfo.Email,
+                FullName = fullName,
+                ShortName = fullName.ToShortName(),
+                Avatar = userInfo.Picture.Data.Url, 
+                FacebookId = userInfo.Id,
+                Sex = SD.Male,
+                DateOfBirth = new DateTime(2000, 1, 1),
+                EmailConfirmed = true
+            };
 
-    //    if (string.IsNullOrEmpty(payload.Email))
-    //    {
-    //        throw new AuthenticationException("Unable to retrieve user email.");
-    //    }
+            var result = await _userManager.CreateAsync(user);
+            if (!result.Succeeded)
+            {
+                throw new BadRequestException($"Failed to register Facebook user: {string.Join("; ", result.Errors.Select(e => e.Description))}");
+            }
 
-    //    // Kiểm tra nếu user đã tồn tại trong database, nếu không, tạo mới
-    //    var user = await _userManager.FindByEmailAsync(payload.Email);
-    //    if (user == null)
-    //    {
-    //        user = new ApplicationUser
-    //        {
-    //            Email = payload.Email,
-    //            UserName = payload.Email,
-    //            FullName = payload.Name ?? payload.Email.Split('@')[0],
-    //            NormalizedEmail = payload.Email.ToUpper(),
-    //            Avatar = payload.Picture,
-    //            Gender = "Male",
-    //            DateOfBirth = new DateTime(2000, 1, 1),
-    //            EmailConfirmed = true,
-    //            CreatedDate = DateTime.UtcNow,
-    //        };
+            await _userManager.AddToRoleAsync(user, SD.CustomerRole);
 
-    //        var result = await _userManager.CreateAsync(user);
-    //        if (!result.Succeeded)
-    //        {
-    //            throw new BadHttpRequestException($"Failed to register Google user: {string.Join("; ", result.Errors.Select(e => e.Description))}");
-    //        }
+            EmailRequest emailRequest = new EmailRequest
+            {
+                To = user.Email,
+                Subject = "Register Successfully!",
+                Message = "Register Successfully!"
+            };
 
-    //        await _userManager.AddToRoleAsync(user, SD.CustomerRole);
+            await _emailService.SendEmailAsync(emailRequest);
+        }
 
-    //        EmailRequest emailRequest = new EmailRequest()
-    //        {
-    //            To = user.Email,
-    //            Subject = "Register Successfully!",
-    //            Message = $"Register Successfully!"
-    //        };
+        // Get user roles
+        var roles = await _userManager.GetRolesAsync(user);
 
-    //        var emailResponse = await _emailService.SendEmailAsync(emailRequest);
-    //    }
+        // Generate JWT token
+        LoginResponseDto loginResponseDto = new LoginResponseDto();
+        var tokenResponse = _jwtTokenGenerator.GenerateToken(user, roles);
 
-    //    // Lấy các vai trò của user
-    //    var roles = await _userManager.GetRolesAsync(user);
+        UserDto userDto = new()
+        {
+            Id = user.Id,
+            PhoneNumber = user.PhoneNumber,
+            Email = user.Email,
+            FullName = user.FullName,
+            ShortName = user.ShortName,
+            Avatar = user.Avatar,
+            Sex = user.Sex.ToString(),
+            DateOfBirth = user.DateOfBirth,
+            Role = string.Join(", ", roles),
+            GoogleId = user.GoogleId,
+            FacebookId = user.FacebookId,
+        };
 
-    //    // Tạo token JWT
-    //    LoginResponseDto loginResponseDto = new LoginResponseDto();
-    //    //MemberShipDto membership = new MemberShipDto();
-    //    //try
-    //    //{
-    //    //  membership = await _membershipService.GetMembership(user.Id);
-    //    //}
-    //    //catch (Exception)
-    //    //{
-    //    //  loginResponseDto.Message = "Unable to retrieve membership expiration details from the Membership API. Please try again later.";
-    //    //}
+        loginResponseDto.User = userDto;
+        loginResponseDto.Token = tokenResponse;
 
-    //    //var membershipExpiration = DateTime.UtcNow.AddDays(-1);
-    //    //if (membership != null)
-    //    //{
-    //    //  membershipExpiration = membership.ExpirationDate;
-    //    //}
-    //    var tokenRespone = _jwtTokenGenerator.GenerateToken(user, roles);
+        return loginResponseDto;
+    }
 
+    private async Task<FacebookUserInfo> VerifyFacebookToken(string accessToken)
+    {
+        try
+        {
+            var httpClient = new HttpClient();
+            //Step 1: Verify the access token
+            var appAccessTokenUrl = $"https://graph.facebook.com/oauth/access_token?client_id={_apiSettings.Facebook.AppId}&client_secret={_apiSettings.Facebook.AppSecret}&grant_type=client_credentials";
+            var appAccessTokenResponse = await httpClient.GetStringAsync(appAccessTokenUrl);
+            var appAccessToken = JsonConvert.DeserializeObject<dynamic>(appAccessTokenResponse).access_token;
 
-    //    UserDto userDto = new()
-    //    {
-    //        Email = user.Email,
-    //        FullName = user.FullName,
-    //        Avatar = user.Avatar,
-    //        Gender = "Male",
-    //        DateOfBirth = new DateTime(2000, 1, 1),
-    //        Role = string.Join(", ", roles),
-    //        CreatedDate = user.CreatedDate,
-    //    };
+            //// Step 2: Debug the user access token
+            var debugTokenUrl = $"https://graph.facebook.com/debug_token?input_token={accessToken}&access_token={appAccessToken}";
+            var debugResponse = await httpClient.GetStringAsync(debugTokenUrl);
+            var debugData = JsonConvert.DeserializeObject<dynamic>(debugResponse);
 
-    //    loginResponseDto.User = userDto;
-    //    loginResponseDto.Token = tokenRespone;
+            if (debugData.data.is_valid != true || debugData.data.app_id != _apiSettings.Facebook.AppId)
+            {
+                throw new BadRequestException("Login with Facebook failed.");
+            }
 
-    //    return loginResponseDto;
-    //}
+            // Step 3: Fetch user info
+            var userInfoUrl = $"https://graph.facebook.com/me?fields=id,name,email,picture&access_token={accessToken}";
+            var userInfoResponse = await httpClient.GetStringAsync(userInfoUrl);
+            var userInfo = JsonConvert.DeserializeObject<FacebookUserInfo>(userInfoResponse);
 
-    //private async Task<GoogleJsonWebSignature.Payload> VerifyGoogleToken(string token)
-    //{
-    //    try
-    //    {
-    //        var validPayload = await GoogleJsonWebSignature.ValidateAsync(token);
+            return userInfo;
+        }
+        catch
+        {
+            throw new BadRequestException("Login with Facebook failed.");
+        }
+    }
 
-    //        // Kiểm tra token hợp lệ bằng ClientId và Audience
-    //        if (validPayload != null && validPayload.Issuer.ToString() == "https://accounts.google.com" && validPayload.Audience.ToString() == _apiSettings.Google.ClientId)
-    //        {
-    //            return validPayload;
-    //        }
-    //        return null;
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return null;
-    //    }
-    //}
+    // Helper class for Facebook user info
+    public class FacebookUserInfo
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public PictureData Picture { get; set; }
+    }
+
+    public class PictureData
+    {
+        public Data Data { get; set; }
+    }
+
+    public class Data
+    {
+        public int Height { get; set; }
+        public bool Is_Silhouette { get; set; }
+        public string Url { get; set; }
+        public int Width { get; set; }
+    }
 }

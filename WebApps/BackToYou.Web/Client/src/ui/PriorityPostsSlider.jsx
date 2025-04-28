@@ -75,16 +75,20 @@ const PriorityPostsSlider = () => {
     <section className="hero-section">
       <div className="container">
         <div className="row">
-          <div className="col-lg-12 col-12">
+          <div className="col-lg-12 col-12 justify-content-between">
             <div className="text-center mb-5 pb-2">
               <h1 className="text-white">Welcome to Back To You</h1>
               <p className="text-white">
                 Lost something? Let’s bring it back to you.
               </p>
-              {/* <a href="#section_2" className="btn custom-btn smoothscroll mt-3">
-                Start searching
-              </a> */}
-              <Link to="/search" className="btn custom-btn smoothscroll mt-3">Start searching</Link>
+              <Link to="/search" className="btn custom-btn btn2 smoothscroll mt-3 me-1">
+                <i className="bi-pencil-square me-2"></i>
+                Đăng bài
+              </Link>
+              <Link to="/search" className="btn custom-btn btn2 smoothscroll mt-3 ms-1">
+                <i className="bi-robot me-2"></i>
+                Tìm kiếm
+              </Link>
             </div>
 
             {carouselPosts.length === 0 ? (

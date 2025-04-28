@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
 
 namespace BuildingBlocks.Enums.Interceptors;
 public class AuditableEntityInterceptor : SaveChangesInterceptor
@@ -33,21 +35,24 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
     {
         if (context == null) return;
 
+        var userId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "Unknown";
         var userShortName = _httpContextAccessor.HttpContext?.User?.FindFirst("ShortName")?.Value ?? "Unknown";
+
+        var createdBy = $"{userShortName}:{userId}";
 
         foreach (var entry in context.ChangeTracker.Entries<IBaseEntity>())
         {
             if (entry.State == EntityState.Added)
             {
-                entry.Entity.CreatedBy = userShortName;
+                entry.Entity.CreatedBy = createdBy;
                 entry.Entity.CreatedAt = DateTime.UtcNow;
-                entry.Entity.LastModifiedBy = userShortName;
+                entry.Entity.LastModifiedBy = createdBy;
                 entry.Entity.LastModified = DateTime.UtcNow;
             }
 
             if (entry.State == EntityState.Modified || entry.HasChangedOwnedEntities())
             {
-                entry.Entity.LastModifiedBy = userShortName;
+                entry.Entity.LastModifiedBy = createdBy;
                 entry.Entity.LastModified = DateTime.UtcNow;
             }
         }

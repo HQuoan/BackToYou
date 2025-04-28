@@ -50,6 +50,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 // App Settings & Jwt Configuration
 builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("ApiSettings:JwtOptions"));
+//builder.Services.Configure<GoogleSettings>(builder.Configuration.GetSection("ApiSettings:Google"));
 
 // FluentValidation Configuration
 builder.Services.AddControllers(options =>
@@ -130,10 +131,26 @@ builder.Services.AddAuthorization();
 // Exception Handler
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+          policy =>
+          {
+              policy.SetIsOriginAllowed(_ => true) // Cho phép tất cả các origin
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+          });
+});
+
 var app = builder.Build();
 
 // Apply Migrations
 ApplyMigration();
+
+// Apply CORS Policy
+app.UseCors("AllowAllOrigins");
 
 // Seed Roles
 using (var scope = app.Services.CreateScope())

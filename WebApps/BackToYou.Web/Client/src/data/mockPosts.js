@@ -259,7 +259,7 @@ const mockPosts = [
     ],
     "comments": [],
     "createdAt": "2025-04-22T09:00:00.000Z",
-    "createdBy": "minhquang",
+    "createdBy": "tienquyen:96afcd09-a768-4d58-9afa-07d1b423c177",
     "lastModified": "2025-04-22T09:00:00.000Z",
     "lastModifiedBy": "minhquang"
   }

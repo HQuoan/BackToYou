@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom"
+import GoogleLoginButton from "./GoogleLoginButton";
+import FacebookLoginButton from "./FacebookLoginButton";
 
 function AuthLayout ({ crumb, children }) {
   return (
@@ -48,13 +50,18 @@ function AuthLayout ({ crumb, children }) {
 
         <div className="col-lg-6">
           <div className="d-flex justify-content-center gap-2 mb-3">
-            <button className="btn btn-danger flex-fill">
+            {/* <button className="btn btn-danger flex-fill">
               <i className="bi bi-google me-1"></i> Đăng nhập bằng Google
-            </button>
-            <button className="btn btn-primary flex-fill">
+            </button> */}
+            <GoogleLoginButton/>
+            {/* <button className="btn btn-primary flex-fill">
               <i className="bi bi-facebook me-1"></i> Đăng nhập bằng Facebook
-            </button>
+            </button> */}
+
+            <FacebookLoginButton/>
           </div>
+
+       
 
           <div className="text-center my-2">
             <span>Hoặc</span>

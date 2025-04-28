@@ -21,14 +21,16 @@ public class AuthAPIController : ControllerBase
         var userDto = await _authService.Register(model);
         _response.Result = userDto;
 
-        return CreatedAtAction(nameof(Register), userDto);
+        return CreatedAtAction(nameof(Register), _response);
     }
 
     [HttpGet("confirm-email")]
     public async Task<IActionResult> ConfirmEmail(string userId, string token)
     {
         var result = await _authService.ConfirmEmail(userId, token);
-        return Ok(new { message = "Email confirmed successfully." });
+
+        _response.Message = "Email confirmed successfully.";
+        return Ok(_response);
     }
 
     [HttpPost("login")]
@@ -53,8 +55,8 @@ public class AuthAPIController : ControllerBase
         {
             throw new BadRequestException("Password change failed.");
         }
-
-        return Ok(new { Message = "Password changed successfully." });
+        _response.Message = "Password changed successfully.";
+        return Ok(_response);
     }
 
     [HttpPost("forgot-password")]
@@ -66,7 +68,8 @@ public class AuthAPIController : ControllerBase
             throw new BadRequestException("Failed to send reset password email.");
         }
 
-        return Ok(new { Message = "Password reset link sent to your email." });
+        _response.Message = "Password reset link sent to your email.";
+        return Ok(_response);
     }
 
     [HttpPost("reset-password")]
@@ -78,11 +81,11 @@ public class AuthAPIController : ControllerBase
             throw new BadRequestException("Password reset failed.");
         }
 
-        return Ok(new { Message = "Password reset successfully." });
-
+        _response.Message = "Password reset successfully.";
+        return Ok(_response);
     }
 
-    [HttpPost("AssignRole")]
+    [HttpPost("assign-role")]
     [Authorize(Roles = SD.AdminRole)]
     public async Task<IActionResult> AssignRole([FromBody] AssignRoleDto model)
     {
@@ -91,25 +94,47 @@ public class AuthAPIController : ControllerBase
         {
             throw new BadRequestException("Error encountered");
         }
+
+        _response.Message = "Assign role successfully.";
         return Ok(_response);
     }
 
     [HttpPost("signin-google")]
     public async Task<IActionResult> SignInGoogle([FromBody] LoginGoogleRequest request)
     {
-        //var authenticateResult = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
-        //if (!authenticateResult.Succeeded)
-        //{
-        //  return BadRequest(new { message = "Google authentication failed." });
-        //}
-        try
+        var response = await _authService.SignInWithGoogle(request.Token);
+
+        // set cookie
+        Response.Cookies.Append("access_token", response.Token, new CookieOptions
         {
-            var response = await _authService.SignInWithGoogle(request.Token);
-            return Ok(response);
-        }
-        catch (Exception ex)
+            HttpOnly = true,
+            Secure = true, 
+            SameSite = SameSiteMode.Strict,
+            Expires = DateTime.UtcNow.AddDays(7)
+        });
+
+        _response.Message = "Login with Google successfully.";
+        _response.Result = response;
+        return Ok(_response);
+    }
+
+
+    [HttpPost("signin-facebook")]
+    public async Task<IActionResult> SignInFacebook([FromBody] LoginGoogleRequest request)
+    {
+        var response = await _authService.SignInWithFacebook(request.Token);
+
+        // Set cookie
+        Response.Cookies.Append("access_token", response.Token, new CookieOptions
         {
-            return BadRequest(new { message = ex.Message });
-        }
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Expires = DateTime.UtcNow.AddDays(7)
+        });
+
+        _response.Message = "Login with Facebook successfully.";
+        _response.Result = response;
+        return Ok(_response);
     }
 }
