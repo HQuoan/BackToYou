@@ -3,41 +3,11 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
-// import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
-// import markerIcon from 'leaflet/dist/images/marker-icon.png';
-import markerShadow from 'leaflet/dist/images/marker-shadow.png';
-
 import MapLogic from './MapLogic';
 import FlyToButton from './FlyToButton';
 import mockPosts from '../../data/mockPosts';
 import PostCard from '../PostCard';
-
-// L.Icon.Default.mergeOptions({
-//   iconRetinaUrl: markerIcon2x,
-//   iconUrl: markerIcon,
-//   shadowUrl: markerShadow,
-// });
-
-// const defaultIcon = new L.Icon({
-//   iconRetinaUrl: markerIcon2x,
-//   iconUrl: markerIcon,
-//   shadowUrl: markerShadow,
-//   iconSize: [25, 41],
-//   iconAnchor: [12, 41],
-//   popupAnchor: [1, -34],
-//   shadowSize: [41, 41]
-// });
-
-const redIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-  shadowUrl: markerShadow,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
-
-
+import RedIcon from '../../utils/RedIcon';
 
 const userPosition = [10.762622, 106.660172];
 
@@ -74,7 +44,7 @@ export default function Map() {
         <MapLogic setShowBackButton={setShowBackButton} />
         <FlyToButton userPosition={userPosition} show={showBackButton} />
 
-        <Marker position={userPosition} icon={redIcon}>
+        <Marker position={userPosition} icon={RedIcon}>
           <Popup>Bạn đang ở đây</Popup>
         </Marker>
 

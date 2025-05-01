@@ -3,87 +3,23 @@ import {
   MapContainer,
   TileLayer,
   Marker,
-  useMap,
-  useMapEvents,
 } from "react-leaflet";
-import { useEffect, useRef, useState } from "react";
-import L from "leaflet";
+import { useState } from "react";
 import "leaflet/dist/leaflet.css";
 import "leaflet-fullscreen";
 import "leaflet-fullscreen/dist/leaflet.fullscreen.css";
 
-import markerShadow from "leaflet/dist/images/marker-shadow.png";
-const redIcon = new L.Icon({
-  iconUrl:
-    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
-  shadowUrl: markerShadow,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
+import LocationSelector from "./LocationSelector";
+import { geocodeAddress, getMyLocation } from "../../utils/locationHelpers";
+import RedIcon from "../../utils/RedIcon";
+
 
 function LocationSection() {
   const { register, setValue, watch } = useFormContext();
-  const lat = parseFloat(watch("latitude")) || 51.505;
-  const lng = parseFloat(watch("longitude")) || -0.09;
+  const lat = parseFloat(watch("latitude")) || 21.028333;
+  const lng = parseFloat(watch("longitude")) || 105.854041;
   const [lock, setLock] = useState(true);
   const [showManual, setShowManual] = useState(false);
-
-  function LocationSelector() {
-    const map = useMap();
-
-    useMapEvents({
-      click(e) {
-        if (!lock) {
-          setValue("latitude", e.latlng.lat.toFixed(6));
-          setValue("longitude", e.latlng.lng.toFixed(6));
-        }
-      },
-    });
-
-    // Fly to whenever lat/lng change
-    useEffect(() => {
-      map.flyTo([lat, lng], 14, { duration: 1.5 });
-    }, [lat, lng, map]);
-
-    return null;
-  }
-
-  const getMyLocation = () => {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
-        setValue("latitude", latitude.toFixed(6));
-        setValue("longitude", longitude.toFixed(6));
-      },
-      (err) => {
-        alert("Không thể lấy vị trí của bạn.");
-      }
-    );
-  };
-
-  const geocodeAddress = async (address) => {
-    if (!address) return;
-
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-          address
-        )}`
-      );
-      const data = await response.json();
-      if (data && data[0]) {
-        const { lat, lon } = data[0];
-        setValue("latitude", parseFloat(lat).toFixed(6));
-        setValue("longitude", parseFloat(lon).toFixed(6));
-      } else {
-        alert("Không tìm thấy vị trí phù hợp.");
-      }
-    } catch (error) {
-      alert("Lỗi khi tìm vị trí.");
-    }
-  };
 
   return (
     <div id="location" className="section mb-5 rounded card">
@@ -106,26 +42,30 @@ function LocationSection() {
             <button
               className="btn btn-outline-secondary"
               type="button"
-              onClick={() => geocodeAddress(watch("address"))}
+              onClick={() => geocodeAddress(watch("address"), setValue)}
             >
-              🔍
+              <i className="bi bi-search"></i>
             </button>
             <button
-              className="btn btn-outline-primary"
+              className="btn btn-outline-success"
               type="button"
-              onClick={getMyLocation}
+              onClick={() => getMyLocation(setValue)}
             >
-              Tôi
+             <i className="bi bi-crosshair"></i>
             </button>
           </div>
         </div>
 
         <div className="mb-3 d-flex justify-content-between align-items-center">
           <div className="d-flex align-items-center">
-            <i className="bi bi-lock-fill me-2"></i>
+            {lock ? (
+              <i className="bi bi-lock-fill me-2 text-primary-custom"></i>
+            ) : (
+              <i className="bi bi-unlock-fill me-2 text-primary-custom"></i>
+            )}
             <button
               type="button"
-              className="btn btn-link p-0"
+              className="btn btn-link-custom p-0"
               onClick={() => setLock((prev) => !prev)}
             >
               {lock ? "Unlock Pin Location" : "Lock Pin Location"}
@@ -133,7 +73,7 @@ function LocationSection() {
           </div>
           <button
             type="button"
-            className="btn btn-link p-0"
+            className="btn btn-link-custom p-0"
             onClick={() => setShowManual((prev) => !prev)}
           >
             {showManual ? "Hide manual input" : "Enter coordinates manually"}
@@ -172,8 +112,8 @@ function LocationSection() {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&copy; <a href="https://carto.com/">CARTO</a>'
             />
-            <Marker position={[lat, lng]} icon={redIcon} />
-            <LocationSelector />
+            <Marker position={[lat, lng]} icon={RedIcon} />
+            <LocationSelector lat={lat} lng={lng} lock={lock} />
           </MapContainer>
         </div>
       </div>

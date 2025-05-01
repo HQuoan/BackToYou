@@ -4,7 +4,7 @@ function SidebarNav() {
       <ul className="nav flex-column">
         <li className="nav-item">
           <a className="nav-link" id="nav-general"  href="#general">
-            General
+            Tổng quan
           </a>
         </li>
         <li className="nav-item">

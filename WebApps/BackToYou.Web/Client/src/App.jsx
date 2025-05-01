@@ -32,7 +32,8 @@ function App() {
             <Route path="search" element={<SearchPage />} />
             <Route path="ai-search" element={<MapPage />} />
             <Route path="map" element={<MapPage />} />
-            <Route path="contact" element={<UpsertListingPage />} />
+            <Route path="contact" element={<Contact />} />
+            <Route path="listing" element={<UpsertListingPage />} />
             <Route path="/:slug" element={<Detail />} />
           </Route>
 

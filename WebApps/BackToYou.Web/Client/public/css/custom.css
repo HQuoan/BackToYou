@@ -181,7 +181,13 @@
   color: var(--white-color);
 }
 
+.btn-link-custom{
+  color: var(--primary-color);
+}
 
+.btn-link-custom:hover{
+  color: var(--secondary-color);
+}
 
 .cursor-pointer input,
 .cursor-pointer label,

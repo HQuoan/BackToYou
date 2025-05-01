@@ -94,6 +94,9 @@ public class AppDbContext : DbContext
             .OwnsOne(p => p.Location);
 
         builder.Entity<Post>()
+        .OwnsOne(p => p.PostContact);
+
+        builder.Entity<Post>()
             .HasOne(p => p.Category)
            .WithMany(c => c.Posts)
            .HasForeignKey(p => p.CategoryId)

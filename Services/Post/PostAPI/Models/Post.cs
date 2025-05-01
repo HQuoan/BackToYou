@@ -20,6 +20,8 @@ public class Post : BaseEntity
     [Required]
     public string Description { get; set; }
     public Location Location { get; set; }
+    public PostContact PostContact { get; set; }
+    
     public PostLabel PostLabel { get; set; } = PostLabel.Normal;
     public PostType PostType { get; set; }
     public PostStatus PostStatus { get; set; } = PostStatus.Pending;
