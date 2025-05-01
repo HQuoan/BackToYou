@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using System.Security.Claims;
-using System.Security.Cryptography.X509Certificates;
 
 namespace BuildingBlocks.Enums.Interceptors;
 public class AuditableEntityInterceptor : SaveChangesInterceptor

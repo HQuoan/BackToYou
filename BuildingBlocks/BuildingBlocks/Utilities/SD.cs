@@ -1,4 +1,6 @@
-﻿namespace BuildingBlocks.Utilities;
+﻿using Microsoft.AspNetCore.Http;
+
+namespace BuildingBlocks.Utilities;
 public static class SD
 {
     public const string AdminEmail = "admin@gmail.com";
@@ -22,4 +24,41 @@ public static class SD
 
     public const string HttpClient_Payment = "Payment";
 
+    public const string AccessTokenCookieName = "access_token";
+    
+
 }
+
+public static class CookieHelper
+{
+    public static void SetAuthCookie(HttpResponse response, string token)
+    {
+        response.Cookies.Append(
+            SD.AccessTokenCookieName,
+            token,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTimeOffset.UtcNow.AddDays(7),
+                Path = "/"
+            }
+        );
+    }
+
+    public static void RemoveAuthCookie(HttpResponse response)
+    {
+        response.Cookies.Delete(
+            SD.AccessTokenCookieName,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
+                Path = "/"
+            }
+        );
+    }
+}
+

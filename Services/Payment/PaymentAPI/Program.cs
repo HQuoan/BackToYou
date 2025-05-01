@@ -116,6 +116,8 @@ builder.Services.AddScoped<IPaymentMethod, PaymentWithStripe>();
 builder.Services.AddScoped<IPaymentMethod, PaymentWithPayOS>();
 
 var app = builder.Build();
+// Request Logging
+app.UseMiddleware<RequestLoggingMiddleware>();
 
 // Apply Migrations
 ApplyMigration();

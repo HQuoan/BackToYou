@@ -92,7 +92,7 @@ public class CustomExceptionHandler(ILogger<CustomExceptionHandler> logger)
 
         context.Response.StatusCode = details.StatusCode;
         await context.Response.WriteAsJsonAsync(
-            new ResponseDto { Result = problemDetails, IsSuccess = false },
+            new ResponseDto { Message = problemDetails.Detail, Result = problemDetails, IsSuccess = false },
             cancellationToken: cancellationToken);
 
         return true;

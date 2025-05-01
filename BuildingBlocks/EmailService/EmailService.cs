@@ -10,7 +10,7 @@ public class EmailService : IEmailService
         try
         {
             var email = new MimeMessage();
-            email.From.Add(new MailboxAddress("CineWorld", EmailConfig.USERNAME));
+            email.From.Add(new MailboxAddress(EmailConfig.PROJECT_NAME, EmailConfig.USERNAME));
             email.To.Add(new MailboxAddress("Customer", emailRequest.To));
             email.Subject = emailRequest.Subject;
 
@@ -60,7 +60,7 @@ public class EmailService : IEmailService
         try
         {
             var email = new MimeMessage();
-            email.From.Add(new MailboxAddress("CineWorld (Mailtrap)", "noreply@mailtrap.io"));
+            email.From.Add(new MailboxAddress($"{EmailConfig.PROJECT_NAME} (Mailtrap)", "noreply@mailtrap.io"));
             email.To.Add(new MailboxAddress("Customer", emailRequest.To));
             email.Subject = emailRequest.Subject;
 

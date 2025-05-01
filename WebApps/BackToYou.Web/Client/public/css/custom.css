@@ -1,5 +1,5 @@
 .header-content-overlay {
-  margin-top: -300px;
+  margin-top: -330px;
   z-index: 10;
   position: relative;
 }
@@ -140,6 +140,13 @@
   margin-right: 10px;
 }
 
+.custom-btn:disabled {
+  background-color: var(--color-grey-300);
+  color: var(--color-grey-600);
+  cursor: not-allowed;
+  opacity: 0.8;
+  border: none;
+}
 
 .border-btn-custom {
   background: transparent;
@@ -153,6 +160,28 @@
   background: #FF4D4D;
 }
 
+.scroll-to-top-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background-color: var(--white-color);
+  color: var(--color-grey-800);
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+
+.scroll-to-top-btn:hover{
+  background-color: var(--primary-color);
+  color: var(--white-color);
+}
+
+
 
 .cursor-pointer input,
 .cursor-pointer label,
@@ -163,4 +192,17 @@
 
 select.form-select {
   cursor: pointer;
+}
+
+.google-login{
+  position: relative;
+}
+
+.google-login-btn{
+  opacity: 0;
+  position: absolute;
+  top: 25%;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }

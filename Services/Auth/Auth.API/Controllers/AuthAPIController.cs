@@ -20,6 +20,7 @@ public class AuthAPIController : ControllerBase
     {
         var userDto = await _authService.Register(model);
         _response.Result = userDto;
+        _response.Message = "Register successfully.";
 
         return CreatedAtAction(nameof(Register), _response);
     }
@@ -41,9 +42,24 @@ public class AuthAPIController : ControllerBase
         {
             throw new BadRequestException("Username or password is incorrect");
         }
+        // Thiết lập cookie
+        CookieHelper.SetAuthCookie(Response, loginResponse.Token);
+
         _response.Result = loginResponse;
+        _response.Message = "Login successfully.";
         return Ok(_response);
     }
+
+    [HttpPost("logout")]
+    public IActionResult Logout()
+    {
+        CookieHelper.RemoveAuthCookie(Response);
+
+        _response.Message = "Logged out successfully.";
+
+        return Ok(_response);
+    }
+
 
     [HttpPost("change-password")]
     [Authorize]
@@ -104,14 +120,8 @@ public class AuthAPIController : ControllerBase
     {
         var response = await _authService.SignInWithGoogle(request.Token);
 
-        // set cookie
-        Response.Cookies.Append("access_token", response.Token, new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = true, 
-            SameSite = SameSiteMode.Strict,
-            Expires = DateTime.UtcNow.AddDays(7)
-        });
+        // Thiết lập cookie
+        CookieHelper.SetAuthCookie(Response, response.Token);
 
         _response.Message = "Login with Google successfully.";
         _response.Result = response;
@@ -124,14 +134,8 @@ public class AuthAPIController : ControllerBase
     {
         var response = await _authService.SignInWithFacebook(request.Token);
 
-        // Set cookie
-        Response.Cookies.Append("access_token", response.Token, new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.Strict,
-            Expires = DateTime.UtcNow.AddDays(7)
-        });
+        // Thiết lập cookie
+        CookieHelper.SetAuthCookie(Response, response.Token);
 
         _response.Message = "Login with Facebook successfully.";
         _response.Result = response;

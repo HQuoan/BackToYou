@@ -10,6 +10,8 @@ import MapPage from "./pages/MapPage";
 import Detail from "./pages/Detail";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import { Toaster } from "react-hot-toast";
+import UpsertListingPage from "./pages/UpsertListingPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,7 +32,7 @@ function App() {
             <Route path="search" element={<SearchPage />} />
             <Route path="ai-search" element={<MapPage />} />
             <Route path="map" element={<MapPage />} />
-            <Route path="contact" element={<Contact />} />
+            <Route path="contact" element={<UpsertListingPage />} />
             <Route path="/:slug" element={<Detail />} />
           </Route>
 
@@ -39,6 +41,27 @@ function App() {
           {/* <Route path="*" element={<PageNotFound />} /> */}
         </Routes>
       </BrowserRouter>
+
+      <Toaster
+          position="top-center"
+          gutter={12}
+          containerStyle={{ margin: "8px" }}
+          toastOptions={{
+            success: {
+              duration: 3000,
+            },
+            error: {
+              duration: 5000,
+            },
+            style: {
+              fontSize: "16px",
+              maxWidth: "500px",
+              padding: "16px 24px",
+              backgroundColor: "var(--color-grey-0)",
+              color: "var(--color-grey-700)",
+            },
+          }}
+        />
     </QueryClientProvider>
   );
 }

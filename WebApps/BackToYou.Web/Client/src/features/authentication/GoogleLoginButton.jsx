@@ -1,36 +1,45 @@
-import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
-const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+import { GoogleLogin } from "@react-oauth/google";
+import { useMutation } from "@tanstack/react-query";
+import { loginWithGoogle } from "../../services/apiAuth";
+import toast from "react-hot-toast";
 
 function GoogleLoginButton() {
+
+  const { isPending, mutate } = useMutation({
+    mutationFn: (data) => {
+      return loginWithGoogle(data);
+    },
+    onSuccess: (data) => {
+      toast.success("Đăng nhập thành công!");
+      console.log(data);
+    },
+    onError: (error) => {
+      toast.error("Đăng nhập thất bại: " + (error?.message || "Lỗi không xác định"));
+      console.error(error);
+    },
+  });
+
   const responseGoogle = (response) => {
-    if (response.error) {
-      console.error('Google login failed:', response.error);
+    if (response.credential) {
+      mutate({ token: response.credential });
+
     } else {
-      // Gửi mã token lên backend để xác thực
-      fetch('https://localhost:5052/auth/signin-google', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        // credentials: 'include',
-        body: JSON.stringify({ token: response.credential }),
-      })
-        .then(res => res.json())
-        .then(data => {
-          console.log('Login successful:', data);
-          // Lưu JWT token hoặc thông tin người dùng từ backend
-        })
-        .catch(error => console.error('Error during login:', error));
+      console.error("No credential found", response);
     }
   };
 
   return (
-    <GoogleOAuthProvider clientId={clientId} >
-        <GoogleLogin
-          onSuccess={responseGoogle}
-          onError={() => console.log("Login Failed")}
-        />
-    </GoogleOAuthProvider>
+    <div className="google-login">
+      <button className="btn btn-danger flex-fill">
+        <i className="bi bi-google me-1"></i> Đăng nhập bằng Google
+        <div className="google-login-btn">
+          <GoogleLogin
+            onSuccess={responseGoogle}
+            onError={() => console.log("Login Failed")}
+          />
+        </div>
+      </button>
+    </div>
   );
 }
 

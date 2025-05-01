@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import Footer from "./Footer";
 import Header from "./Header";
 import ScrollToTop from "./ScrollToTop";
+import ScrollToTopButton from "./ScrollToTopButton";
 
 function AppLayout() {
   return (
@@ -10,6 +11,7 @@ function AppLayout() {
       <Header />
       <Outlet />
       <Footer />
+      <ScrollToTopButton/>
     </>
   );
 }

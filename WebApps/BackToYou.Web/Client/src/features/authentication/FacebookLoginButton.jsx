@@ -1,39 +1,62 @@
-import React from 'react';
-import FacebookLogin from 'react-facebook-login';
+import { useMutation } from '@tanstack/react-query';
+import React, { useEffect } from 'react';
+import { loginWithFacebook } from '../../services/apiAuth';
+import toast from 'react-hot-toast';
 
 const appId = import.meta.env.VITE_FACEBOOK_APP_ID;
 
 function FacebookLoginButton() {
-  const responseFacebook = (response) => {
-    if (response.status === 'unknown' || !response.accessToken) {
-      console.error('Facebook login failed:', response);
-      return;
-    }
+  useEffect(() => {
+    window.fbAsyncInit = function () {
+      window.FB.init({
+        appId: appId,
+        cookie: true,
+        xfbml: true,
+        version: 'v18.0', 
+      });
+    };
 
-    // Send access token to backend
-    fetch('https://localhost:5052/auth/signin-facebook', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    (function (d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "https://connect.facebook.net/en_US/sdk.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    })(document, 'script', 'facebook-jssdk');
+  }, []);
+
+  const { isPending, mutate } = useMutation({
+    mutationFn: (data) => {
+      return loginWithFacebook(data);
+    },
+    onSuccess: (data) => {
+      toast.success("Đăng nhập thành công!");
+      console.log(data);
+    },
+    onError: (error) => {
+      toast.error("Đăng nhập thất bại: " + (error?.message || "Lỗi không xác định"));
+      console.error(error);
+    },
+  });
+
+  const handleLogin = () => {
+    window.FB.login(
+      function (response) {
+        if (response.authResponse) {
+          const { accessToken } = response.authResponse;
+          mutate({token: accessToken});
+        } else {
+          console.error('User cancelled login or did not fully authorize.');
+        }
       },
-      body: JSON.stringify({ token: response.accessToken }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log('Login successful:', data);
-        // Store JWT token or user info
-      })
-      .catch((error) => console.error('Error during login:', error));
+      { scope: 'public_profile,email' }
+    );
   };
 
   return (
-    <FacebookLogin
-      appId={appId}
-      fields="name,email,picture"
-      callback={responseFacebook}
-      icon="fa-facebook"
-      textButton="Login with Facebook"
-    />
+    <button className="btn btn-primary flex-fill" onClick={handleLogin}>
+      <i className="bi bi-facebook me-1"></i> Đăng nhập bằng Facebook
+    </button>
   );
 }
 

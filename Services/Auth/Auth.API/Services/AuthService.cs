@@ -289,69 +289,98 @@ public class AuthService : IAuthService
         return false;
     }
 
-
-    public async Task<LoginResponseDto> SignInWithGoogle(string token)
+    public Task<LoginResponseDto> SignInWithGoogle(string token)
     {
+        return SignInWithExternalProvider(token, ExternalProviderType.Google);
+    }
 
-        // Xác thực mã token từ Google
-        var payload = await VerifyGoogleToken(token);
-        if (payload == null)
+    public Task<LoginResponseDto> SignInWithFacebook(string token)
+    {
+        return SignInWithExternalProvider(token, ExternalProviderType.Facebook);
+    }
+
+    public async Task<LoginResponseDto> SignInWithExternalProvider(string token, ExternalProviderType providerType)
+    {
+        ApplicationUser user = null;
+        string email = "";
+        string fullName = "";
+        string avatar = "";
+        string providerId = "";
+
+        switch (providerType)
         {
-            throw new BadRequestException("Invalid Google token.");
+            case ExternalProviderType.Google:
+                var googlePayload = await VerifyGoogleToken(token);
+                if (googlePayload == null || string.IsNullOrEmpty(googlePayload.Email))
+                    throw new BadRequestException("Invalid Google token or unable to retrieve user email.");
+
+                email = googlePayload.Email;
+                fullName = googlePayload.Name ?? email.Split('@')[0];
+                avatar = googlePayload.Picture;
+                providerId = googlePayload.JwtId;
+                break;
+
+            case ExternalProviderType.Facebook:
+                var facebookUser = await VerifyFacebookToken(token);
+                if (facebookUser == null || string.IsNullOrEmpty(facebookUser.Email))
+                    throw new BadRequestException("Invalid Facebook token or unable to retrieve user email.");
+
+                email = facebookUser.Email;
+                fullName = facebookUser.Name ?? email.Split('@')[0];
+                avatar = facebookUser.Picture.Data.Url;
+                providerId = facebookUser.Id;
+                break;
+
+            default:
+                throw new BadRequestException("Unsupported external provider.");
         }
 
-        if (string.IsNullOrEmpty(payload.Email))
-        {
-            throw new BadRequestException("Unable to retrieve user email.");
-        }
-
-        // Kiểm tra nếu user đã tồn tại trong database, nếu không, tạo mới
-        var user = await _userManager.FindByEmailAsync(payload.Email);
-
+        // Find or create user
+        user = await _userManager.FindByEmailAsync(email);
         if (user == null)
         {
-            var fullName = payload.Name ?? payload.Email.Split('@')[0];
             user = new ApplicationUser
             {
-                GoogleId = payload.JwtId,
-                Email = payload.Email,
-                NormalizedEmail = payload.Email.ToUpper(),
-                UserName = payload.Email,
+                Email = email,
+                NormalizedEmail = email.ToUpper(),
+                UserName = email,
                 FullName = fullName,
                 ShortName = fullName.ToShortName(),
-                Avatar = payload.Picture,
+                Avatar = avatar,
                 Sex = SD.Male,
                 DateOfBirth = new DateTime(2000, 1, 1),
-                EmailConfirmed = true,
+                EmailConfirmed = true
             };
+
+            // Set provider ID
+            if (providerType == ExternalProviderType.Google)
+                user.GoogleId = providerId;
+            else if (providerType == ExternalProviderType.Facebook)
+                user.FacebookId = providerId;
 
             var result = await _userManager.CreateAsync(user);
             if (!result.Succeeded)
             {
-                throw new BadRequestException($"Failed to register Google user: {string.Join("; ", result.Errors.Select(e => e.Description))}");
+                throw new BadRequestException($"Failed to register user: {string.Join("; ", result.Errors.Select(e => e.Description))}");
             }
 
             await _userManager.AddToRoleAsync(user, SD.CustomerRole);
 
-            EmailRequest emailRequest = new EmailRequest()
-            {
-                To = user.Email,
-                Subject = "Register Successfully!",
-                Message = $"Register Successfully!"
-            };
+            //EmailRequest emailRequest = new()
+            //{
+            //    To = user.Email,
+            //    Subject = "Register Successfully!",
+            //    Message = "Register Successfully!"
+            //};
 
-            var emailResponse = await _emailService.SendEmailAsync(emailRequest);
+            //await _emailService.SendEmailAsync(emailRequest);
         }
 
-        // Lấy các vai trò của user
         var roles = await _userManager.GetRolesAsync(user);
 
-        // Tạo token JWT
-        LoginResponseDto loginResponseDto = new LoginResponseDto();
-        var tokenRespone = _jwtTokenGenerator.GenerateToken(user, roles);
+        var tokenResponse = _jwtTokenGenerator.GenerateToken(user, roles);
 
-
-        UserDto userDto = new()
+        var userDto = new UserDto
         {
             Id = user.Id,
             PhoneNumber = user.PhoneNumber,
@@ -359,17 +388,18 @@ public class AuthService : IAuthService
             FullName = user.FullName,
             ShortName = user.ShortName,
             Avatar = user.Avatar,
-            Sex = user.Sex.ToString(),
+            Sex = user.Sex,
             DateOfBirth = user.DateOfBirth,
             Role = string.Join(", ", roles),
             GoogleId = user.GoogleId,
             FacebookId = user.FacebookId,
         };
 
-        loginResponseDto.User = userDto;
-        loginResponseDto.Token = tokenRespone;
-
-        return loginResponseDto;
+        return new LoginResponseDto
+        {
+            User = userDto,
+            Token = tokenResponse
+        };
     }
 
     private async Task<GoogleJsonWebSignature.Payload> VerifyGoogleToken(string token)
@@ -391,81 +421,6 @@ public class AuthService : IAuthService
         }
     }
 
-
-    public async Task<LoginResponseDto> SignInWithFacebook(string accessToken)
-    {
-        // Verify Facebook access token
-        var userInfo = await VerifyFacebookToken(accessToken);
-        if (userInfo == null || string.IsNullOrEmpty(userInfo.Email))
-        {
-            throw new BadRequestException("Invalid Facebook token or unable to retrieve user email.");
-        }
-
-        // Check if user exists in the database, if not, create a new one
-        var user = await _userManager.FindByEmailAsync(userInfo.Email);
-        if (user == null)
-        {
-            var fullName = userInfo.Name ?? userInfo.Email.Split('@')[0];
-            user = new ApplicationUser
-            {
-                Email = userInfo.Email,
-                NormalizedEmail = userInfo.Email.ToUpper(),
-                UserName = userInfo.Email,
-                FullName = fullName,
-                ShortName = fullName.ToShortName(),
-                Avatar = userInfo.Picture.Data.Url, 
-                FacebookId = userInfo.Id,
-                Sex = SD.Male,
-                DateOfBirth = new DateTime(2000, 1, 1),
-                EmailConfirmed = true
-            };
-
-            var result = await _userManager.CreateAsync(user);
-            if (!result.Succeeded)
-            {
-                throw new BadRequestException($"Failed to register Facebook user: {string.Join("; ", result.Errors.Select(e => e.Description))}");
-            }
-
-            await _userManager.AddToRoleAsync(user, SD.CustomerRole);
-
-            EmailRequest emailRequest = new EmailRequest
-            {
-                To = user.Email,
-                Subject = "Register Successfully!",
-                Message = "Register Successfully!"
-            };
-
-            await _emailService.SendEmailAsync(emailRequest);
-        }
-
-        // Get user roles
-        var roles = await _userManager.GetRolesAsync(user);
-
-        // Generate JWT token
-        LoginResponseDto loginResponseDto = new LoginResponseDto();
-        var tokenResponse = _jwtTokenGenerator.GenerateToken(user, roles);
-
-        UserDto userDto = new()
-        {
-            Id = user.Id,
-            PhoneNumber = user.PhoneNumber,
-            Email = user.Email,
-            FullName = user.FullName,
-            ShortName = user.ShortName,
-            Avatar = user.Avatar,
-            Sex = user.Sex.ToString(),
-            DateOfBirth = user.DateOfBirth,
-            Role = string.Join(", ", roles),
-            GoogleId = user.GoogleId,
-            FacebookId = user.FacebookId,
-        };
-
-        loginResponseDto.User = userDto;
-        loginResponseDto.Token = tokenResponse;
-
-        return loginResponseDto;
-    }
-
     private async Task<FacebookUserInfo> VerifyFacebookToken(string accessToken)
     {
         try
@@ -483,7 +438,7 @@ public class AuthService : IAuthService
 
             if (debugData.data.is_valid != true || debugData.data.app_id != _apiSettings.Facebook.AppId)
             {
-                throw new BadRequestException("Login with Facebook failed.");
+                return null;
             }
 
             // Step 3: Fetch user info
@@ -495,29 +450,7 @@ public class AuthService : IAuthService
         }
         catch
         {
-            throw new BadRequestException("Login with Facebook failed.");
+            return null;
         }
-    }
-
-    // Helper class for Facebook user info
-    public class FacebookUserInfo
-    {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public string Email { get; set; }
-        public PictureData Picture { get; set; }
-    }
-
-    public class PictureData
-    {
-        public Data Data { get; set; }
-    }
-
-    public class Data
-    {
-        public int Height { get; set; }
-        public bool Is_Silhouette { get; set; }
-        public string Url { get; set; }
-        public int Width { get; set; }
     }
 }

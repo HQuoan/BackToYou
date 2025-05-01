@@ -25,7 +25,7 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-   // [Authorize(Roles = SD.AdminRole)]
+    [Authorize]
     public async Task<IActionResult> Get([FromQuery] UserQueryParameters queryParameters)
     {
         // Build query parameters
@@ -34,7 +34,7 @@ public class UserController : ControllerBase
         // Apply filters, sorting, and pagination (exclude Role)
         var queryableUsers = _db.ApplicationUsers.AsQueryable();
 
-        if (query.Filters != null && query.Filters.Any())
+        if (query.Filters != null && query.Filters.Any()) 
         {
             foreach (var filter in query.Filters)
             {

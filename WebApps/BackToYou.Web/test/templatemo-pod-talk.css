@@ -241,11 +241,11 @@ main {
   color: var(--white-color);
 }
 
-.custom-btn.btn2{
+.btn2{
   background: var(--custom-btn-bg-hover-color);
 }
 
-.custom-btn.btn2:hover{
+.btn2:hover{
   background: var(--custom-btn-bg-color);
 }
 

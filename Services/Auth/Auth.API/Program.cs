@@ -146,6 +146,9 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Request Logging
+app.UseMiddleware<RequestLoggingMiddleware>();
+
 // Apply Migrations
 ApplyMigration();
 

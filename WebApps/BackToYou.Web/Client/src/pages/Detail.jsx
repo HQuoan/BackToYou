@@ -12,13 +12,13 @@ function Detail() {
     <>
       <div className="site-header"></div>
       <div className="container shadow rounded header-content-overlay">
-          <div className="row justify-content-center">
-            <div className="col-lg-10 col-12">
-              <DetailPost post={post} />
-              <CommentsList comments={post.comments} />
-            </div>
+        <div className="row justify-content-center">
+          <div className="col-lg-10 col-12">
+            <DetailPost post={post} />
+            <CommentsList comments={post.comments} />
           </div>
         </div>
+      </div>
       <RecentPosts />
     </>
   );

@@ -31,7 +31,8 @@ public class ValidationFilter : IActionFilter
             context.Result = new JsonResult(new ResponseDto
             {
                 IsSuccess = false,
-                Result = problemDetails
+                Result = problemDetails,
+                Message = problemDetails.Detail,
             })
             {
                 StatusCode = StatusCodes.Status400BadRequest
