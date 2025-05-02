@@ -27,7 +27,6 @@ public class PostImageAPIController : ControllerBase
         //}
 
         var query = PostImageFeatures.Build(queryParameters);
-        query.IncludeProperties = "Category,PostImages";
 
         IEnumerable<PostImage> postImages = await _unitOfWork.PostImage.GetAllAsync(query);
 

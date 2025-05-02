@@ -12,8 +12,8 @@ using PostAPI.Data;
 namespace PostAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250419141144_update")]
-    partial class update
+    [Migration("20250502173642_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,7 +45,8 @@ namespace PostAPI.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(17)
+                        .HasColumnType("nvarchar(17)");
 
                     b.Property<string>("Slug")
                         .IsRequired()
@@ -156,6 +157,9 @@ namespace PostAPI.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("LostOrFoundDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("PostLabel")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -169,11 +173,12 @@ namespace PostAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Slug")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ThumbnailUrl")
                         .IsRequired()
@@ -190,8 +195,10 @@ namespace PostAPI.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex("Title")
+                    b.HasIndex("Slug")
                         .IsUnique();
+
+                    b.HasIndex("Title");
 
                     b.ToTable("Posts");
                 });
@@ -297,7 +304,6 @@ namespace PostAPI.Migrations
                                 .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("StreetAddress")
-                                .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Ward")
@@ -312,9 +318,37 @@ namespace PostAPI.Migrations
                                 .HasForeignKey("PostId");
                         });
 
+                    b.OwnsOne("PostAPI.Models.PostContact", "PostContact", b1 =>
+                        {
+                            b1.Property<Guid>("PostId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("Email")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Facebook")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Name")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Phone")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("PostId");
+
+                            b1.ToTable("Posts");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PostId");
+                        });
+
                     b.Navigation("Category");
 
                     b.Navigation("Location")
+                        .IsRequired();
+
+                    b.Navigation("PostContact")
                         .IsRequired();
                 });
 

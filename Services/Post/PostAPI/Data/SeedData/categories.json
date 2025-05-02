@@ -1,0 +1,37 @@
+﻿[
+    {
+        "CategoryId": "11111111-1111-1111-1111-111111111111",
+        "Name": "Giấy tờ tùy thân",
+        "Slug": "giay-to-tuy-than"
+    },
+    {
+        "CategoryId": "22222222-2222-2222-2222-222222222222",
+        "Name": "Người thân",
+        "Slug": "nguoi-than"
+    },
+    {
+        "CategoryId": "33333333-3333-3333-3333-333333333333",
+        "Name": "Thú cưng",
+        "Slug": "thu-cung"
+    },
+    {
+        "CategoryId": "44444444-4444-4444-4444-444444444444",
+        "Name": "Trang sức",
+        "Slug": "trang-suc"
+    },
+    {
+        "CategoryId": "55555555-5555-5555-5555-555555555555",
+        "Name": "Thiết bị điện tử",
+        "Slug": "thiet-bi-dien-tu"
+    },
+    {
+        "CategoryId": "66666666-6666-6666-6666-666666666666",
+        "Name": "Xe cộ",
+        "Slug": "xe-co"
+    },
+    {
+        "CategoryId": "77777777-7777-7777-7777-777777777777",
+        "Name": "Khác",
+        "Slug": "khac"
+    }
+]

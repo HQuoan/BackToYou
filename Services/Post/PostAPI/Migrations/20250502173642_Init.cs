@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PostAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class update : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,7 +16,7 @@ namespace PostAPI.Migrations
                 columns: table => new
                 {
                     CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(17)", maxLength: 17, nullable: false),
                     Slug = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -49,19 +49,24 @@ namespace PostAPI.Migrations
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Slug = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Slug = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ThumbnailUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Location_Latitude = table.Column<double>(type: "float", nullable: true),
                     Location_Longitude = table.Column<double>(type: "float", nullable: true),
+                    Location_StreetAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Location_Ward = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Location_District = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Location_Province = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Location_StreetAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PostContact_Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PostContact_Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PostContact_Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PostContact_Facebook = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PostLabel = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PostType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PostStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    LostOrFoundDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -184,10 +189,15 @@ namespace PostAPI.Migrations
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Posts_Slug",
+                table: "Posts",
+                column: "Slug",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Posts_Title",
                 table: "Posts",
-                column: "Title",
-                unique: true);
+                column: "Title");
         }
 
         /// <inheritdoc />

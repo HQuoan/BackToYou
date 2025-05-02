@@ -7,6 +7,7 @@ public class PostUpdateDto
     public string ThumbnailUrl { get; set; }
     public string Description { get; set; }
     public Location Location { get; set; }
+    public PostContact PostContact { get; set; }
     public PostType PostType { get; set; }
     public PostLabel PostLabel { get; set; }
     public DateTime LostOrFoundDate { get; set; }

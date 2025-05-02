@@ -1,5 +1,4 @@
-﻿using PostAPI.Features.Categories.Dtos;
-using PostAPI.Features.Comments.Dtos;
+﻿using PostAPI.Features.Comments.Dtos;
 using PostAPI.Features.Followers.Dtos;
 using PostAPI.Features.PostImages.Dtos;
 using PostAPI.Features.Posts.Dtos;

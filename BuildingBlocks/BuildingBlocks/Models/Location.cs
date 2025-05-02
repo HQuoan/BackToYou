@@ -6,6 +6,8 @@ public class Location
 {
     public double? Latitude { get; set; }
     public double? Longitude { get; set; }
+    [DefaultValue("Tạp hóa cô Dung")]
+    public string? StreetAddress { get; set; }
     [Required]
     [DefaultValue("Duy Tân")]
     public string Ward { get; set; }
@@ -15,7 +17,5 @@ public class Location
     [Required]
     [DefaultValue("Quảng Nam")]
     public string Province { get; set; }
-    [Required]
-    [DefaultValue("Tạp hóa cô Dung")]
-    public string StreetAddress { get; set; }
+ 
 }

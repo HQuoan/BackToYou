@@ -1,0 +1,37 @@
+﻿[
+    {
+        "postId": "b7e3dba0-7f8a-4b4d-a9be-62cfb9b8b3f5",
+        "userId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+        "categoryId": "11111111-1111-1111-1111-111111111111",
+        "title": "Tôi bị mất ví da màu đen tại công viên",
+        "slug": "toi-bi-mat-vi-da-mau-den-tai-cong-vien",
+        "thumbnailUrl": "https://example.com/images/vi-da.jpg",
+        "description": "hahahahahah",
+        "location": {
+            "latitude": 15.8801,
+            "longitude": 108.3380,
+            "streetAddress": "Công viên trung tâm",
+            "ward": "Duy Tân",
+            "district": "Duy Xuyên",
+            "province": "Quảng Nam"
+        },
+        "postContact": {
+            "name": "Nguyễn Văn A",
+            "phone": "0123456789",
+            "email": "example@gmail.com",
+            "facebook": "https://facebook.com/nguyenvana"
+        },
+        "postLabel": "Priority",
+        "postType": "Lost",
+        "postStatus": "Pending",
+        "lostOrFoundDate": "2025-05-01T18:00:00Z",
+        "price": 200000,
+        "postImages": [
+            {
+                "postImageId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                "imageUrl": "https://timdo.io.vn/uploads/1738505607740.jpg",
+                "publicId": "1738505607740"
+            }
+        ]
+    }
+]

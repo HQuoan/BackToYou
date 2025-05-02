@@ -28,10 +28,10 @@ public class PostAPIController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<ResponseDto>> Get([FromQuery] PostQueryParameters? queryParameters)
     {
-        if (!User.IsInRole(SD.AdminRole))
-        {
-            queryParameters.PostStatus = PostStatus.Approved;
-        }
+        //if (!User.IsInRole(SD.AdminRole))
+        //{
+        //    queryParameters.PostStatus = PostStatus.Approved;
+        //}
 
         var query = PostFeatures.Build(queryParameters);
         query.IncludeProperties = "Category,PostImages";
@@ -207,7 +207,7 @@ public class PostAPIController : ControllerBase
 
 
         // Generate slug
-        post.Slug = SlugGenerator.GenerateSlug(post.Title);
+        post.Slug = SlugGenerator.CreateUniqueSlugAsync(post.Title);
 
         await _unitOfWork.Post.AddAsync(post);
 
