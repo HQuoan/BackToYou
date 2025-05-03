@@ -52,13 +52,27 @@
 .owl-carousel-info {
   background-color: var(--section-bg-color, #f8f9fa);
   box-shadow: 0 1rem 3rem rgba(0,0,0,.175);
-  position: absolute;
+  /* position: absolute;
   bottom: 0;
   right: 0;
-  left: 0;
+  left: 0; */
   padding: 30px;
   max-height: 180px;
 }
+
+
+/* .img-wrapper {
+  aspect-ratio: 2/3; 
+  width: 100%;
+  overflow: hidden;
+}
+
+.img-wrapper img {
+  width: 99.999%;
+  height: 100%;
+  object-fit: cover;      
+  object-position: center;
+} */
 
 
 

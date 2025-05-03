@@ -1,13 +1,27 @@
-.header-content-overlay {
-  margin-top: -330px;
-  z-index: 10;
-  position: relative;
-}
-
-.min-height-600{
+.min-height-600 {
   min-height: 600px;
 }
 
+.hidden {
+  opacity: 0;
+}
+
+.cursor-pointer input,
+.cursor-pointer label,
+.cursor-pointer select,
+select.form-select {
+  cursor: pointer;
+}
+
+.login-page {
+  background: linear-gradient(to bottom, #e0e7ff, #c3d7f5);
+}
+
+.login-page h {
+  font-family: var(--body-font-family);
+}
+
+/* Typography */
 .text-black-custom {
   color: var(--dark-color);
 }
@@ -20,7 +34,7 @@
   color: var(--primary-color);
 }
 
-
+/* Navbar */
 .navbar.scrolled {
   position: fixed;
   background-image: url('../images/templatemo-wave-header.jpg'), linear-gradient(#348CD2, #FFFFFF);
@@ -28,37 +42,55 @@
   background-size: cover;
   background-position: center;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  padding-top: 0px;
-  padding-bottom: 0px;
-
+  padding-top: 0;
+  padding-bottom: 0;
   opacity: 1;
   transform: translateY(0);
 }
 
-.hidden{
-  opacity: 0;
+/* Header */
+.header-content-overlay {
+  margin-top: -330px;
+  z-index: 10;
+  position: relative;
 }
 
-.sidebar-block {
-  border: 2px solid var(--primary-color);
-  border-radius: var(--border-radius-medium);
-  padding: 30px;
+/* Image Wrapper */
+.img-wrapper {
+  width: 100%;
+  background: var(--color-grey-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
+.img-wrapper a {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.img-wrapper img {
+  padding: 10px;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: scale-down;
+}
+
+.img-height-priority {
+  height: 250px;
+}
+
+/* Clamp lines */
 .line-clamp-1,
 .line-clamp-2,
 .line-clamp-carousel-title {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-
-.login-page{
-  background: linear-gradient(to bottom, #e0e7ff, #c3d7f5);
-}
-
-.login-page h{
-  font-family: var(--body-font-family);
 }
 
 .line-clamp-1 {
@@ -70,7 +102,7 @@
   min-height: 3em;
 }
 
-.map .line-clamp-2{
+.map .line-clamp-2 {
   min-height: 2.5em;
 }
 
@@ -79,9 +111,14 @@
   min-height: 2.5em;
 }
 
+/* Sidebar */
+.sidebar-block {
+  border: 2px solid var(--primary-color);
+  border-radius: var(--border-radius-medium);
+  padding: 30px;
+}
 
-/* --custom-btn-bg-color:          #0066CC; */
-
+/* Badges */
 .badge {
   background-color: var(--custom-btn-bg-color, #007bff);
   font-family: var(--title-font-family, 'Montserrat', sans-serif);
@@ -89,7 +126,6 @@
   color: var(--white-color, #ffffff);
   padding-bottom: 5px;
   margin-right: 5px;
-
   cursor: pointer;
 }
 
@@ -106,22 +142,21 @@
 }
 
 .badge-lost {
-  background-color: #FF4D4D; /* đỏ nhẹ - biểu thị khẩn cấp/mất mát */
+  background-color: #FF4D4D;
 }
 
 .badge-found {
-  background-color: #00B894; /* xanh ngọc - biểu thị tích cực/đã nhặt được */
+  background-color: #00B894;
 }
 
 .badge-lost-or-found-date {
   background-color: #4D90FE;
 }
 
-
-
+/* Post Labels */
 .post-label-block {
   display: inline-block;
-  background-color: var(--highlight-color, #ff9800); /* màu cam nổi bật */
+  background-color: var(--highlight-color, #ff9800);
   color: var(--white-color, #ffffff);
   font-family: var(--title-font-family, 'Montserrat', sans-serif);
   font-weight: 600;
@@ -131,8 +166,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 }
 
-
-.owl-carousel-info-wrap .post-label-block{
+.owl-carousel-info-wrap .post-label-block {
   position: absolute;
   right: 0;
   top: 0;
@@ -140,6 +174,7 @@
   margin-right: 10px;
 }
 
+/* Buttons */
 .custom-btn:disabled {
   background-color: var(--color-grey-300);
   color: var(--color-grey-600);
@@ -160,6 +195,15 @@
   background: #FF4D4D;
 }
 
+.btn-link-custom {
+  color: var(--primary-color);
+}
+
+.btn-link-custom:hover {
+  color: var(--secondary-color);
+}
+
+/* Scroll To Top */
 .scroll-to-top-btn {
   position: fixed;
   bottom: 2rem;
@@ -176,35 +220,17 @@
   z-index: 1000;
 }
 
-.scroll-to-top-btn:hover{
+.scroll-to-top-btn:hover {
   background-color: var(--primary-color);
   color: var(--white-color);
 }
 
-.btn-link-custom{
-  color: var(--primary-color);
-}
-
-.btn-link-custom:hover{
-  color: var(--secondary-color);
-}
-
-.cursor-pointer input,
-.cursor-pointer label,
-.cursor-pointer select {
-  cursor: pointer;
-}
-
-
-select.form-select {
-  cursor: pointer;
-}
-
-.google-login{
+/* Google Login */
+.google-login {
   position: relative;
 }
 
-.google-login-btn{
+.google-login-btn {
   opacity: 0;
   position: absolute;
   top: 25%;

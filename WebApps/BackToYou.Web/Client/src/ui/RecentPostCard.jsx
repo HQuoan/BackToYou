@@ -7,7 +7,7 @@ const RecentPostCard = ({ post }) => {
   return (
     <div className="col-lg-4 col-12 mb-4 mb-lg-4">
       <div className="custom-block custom-block-full pb-3">
-        <div className="custom-block-image-wrap">
+        <div className="custom-block-image-wrap img-wrapper">
           <Link to={`/${post.slug}`} state={{ post }}>
             <img
               src={post.thumbnailUrl}

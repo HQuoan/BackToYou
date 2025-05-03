@@ -12,7 +12,7 @@ function DetailPost({ post }) {
       <div className="row">
         <div className="col-lg-3 col-12">
           <div className="custom-block-icon-wrap">
-            <div className="custom-block-image-wrap custom-block-image-detail-page">
+            <div className="custom-block-image-wrap custom-block-image-detail-page img-wrapper">
               <img
                 src={post.thumbnailUrl}
                 className="custom-block-image img-fluid"

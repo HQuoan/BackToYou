@@ -81,11 +81,17 @@ const PriorityPostsSlider = () => {
               <p className="text-white">
                 Lost something? Let’s bring it back to you.
               </p>
-              <Link to="/listing" className="btn custom-btn btn2 smoothscroll mt-3 me-1">
+              <Link
+                to="/listing"
+                className="btn custom-btn btn2 smoothscroll mt-3 me-1"
+              >
                 <i className="bi-pencil-square me-2"></i>
                 Đăng bài
               </Link>
-              <Link to="/search" className="btn custom-btn btn2 smoothscroll mt-3 ms-1">
+              <Link
+                to="/search"
+                className="btn custom-btn btn2 smoothscroll mt-3 ms-1"
+              >
                 <i className="bi-robot me-2"></i>
                 Tìm kiếm
               </Link>
@@ -101,20 +107,26 @@ const PriorityPostsSlider = () => {
               >
                 {carouselPosts.map((post, index) => (
                   <SwiperSlide
-                    className="owl-carousel-info-wrap item"
+                    className="owl-carousel-info-wrap item "
                     key={index}
                   >
-                    <Link to={`/${post.slug}`} state={{ post }}>
-                      <img
-                        src={post.thumbnailUrl}
-                        className="owl-carousel-image img-fluid"
-                        alt={post.title}
-                      />
-                    </Link>
+                    <div className="img-wrapper img-height-priority">
+                      <Link to={`/${post.slug}`} state={{ post }}>
+                        <img
+                          src={post.thumbnailUrl}
+                          className="owl-carousel-image img-fluid"
+                          alt={post.title}
+                        />
+                      </Link>
+                    </div>
 
                     <div className="owl-carousel-info">
                       <h4 className="mb-2 ">
-                        <Link className="line-clamp-carousel-title" to={`/${post.slug}`} state={{ post }}>
+                        <Link
+                          className="line-clamp-carousel-title"
+                          to={`/${post.slug}`}
+                          state={{ post }}
+                        >
                           {post.title}
                         </Link>
                       </h4>

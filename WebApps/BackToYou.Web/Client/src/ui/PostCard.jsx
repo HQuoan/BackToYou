@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 const PostCard = ({ post }) => {
   return (
     <div className="custom-block custom-block-full pb-3">
-      <div className="custom-block-image-wrap">
+      <div className="custom-block-image-wrap img-wrapper">
         <Link to={`/${post.slug}`} state={{ post }}>
           <img
             src={post.thumbnailUrl}

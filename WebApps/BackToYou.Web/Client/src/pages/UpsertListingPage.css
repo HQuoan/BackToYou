@@ -82,7 +82,7 @@
 .section {
   opacity: 0.3; /* Default state: semi-transparent */
   transform: translateY(20px); /* Start slightly lower */
-  transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.5s ease; /* Smooth transition for all properties */
+  transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.5s ease; 
 }
 
 .section.visible {

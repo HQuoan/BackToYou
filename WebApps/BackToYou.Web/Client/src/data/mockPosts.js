@@ -14,7 +14,7 @@ const mockPosts = [
     },
     "title": "Tìm đồ",
     "slug": "tim-o",
-    "thumbnailUrl": "images/profile/handsome-asian-man-listening-music-through-headphones.jpg",
+    "thumbnailUrl": "images/cccd/2.jpg",
     "description": "Mất đồ",
     "location": {
       "latitude": 0,
@@ -63,7 +63,7 @@ const mockPosts = [
     },
     "title": "Tìm chìa khóa xe máy Tìm chìa khóa xe máy",
     "slug": "tim-chia-khoa-xe-may",
-    "thumbnailUrl": "images/profile/handsome-asian-man-listening-music-through-headphones.jpg",
+    "thumbnailUrl": "images/cccd/5.jpg",
     "description": "Rơi chìa khóa khu vực gần công viên Rơi chìa khóa khu vực gần công viên Rơi chìa khóa khu vực gần công viên",
     "location": {
       "latitude": 16.0544,
@@ -106,7 +106,7 @@ const mockPosts = [
     },
     "title": "Nhặt được ví",
     "slug": "nhat-vi",
-    "thumbnailUrl": "images/profile/handsome-asian-man-listening-music-through-headphones.jpg",
+    "thumbnailUrl": "https://timdo.io.vn/images/minhhoa/3.jpg",
     "description": "Nhặt được ví gần trường THPT",
     "location": {
       "latitude": 10.762622,
@@ -149,7 +149,7 @@ const mockPosts = [
     },
     "title": "Tìm điện thoại iPhone",
     "slug": "tim-dien-thoai-iphone",
-    "thumbnailUrl": "images/profile/handsome-asian-man-listening-music-through-headphones.jpg",
+    "thumbnailUrl": "images/cccd/99.jpg",
     "description": "Rơi điện thoại trên taxi hãng ABC",
     "location": {
       "latitude": 20.9983,
