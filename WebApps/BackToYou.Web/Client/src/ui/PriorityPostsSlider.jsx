@@ -8,6 +8,7 @@ import mockPosts from "../data/mockPosts";
 import PostTypeBadge from "./PostTypeBadge ";
 import PriorityLabel from "./PriorityLabel";
 import { Link } from "react-router-dom";
+import { usePosts } from "../features/posts/usePosts";
 
 const social = [
   // "bi-twitter",
@@ -61,14 +62,18 @@ const handleSwiperHover = (swiper) => {
 
 // Duplicate mockPosts if needed for looping effect
 const getCarouselPosts = (posts, minSlides = 6) => {
-  if (posts.length === 0) return [];
+  if (!Array.isArray(posts) || posts.length === 0) return [];
+
   if (posts.length >= minSlides) return posts;
 
   const repeatCount = Math.ceil(minSlides / posts.length);
   return Array(repeatCount).fill(posts).flat().slice(0, minSlides);
 };
 
+
 const PriorityPostsSlider = () => {
+  // const { isPending, posts } = usePosts();
+  // console.log(posts)
   const carouselPosts = getCarouselPosts(mockPosts);
 
   return (
@@ -139,7 +144,7 @@ const PriorityPostsSlider = () => {
                       </div>
                       <span className="badge">
                         <i className="bi-geo-alt me-1"></i>
-                        {post.location.ward}, {post.location.district}
+                        {post.location.district}, {post.location.province}
                       </span>
                     </div>
                     <PriorityLabel postLabel={post.postLabel} />

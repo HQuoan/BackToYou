@@ -1,4 +1,10 @@
+import { usePosts } from "../features/posts/usePosts";
+
 function Contact() {
+
+    const { isPending, posts } = usePosts();
+  console.log(posts)
+  const carouselPosts = posts;
   return (
     <>
       <div className="site-header">Test</div>

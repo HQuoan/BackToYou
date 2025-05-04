@@ -15,6 +15,7 @@ const RecentPostCard = ({ post }) => {
               alt={post.title}
             />
           </Link>
+
         </div>
         <div className="custom-block-info">
           <h5 className="mb-2">
@@ -35,7 +36,7 @@ const RecentPostCard = ({ post }) => {
 
           <span className="badge mb-2">
             <i className="bi-geo-alt me-1"></i>
-            {post.location.ward}, {post.location.district}
+           {post.location.district}, {post.location.province}
           </span>
 
           <div className="text-success d-flex justify-content-between mt-1">

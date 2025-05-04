@@ -6,7 +6,6 @@ import DetailPost from "../ui/DetailPost";
 function Detail() {
   const location = useLocation();
   const { post } = location.state || {};
-  // const post = mockPosts[1];
 
   return (
     <>

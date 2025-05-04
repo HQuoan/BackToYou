@@ -1,4 +1,5 @@
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -28,11 +29,15 @@ export async function callAPI({ method, url, data = null, params = null }) {
       params,
     });
 
+    // toast.success(url)
+    console.log(url)
+
     return res.data.result; // tương ứng với _response.Result
   } catch (err) {
     console.log(err)
     const message =
       err.response?.data?.message || err.message || "Có lỗi xảy ra";
+    toast.error(message);
     throw new Error(message);
   }
 }

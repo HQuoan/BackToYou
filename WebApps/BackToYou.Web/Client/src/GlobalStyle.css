@@ -2,6 +2,10 @@
   min-height: 600px;
 }
 
+.min-height-300 {
+  min-height: 300px;
+}
+
 .hidden {
   opacity: 0;
 }
@@ -84,6 +88,21 @@ select.form-select {
   height: 250px;
 }
 
+
+/* custome detail page */
+.img-wrapper.detail-page {
+  overflow: visible;
+}
+
+.img-wrapper.detail-page img {
+  transition: transform 0.4s ease;
+  z-index: 1;
+}
+
+.img-wrapper.detail-page:hover img {
+  transform: scale(1.2); /* Phóng to ảnh */
+  z-index: 10;
+}
 /* Clamp lines */
 .line-clamp-1,
 .line-clamp-2,
@@ -109,6 +128,10 @@ select.form-select {
 .line-clamp-carousel-title {
   -webkit-line-clamp: 2;
   min-height: 2.5em;
+}
+
+.line-clamp-detail-title{
+  min-height: 2.2em;
 }
 
 /* Sidebar */

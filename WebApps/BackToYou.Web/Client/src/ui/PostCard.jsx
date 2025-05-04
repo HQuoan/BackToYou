@@ -4,6 +4,7 @@ import PostTypeBadge from "./PostTypeBadge ";
 import "./PostCard.css";
 import PriorityLabel from "./PriorityLabel";
 import { Link } from "react-router-dom";
+import { formatDateVN } from "../utils/helpers";
 
 const PostCard = ({ post }) => {
   return (
@@ -30,7 +31,8 @@ const PostCard = ({ post }) => {
           <PostTypeBadge type={post.postType} />
           <span className="badge badge-lost-or-found-date mb-1">
             <i className="bi-calendar-fill me-1"></i>
-            {new Date(post.createdAt).toLocaleDateString()}
+             {formatDateVN(post.createdAt)}
+             {/* {formatDateVN(post.lostOrFoundDate)} */}
           </span>
         </div>
 
@@ -41,7 +43,7 @@ const PostCard = ({ post }) => {
           </span>
           <span className="badge mb-2">
             <i className="bi-geo-alt me-1"></i>
-            {post.location.ward}, {post.location.district}
+            {post.location.district}, {post.location.province}
           </span>
         </div>
 
