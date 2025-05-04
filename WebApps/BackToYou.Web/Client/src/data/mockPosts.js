@@ -32,7 +32,7 @@ const mockPosts = [
       {
         "postImageId": "d47bcfec-7791-40b2-b424-08dd7f4d06df",
         "postId": "54bd8f13-bb54-4679-156c-08dd7f4d0564",
-        "imageUrl": "images/profile/handsome-asian-man-listening-music-through-headphones.jpg",
+        "imageUrl": "images/cccd/2.jpg",
         "publicId": "post/ev0dvfblqoagt0ebxg5y"
       },
       {

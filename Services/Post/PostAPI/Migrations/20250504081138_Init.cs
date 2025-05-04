@@ -55,7 +55,7 @@ namespace PostAPI.Migrations
                     Location_Latitude = table.Column<double>(type: "float", nullable: true),
                     Location_Longitude = table.Column<double>(type: "float", nullable: true),
                     Location_StreetAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Location_Ward = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Location_Ward = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Location_District = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Location_Province = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PostContact_Name = table.Column<string>(type: "nvarchar(max)", nullable: true),

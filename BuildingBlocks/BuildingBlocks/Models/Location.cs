@@ -8,9 +8,8 @@ public class Location
     public double? Longitude { get; set; }
     [DefaultValue("Tạp hóa cô Dung")]
     public string? StreetAddress { get; set; }
-    [Required]
     [DefaultValue("Duy Tân")]
-    public string Ward { get; set; }
+    public string? Ward { get; set; }
     [Required]
     [DefaultValue("Duy Xuyên")]
     public string District { get; set; }

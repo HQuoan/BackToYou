@@ -12,7 +12,7 @@ using PostAPI.Data;
 namespace PostAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250502173642_Init")]
+    [Migration("20250504081138_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -307,7 +307,6 @@ namespace PostAPI.Migrations
                                 .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Ward")
-                                .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
                             b1.HasKey("PostId");

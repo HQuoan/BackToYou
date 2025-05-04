@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PaymentAPI.Models;
-
+namespace BuildingBlocks.Models;
 public class TimePeriod : IValidatableObject
 {
     public DateTime From { get; set; } = DateTime.MinValue;

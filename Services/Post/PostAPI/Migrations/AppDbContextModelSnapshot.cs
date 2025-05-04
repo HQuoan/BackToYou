@@ -304,7 +304,6 @@ namespace PostAPI.Migrations
                                 .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Ward")
-                                .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
                             b1.HasKey("PostId");

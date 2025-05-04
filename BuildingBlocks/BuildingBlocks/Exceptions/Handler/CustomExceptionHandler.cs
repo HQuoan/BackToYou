@@ -16,7 +16,7 @@ public class CustomExceptionHandler(ILogger<CustomExceptionHandler> logger)
     {
         logger.LogError(
             "Error Message: {exceptionMessage}, Time of occurrence {time}",
-            exception.Message, DateTime.UtcNow);
+            exception.Message, DateTime.Now);
 
         (string Detail, string Title, int StatusCode) details;
 

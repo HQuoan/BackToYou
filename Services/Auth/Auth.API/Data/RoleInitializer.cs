@@ -36,7 +36,7 @@ public class RoleInitializer
                 Avatar = null,
                 NormalizedEmail = adminEmail.ToUpper(),
                 Sex = SD.Male,
-                DateOfBirth = DateTime.UtcNow,
+                DateOfBirth = DateTime.Now,
                 EmailConfirmed = true,
             };
 

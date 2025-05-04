@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using CloudinaryDotNet.Core;
+using System.Linq.Expressions;
 
 namespace PostAPI.Features.Posts.Queries;
 
@@ -41,6 +42,45 @@ public static class PostFeatures
                         filters.Add(m => m.PostStatus == (PostStatus)value);
                         break;
 
+                    case nameof(PostQueryParameters.Keyword):
+                        var keyword = ((string)value).ToLower();
+                        filters.Add(m => m.Title.ToLower().Contains(keyword) || m.Description.ToLower().Contains(keyword));
+                        break;
+
+                    case nameof(PostQueryParameters.Phone):
+                        filters.Add(m => m.PostContact.Phone != null && m.PostContact.Phone.Contains((string)value));
+                        break;
+
+                    case nameof(PostQueryParameters.Email):
+                        filters.Add(m => m.PostContact.Email != null && m.PostContact.Email.ToLower().Contains(((string)value).ToLower()));
+                        break;
+
+                    case nameof(PostQueryParameters.StreetAddress):
+                        filters.Add(m => m.Location.StreetAddress.ToLower().Contains(((string)value).ToLower()));
+                        break;
+
+                    case nameof(PostQueryParameters.Ward):
+                        filters.Add(m => m.Location.Ward.ToLower().Contains(((string)value).ToLower()));
+                        break;
+
+                    case nameof(PostQueryParameters.District):
+                        filters.Add(m => m.Location.District.ToLower().Contains(((string)value).ToLower()));
+                        break;
+
+                    case nameof(PostQueryParameters.Province):
+                        filters.Add(m => m.Location.Province.ToLower().Contains(((string)value).ToLower()));
+                        break;
+
+                    case nameof(PostQueryParameters.LostOrFoundDate):
+                        var lostOrFoundDate = (TimePeriod)value;
+                        filters.Add(m => m.LostOrFoundDate >= lostOrFoundDate.From && m.LostOrFoundDate <= lostOrFoundDate.To);
+                        break;
+
+                    case nameof(PostQueryParameters.CreatedAt):
+                        var createAt = (TimePeriod)value;
+                        filters.Add(m => m.CreatedAt >= createAt.From && m.CreatedAt <= createAt.To);
+                        break;
+
                 }
             }
         }
@@ -69,7 +109,15 @@ public static class PostFeatures
                     ? (q => q.OrderByDescending(m => m.PostId))
                     : q => q.OrderBy(m => m.PostId),
 
-                _ => q => q.OrderByDescending(m => m.PostId)
+                "lostorfounddate" => isDescending
+                   ? (q => q.OrderByDescending(m => m.LostOrFoundDate))
+                   : (q => q.OrderBy(m => m.LostOrFoundDate)),
+
+                "createdat" => isDescending
+                   ? (q => q.OrderByDescending(m => m.CreatedAt))
+                   : (q => q.OrderBy(m => m.CreatedAt)),
+
+                _ => q => q.OrderByDescending(m => m.CreatedAt)
             };
         }
 

@@ -115,12 +115,31 @@ builder.Services.AddScoped<IPaymentMethodFactory, PaymentMethodFactory>();
 builder.Services.AddScoped<IPaymentMethod, PaymentWithStripe>();
 builder.Services.AddScoped<IPaymentMethod, PaymentWithPayOS>();
 
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+          policy =>
+          {
+              policy.SetIsOriginAllowed(_ => true) // Cho phép tất cả các origin
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+          });
+});
+
 var app = builder.Build();
+
+// --- Middleware Configuration ---
+
 // Request Logging
 app.UseMiddleware<RequestLoggingMiddleware>();
 
 // Apply Migrations
 ApplyMigration();
+
+// Apply CORS Policy
+app.UseCors("AllowAllOrigins");
 
 // HTTP request pipeline
 if (app.Environment.IsDevelopment())

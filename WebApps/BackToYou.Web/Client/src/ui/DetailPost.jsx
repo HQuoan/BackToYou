@@ -1,8 +1,13 @@
+import { useState } from "react";
 import { formatDateVN, formatPhoneNumber } from "../utils/helpers";
+import ImageWithPopup from "./ImageWithPopup";
 import PostTypeBadge from "./PostTypeBadge ";
 import PriorityLabel from "./PriorityLabel";
 
 function DetailPost({ post }) {
+  const [mainImage, setMainImage] = useState(post.thumbnailUrl);
+
+
   return (
     <>
       <div className="section-title-wrap mb-5 mt-4">
@@ -14,13 +19,29 @@ function DetailPost({ post }) {
         <div className="col-lg-3 col-12">
           <div className="custom-block-icon-wrap">
             <div className="custom-block-image-wrap custom-block-image-detail-page img-wrapper detail-page">
-              <img
-                src={post.thumbnailUrl}
-                className="custom-block-image img-fluid"
-                alt={post.title}
-              />
+              <ImageWithPopup src={mainImage} alt={post.title} />
             </div>
           </div>
+          {post.postImages && post.postImages.length > 1 && (
+            <div className="post-thumbnails mt-3 d-flex gap-2 flex-wrap">
+              {post.postImages.map((img) => (
+                <img
+                  key={img.postImageId}
+                  src={img.imageUrl}
+                  alt="Ảnh phụ"
+                  className="img-thumbnail"
+                  style={{
+                    width: "70px",
+                    height: "70px",
+                    objectFit: "cover",
+                    cursor: "pointer",
+                    border: mainImage === img.imageUrl ? "2px solid #007bff" : "1px solid #ccc",
+                  }}
+                  onClick={() => setMainImage(img.imageUrl)}
+                />
+              ))}
+            </div>
+          )}
         </div>
         <div className="col-lg-9 col-12">
           <div className="custom-block-info">
@@ -48,8 +69,8 @@ function DetailPost({ post }) {
 
               <p>
                 <strong>
-                  Địa chỉ {post.postType === "Lost" ? "mất" : "nhặt"}:{" "}
-                  {post.location.streetAddress}, {post.location.ward}
+                  Địa chỉ {post.postType === "Lost" ? "mất: " : "nhặt: "}
+                  {post.location.streetAddress}, {post.location.ward},{" "}
                   {post.location.district}, {post.location.province}
                 </strong>
               </p>

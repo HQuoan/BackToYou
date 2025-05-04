@@ -94,6 +94,7 @@ public class AppDbContext : DbContext
     {
         await SeedEntityAsync<Category>("Data/SeedData/categories.json", Categories);
         await SeedEntityAsync<Post>("Data/SeedData/posts.json", Posts);
+        await SeedEntityAsync<Post>("Data/SeedData/posts_found.json", Posts);
         //await SeedEntityAsync<PostImage>("Data/SeedData/postimages.json", PostImages);
     }
 

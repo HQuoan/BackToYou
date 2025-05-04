@@ -28,10 +28,10 @@ public class PostAPIController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<ResponseDto>> Get([FromQuery] PostQueryParameters? queryParameters)
     {
-        //if (!User.IsInRole(SD.AdminRole))
-        //{
-        //    queryParameters.PostStatus = PostStatus.Approved;
-        //}
+        if (!User.IsInRole(SD.AdminRole))
+        {
+            queryParameters.PostStatus = PostStatus.Approved;
+        }
 
         var query = PostFeatures.Build(queryParameters);
         query.IncludeProperties = "Category,PostImages";
@@ -99,24 +99,26 @@ public class PostAPIController : ControllerBase
         {
             post = await _unitOfWork.Post.GetAsync(c => c.PostId == id && c.PostStatus == PostStatus.Approved, includeProperties: "Category,PostImages");
 
-            if (post.PostStatus != PostStatus.Approved)
-            {
-                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-                if (!Guid.TryParse(userIdClaim.Value, out Guid userId))
-                {
-                    throw new BadRequestException("Invalid or missing user ID claim.");
-                }
-
-                if (userId != post.UserId)
-                {
-                    throw new ForbiddenException();
-                }
-            }
+            
         }
 
         if (post == null)
         {
             throw new PostNotFoundException(id);
+        }
+
+        if (post.PostStatus != PostStatus.Approved)
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userIdClaim.Value, out Guid userId))
+            {
+                throw new BadRequestException("Invalid or missing user ID claim.");
+            }
+
+            if (userId != post.UserId)
+            {
+                throw new ForbiddenException();
+            }
         }
 
         _response.Result = _mapper.Map<PostDto>(post);
@@ -139,24 +141,26 @@ public class PostAPIController : ControllerBase
         {
             post = await _unitOfWork.Post.GetAsync(c => c.Slug == slug && c.PostStatus == PostStatus.Approved, includeProperties: "Category,PostImages");
 
-            if (post.PostStatus != PostStatus.Approved)
-            {
-                var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-                if (!Guid.TryParse(userIdClaim.Value, out Guid userId))
-                {
-                    throw new BadRequestException("Invalid or missing user ID claim.");
-                }
-
-                if (userId != post.UserId)
-                {
-                    throw new ForbiddenException();
-                }
-            }
+           
         }
 
         if (post == null)
         {
             throw new PostNotFoundException(slug);
+        }
+
+        if (post.PostStatus != PostStatus.Approved)
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(userIdClaim.Value, out Guid userId))
+            {
+                throw new BadRequestException("Invalid or missing user ID claim.");
+            }
+
+            if (userId != post.UserId)
+            {
+                throw new ForbiddenException();
+            }
         }
 
         _response.Result = _mapper.Map<PostDto>(post);

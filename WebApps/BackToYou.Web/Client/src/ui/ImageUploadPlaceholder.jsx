@@ -10,7 +10,7 @@ function ImageUploadPlaceholder() {
         backgroundColor: "var(--color-grey-0)"
       }}
     >
-      <i className="bi bi-plus-circle fs-3"></i>
+      <i className="bi bi-plus-circle fs-3 text-primary-custom"></i>
     </div>
   );
 }

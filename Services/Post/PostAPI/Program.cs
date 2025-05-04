@@ -115,6 +115,19 @@ builder.Services.AddScoped<IPaymentService, PaymentService>();
 // HttpClient Configuration for External Services
 builder.Services.AddHttpClient(SD.HttpClient_Payment, u => u.BaseAddress = new Uri(builder.Configuration["ServiceUrls:PaymentAPI"]));
 
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+          policy =>
+          {
+              policy.SetIsOriginAllowed(_ => true) // Cho phép tất cả các origin
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+          });
+});
+
 var app = builder.Build();
 
 // --- Middleware Configuration ---
@@ -124,6 +137,9 @@ app.UseMiddleware<RequestLoggingMiddleware>();
 
 // Apply Migrations
 ApplyMigration();
+
+// Apply CORS Policy
+app.UseCors("AllowAllOrigins");
 
 // HTTP Request Pipeline Configuration
 if (app.Environment.IsDevelopment())
