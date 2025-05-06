@@ -22,6 +22,74 @@ namespace PostAPI.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("PostAPI.Models.AdministrativeRegion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CodeName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("CodeNameEn")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AdministrativeRegions");
+                });
+
+            modelBuilder.Entity("PostAPI.Models.AdministrativeUnit", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CodeName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("CodeNameEn")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FullName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FullNameEn")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("ShortName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("ShortNameEn")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AdministrativeUnits");
+                });
+
             modelBuilder.Entity("PostAPI.Models.Category", b =>
                 {
                     b.Property<Guid>("CategoryId")
@@ -96,6 +164,49 @@ namespace PostAPI.Migrations
                     b.HasIndex("PostId");
 
                     b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("PostAPI.Models.District", b =>
+                {
+                    b.Property<string>("Code")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int?>("AdministrativeUnitId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CodeName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FullName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FullNameEn")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("NameEn")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("ProvinceCode")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Code");
+
+                    b.HasIndex("AdministrativeUnitId");
+
+                    b.HasIndex("ProvinceCode");
+
+                    b.ToTable("Districts");
                 });
 
             modelBuilder.Entity("PostAPI.Models.Follower", b =>
@@ -251,6 +362,92 @@ namespace PostAPI.Migrations
                         });
                 });
 
+            modelBuilder.Entity("PostAPI.Models.Province", b =>
+                {
+                    b.Property<string>("Code")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int?>("AdministrativeRegionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AdministrativeUnitId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CodeName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FullNameEn")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("NameEn")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Code");
+
+                    b.HasIndex("AdministrativeRegionId");
+
+                    b.HasIndex("AdministrativeUnitId");
+
+                    b.ToTable("Provinces");
+                });
+
+            modelBuilder.Entity("PostAPI.Models.Ward", b =>
+                {
+                    b.Property<string>("Code")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int?>("AdministrativeUnitId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CodeName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("DistrictCode")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("FullName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FullNameEn")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("NameEn")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Code");
+
+                    b.HasIndex("AdministrativeUnitId");
+
+                    b.HasIndex("DistrictCode");
+
+                    b.ToTable("Wards");
+                });
+
             modelBuilder.Entity("PostAPI.Models.Comment", b =>
                 {
                     b.HasOne("PostAPI.Models.Post", "Post")
@@ -260,6 +457,21 @@ namespace PostAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("Post");
+                });
+
+            modelBuilder.Entity("PostAPI.Models.District", b =>
+                {
+                    b.HasOne("PostAPI.Models.AdministrativeUnit", "AdministrativeUnit")
+                        .WithMany()
+                        .HasForeignKey("AdministrativeUnitId");
+
+                    b.HasOne("PostAPI.Models.Province", "Province")
+                        .WithMany()
+                        .HasForeignKey("ProvinceCode");
+
+                    b.Navigation("AdministrativeUnit");
+
+                    b.Navigation("Province");
                 });
 
             modelBuilder.Entity("PostAPI.Models.Follower", b =>
@@ -359,9 +571,54 @@ namespace PostAPI.Migrations
                     b.Navigation("Post");
                 });
 
+            modelBuilder.Entity("PostAPI.Models.Province", b =>
+                {
+                    b.HasOne("PostAPI.Models.AdministrativeRegion", "AdministrativeRegion")
+                        .WithMany("Provinces")
+                        .HasForeignKey("AdministrativeRegionId");
+
+                    b.HasOne("PostAPI.Models.AdministrativeUnit", "AdministrativeUnit")
+                        .WithMany("Provinces")
+                        .HasForeignKey("AdministrativeUnitId");
+
+                    b.Navigation("AdministrativeRegion");
+
+                    b.Navigation("AdministrativeUnit");
+                });
+
+            modelBuilder.Entity("PostAPI.Models.Ward", b =>
+                {
+                    b.HasOne("PostAPI.Models.AdministrativeUnit", "AdministrativeUnit")
+                        .WithMany()
+                        .HasForeignKey("AdministrativeUnitId");
+
+                    b.HasOne("PostAPI.Models.District", "District")
+                        .WithMany("Wards")
+                        .HasForeignKey("DistrictCode");
+
+                    b.Navigation("AdministrativeUnit");
+
+                    b.Navigation("District");
+                });
+
+            modelBuilder.Entity("PostAPI.Models.AdministrativeRegion", b =>
+                {
+                    b.Navigation("Provinces");
+                });
+
+            modelBuilder.Entity("PostAPI.Models.AdministrativeUnit", b =>
+                {
+                    b.Navigation("Provinces");
+                });
+
             modelBuilder.Entity("PostAPI.Models.Category", b =>
                 {
                     b.Navigation("Posts");
+                });
+
+            modelBuilder.Entity("PostAPI.Models.District", b =>
+                {
+                    b.Navigation("Wards");
                 });
 
             modelBuilder.Entity("PostAPI.Models.Post", b =>

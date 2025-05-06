@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PostAPI.Features.Categories.Dtos;
 using PostAPI.Features.Categories.Queries;
 
 namespace PostAPI.Features.Categories;

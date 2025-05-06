@@ -172,9 +172,26 @@ void ApplyMigration()
         }
 
         // Kiểm tra xem đã có dữ liệu trong bảng hay chưa
-        if (!_db.Posts.Any()) // Kiểm tra bảng Movies hoặc bảng phù hợp
+        if (!_db.Posts.Any())
         {
             _db.SeedDataAsync().Wait();
+        }
+
+        if (!_db.AdministrativeRegions.Any()) 
+        {
+            var sqlFilePath = "Data/SeedData/ImportData_vn_units.sql";
+            //var sqlFilePath = "Data/SeedData/test.sql";
+
+            if (File.Exists(sqlFilePath))
+            {
+                var sqlScript = File.ReadAllText(sqlFilePath);
+                _db.Database.ExecuteSqlRaw(sqlScript);
+            }
+            else
+            {
+                Console.WriteLine("Không tìm thấy file ImportData_vn_units.sql.");
+                Console.WriteLine(sqlFilePath);
+            }
         }
     }
 }

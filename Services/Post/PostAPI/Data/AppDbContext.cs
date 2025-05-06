@@ -14,6 +14,14 @@ public class AppDbContext : DbContext
     public DbSet<Comment> Comments { get; set; }
     public DbSet<Follower> Followers { get; set; }
 
+
+    public DbSet<AdministrativeRegion> AdministrativeRegions { get; set; }
+    public DbSet<AdministrativeUnit> AdministrativeUnits { get; set; }
+    public DbSet<Province> Provinces { get; set; }
+    public DbSet<District> Districts { get; set; }
+    public DbSet<Ward> Wards { get; set; }
+
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

@@ -4,6 +4,8 @@ using PostAPI.Features.Followers;
 using PostAPI.Features.PostImages;
 using PostAPI.Features.PostSettings;
 using PostAPI.Features.Posts;
+using PostAPI.Features.Locations;
+using PostAPI.Features.Locations.Repositories;
 
 namespace PostAPI.Repositories;
 
@@ -17,6 +19,10 @@ public class UnitOfWork : IUnitOfWork
     public ICommentRepository Comment { get; private set; }
     public IFollowerRepository Follower { get; private set; }
 
+    public IProvinceRepository Province { get; private set; }
+    public IDistrictRepository District { get; private set; }
+    public IWardRepository Ward { get; private set; }
+
     public UnitOfWork(AppDbContext db)
     {
         _db = db;
@@ -26,6 +32,11 @@ public class UnitOfWork : IUnitOfWork
         Comment = new CommentRepository(_db);
         Follower = new FollowerRepository(_db);
         PostSetting = new PostSettingRepository(_db);
+
+        // Location
+        Province = new ProvinceRepository(_db);
+        District = new DistrictRepository(_db);
+        Ward = new WardRepository(_db);
     }
     public async Task SaveAsync()
     {

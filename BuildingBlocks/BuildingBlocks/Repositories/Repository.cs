@@ -41,14 +41,12 @@ public class Repository<T> : IRepository<T> where T : class
     }
 
 
-    public async Task<IEnumerable<T>> GetAllAsync(QueryParameters<T>? queryParameters)
+    private IQueryable<T> BuildQuery(QueryParameters<T>? queryParameters)
     {
         IQueryable<T> query = dbSet;
 
         if (queryParameters == null)
-        {
             queryParameters = new QueryParameters<T>();
-        }
 
         // Filtering
         if (queryParameters.Filters != null && queryParameters.Filters.Any())
@@ -59,10 +57,11 @@ public class Repository<T> : IRepository<T> where T : class
             }
         }
 
-        // Including related entities
+        // Including
         if (!string.IsNullOrEmpty(queryParameters.IncludeProperties))
         {
-            foreach (var includeProp in queryParameters.IncludeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var includeProp in queryParameters.IncludeProperties
+                         .Split(',', StringSplitOptions.RemoveEmptyEntries))
             {
                 query = query.Include(includeProp.Trim());
             }
@@ -74,13 +73,32 @@ public class Repository<T> : IRepository<T> where T : class
             query = queryParameters.OrderBy(query);
         }
 
-
         // Pagination
-        int skip = (queryParameters.PageNumber- 1) * queryParameters.PageSize;
-        query = query.Skip(skip).Take(queryParameters.PageSize);
+        if (queryParameters.PageSize > 0)
+        {
+            int skip = (queryParameters.PageNumber - 1) * queryParameters.PageSize;
+            query = query.Skip(skip).Take(queryParameters.PageSize);
+        }
 
+        return query;
+    }
+
+    public async Task<IEnumerable<T>> GetAllAsync(QueryParameters<T>? queryParameters)
+    {
+        var query = BuildQuery(queryParameters);
         return await query.ToListAsync();
     }
+
+    public async Task<IEnumerable<TResult>> GetAllAsync<TResult>(
+    QueryParameters<T>? queryParameters,
+    Expression<Func<T, TResult>> selector)
+    {
+        var query = BuildQuery(queryParameters);
+        return await query.Select(selector).ToListAsync();
+    }
+
+
+
 
 
     public async Task<int> CountAsync(QueryParameters<T>? queryParameters)
