@@ -1,4 +1,4 @@
-import mockPosts from "../data/mockPosts";
+import mockPosts from "../../data/mockPosts";
 import RecentPostCard from "./RecentPostCard";
 
 const RecentPosts = () => (

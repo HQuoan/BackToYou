@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import CommentsList from "../ui/CommentsList";
-import RecentPosts from "../ui/RecentPosts";
 import DetailPost from "../ui/DetailPost";
+import RecentPosts from "../ui/homepage/RecentPosts";
 
 function Detail() {
   const location = useLocation();

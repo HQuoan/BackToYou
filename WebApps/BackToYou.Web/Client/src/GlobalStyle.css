@@ -321,3 +321,13 @@ select.form-select {
   border-color: #4a90e2;
   background: #eef4ff;
 }
+
+.listing-page select {
+  margin-right: 12px; 
+}
+
+/* Xóa margin phải của thằng cuối cùng để không bị dư khoảng trắng */
+.listing-page select:last-child {
+  margin-right: 0;
+}
+

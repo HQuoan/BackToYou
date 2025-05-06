@@ -9,5 +9,3 @@ export async function getPosts({page, filter}) {
 
   return data
 }
-
-// pagination

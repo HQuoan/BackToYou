@@ -1,18 +1,14 @@
 import { useFormContext } from "react-hook-form";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-} from "react-leaflet";
+import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import { useState } from "react";
 import "leaflet/dist/leaflet.css";
 import "leaflet-fullscreen";
 import "leaflet-fullscreen/dist/leaflet.fullscreen.css";
 
-import LocationSelector from "./LocationSelector";
 import { geocodeAddress, getMyLocation } from "../../utils/locationHelpers";
 import RedIcon from "../../utils/RedIcon";
-
+import LocationMapSelector from "./LocationMapSelector";
+import LocationSelector from "./../../ui/LocationSelector";
 
 function LocationSection() {
   const { register, setValue, watch } = useFormContext();
@@ -32,17 +28,27 @@ function LocationSection() {
       <div className="card-body">
         <div className="mb-3">
           <label className="form-label fw-bold">Địa chỉ rơi</label>
+          <div className="d-flex listing-page">
+            <LocationSelector />
+          </div>
           <div className="input-group">
             <input
-              type="text"
+              type="search"
               className="form-control"
-              placeholder='e.g. "123 Nguyễn Trãi, Hà Nội"'
-              {...register("address")}
+              placeholder='e.g. "131 Nguyễn Chánh"'
+              {...register("streetAddress")}
             />
             <button
               className="btn btn-outline-secondary"
               type="button"
-              onClick={() => geocodeAddress(watch("address"), setValue)}
+              onClick={() =>
+                geocodeAddress(
+                  [watch("streetAddress"), watch("ward"), watch("district"), watch("province")]
+                    .filter(Boolean)
+                    .join(", "),
+                  setValue
+                )
+              }
             >
               <i className="bi bi-search"></i>
             </button>
@@ -51,7 +57,7 @@ function LocationSection() {
               type="button"
               onClick={() => getMyLocation(setValue)}
             >
-             <i className="bi bi-crosshair"></i>
+              <i className="bi bi-crosshair"></i>
             </button>
           </div>
         </div>
@@ -113,7 +119,7 @@ function LocationSection() {
               attribution='&copy; <a href="https://carto.com/">CARTO</a>'
             />
             <Marker position={[lat, lng]} icon={RedIcon} />
-            <LocationSelector lat={lat} lng={lng} lock={lock} />
+            <LocationMapSelector lat={lat} lng={lng} lock={lock} />
           </MapContainer>
         </div>
       </div>

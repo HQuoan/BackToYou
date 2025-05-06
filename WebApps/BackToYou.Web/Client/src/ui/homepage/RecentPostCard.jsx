@@ -1,6 +1,6 @@
 import { formatDistanceToNow } from "date-fns";
 import vi from "date-fns/locale/vi";
-import PostTypeBadge from "./PostTypeBadge ";
+import PostTypeBadge from "../PostTypeBadge ";
 import { Link } from "react-router-dom";
 
 const RecentPostCard = ({ post }) => {

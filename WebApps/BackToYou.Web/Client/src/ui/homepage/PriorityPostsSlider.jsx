@@ -4,11 +4,10 @@ import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "./PriorityPostsSlider.css";
-import mockPosts from "../data/mockPosts";
-import PostTypeBadge from "./PostTypeBadge ";
-import PriorityLabel from "./PriorityLabel";
+import mockPosts from "../../data/mockPosts";
+import PostTypeBadge from "../PostTypeBadge ";
+import PriorityLabel from "../PriorityLabel";
 import { Link } from "react-router-dom";
-import { usePosts } from "../features/posts/usePosts";
 
 const social = [
   // "bi-twitter",
@@ -40,8 +39,8 @@ const swiperOptions = {
       slidesPerView: 4,
     },
   },
-  modules: [Navigation],
-  // modules: [Autoplay, Navigation],
+  // modules: [Navigation],
+  modules: [Autoplay, Navigation],
 };
 
 const handleSwiperHover = (swiper) => {
@@ -94,7 +93,7 @@ const PriorityPostsSlider = () => {
                 Đăng bài
               </Link>
               <Link
-                to="/search"
+                to="/search-ai"
                 className="btn custom-btn btn2 smoothscroll mt-3 ms-1"
               >
                 <i className="bi-robot me-2"></i>

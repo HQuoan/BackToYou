@@ -1,5 +1,4 @@
-﻿using CloudinaryDotNet.Core;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace PostAPI.Features.Posts.Queries;
 
@@ -59,20 +58,24 @@ public static class PostFeatures
                         filters.Add(m => m.PostContact.Email != null && m.PostContact.Email.ToLower().Contains(((string)value).ToLower()));
                         break;
 
+                    //case nameof(PostQueryParameters.StreetAddress):
+                    //    filters.Add(m => m.Location.StreetAddress.ToLower().Contains(((string)value).ToLower()));
+                    //    break;
+
                     case nameof(PostQueryParameters.StreetAddress):
-                        filters.Add(m => m.Location.StreetAddress.ToLower().Contains(((string)value).ToLower()));
+                        filters.Add(m => m.Location.StreetAddress.ToLower() ==((string)value).ToLower());
                         break;
 
                     case nameof(PostQueryParameters.Ward):
-                        filters.Add(m => m.Location.Ward.ToLower().Contains(((string)value).ToLower()));
+                        filters.Add(m => m.Location.Ward.ToLower() == ((string)value).ToLower());
                         break;
 
                     case nameof(PostQueryParameters.District):
-                        filters.Add(m => m.Location.District.ToLower().Contains(((string)value).ToLower()));
+                        filters.Add(m => m.Location.District.ToLower() == ((string)value).ToLower());
                         break;
 
                     case nameof(PostQueryParameters.Province):
-                        filters.Add(m => m.Location.Province.ToLower().Contains(((string)value).ToLower()));
+                        filters.Add(m => m.Location.Province.ToLower() == ((string)value).ToLower());
                         break;
 
                     case nameof(PostQueryParameters.LostOrFoundDate):

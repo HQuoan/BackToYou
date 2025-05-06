@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useMap, useMapEvents } from "react-leaflet";
 import { useFormContext } from "react-hook-form";
 
-function LocationSelector({ lat, lng, lock }) {
+function LocationMapSelector({ lat, lng, lock }) {
   const { setValue } = useFormContext();
   const map = useMap();
 
@@ -22,4 +22,4 @@ function LocationSelector({ lat, lng, lock }) {
   return null;
 }
 
-export default LocationSelector;
+export default LocationMapSelector;

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import mockCategories from "../data/mockCategories";
+import mockCategories from "../../data/mockCategories";
 
 const categories = mockCategories;
 

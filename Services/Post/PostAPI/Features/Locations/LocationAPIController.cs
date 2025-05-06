@@ -17,11 +17,14 @@ public class LocationAPIController : ControllerBase
     [HttpGet("provinces")]
     public async Task<ActionResult<ResponseDto>> GetProvinces([FromQuery] string? name)
     {
-        var query = new QueryParameters<Province>();
-        query.PageSize = 0;
+        var query = new QueryParameters<Province>
+        {
+            PageSize = 0,
+            OrderBy = q => q.OrderBy(p => p.Name)
+        };
 
 
-        if(name is not null)
+        if (name is not null)
         {
             query.Filters.Add(p => p.Name.Contains(name));
         }
@@ -40,10 +43,13 @@ public class LocationAPIController : ControllerBase
     [HttpGet("districts")]
     public async Task<ActionResult<ResponseDto>> GetDistricts([FromQuery] string? provinceCode, [FromQuery] string? name)
     {
-        var query = new QueryParameters<District>();
-        query.PageSize = 0;
+        var query = new QueryParameters<District>
+        {
+            PageSize = 0,
+            OrderBy = q => q.OrderBy(p => p.Name)
+        };
 
-        if(provinceCode is not null)
+        if (provinceCode is not null)
         {
             query.Filters.Add(p => p.ProvinceCode == provinceCode);
         }
@@ -67,8 +73,11 @@ public class LocationAPIController : ControllerBase
     [HttpGet("wards")]
     public async Task<ActionResult<ResponseDto>> GetWards([FromQuery] string? districtCode, [FromQuery] string? name)
     {
-        var query = new QueryParameters<Ward>();
-        query.PageSize = 0;
+        var query = new QueryParameters<Ward>
+        {
+            PageSize = 0,
+            OrderBy = q => q.OrderBy(p => p.Name)
+        };
 
         if (districtCode is not null)
         {
