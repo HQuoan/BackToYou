@@ -4,6 +4,7 @@ public class PostQueryParameters : BaseQueryParameters
 {
     public Guid? UserId { get; set; }
     public Guid? CategoryId { get; set; }
+    public string? CategorySlug { get; set; }
     //public string Title { get; set; }
     //public string Description { get; set; }
     public string? Keyword { get; set; } // Title, Description

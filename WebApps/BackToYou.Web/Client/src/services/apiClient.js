@@ -22,6 +22,13 @@ const axiosInstance = axios.create({
 
 export async function callAPI({ method, url, data = null, params = null }) {
   try {
+    console.log("%c[API REQUEST]", "color: #2196f3; font-weight: bold");
+    console.log("Method:", method.toUpperCase());
+    console.log("URL:", url);
+    if (params) console.log("Params:", params);
+    if (data) console.log("Data:", data);
+
+
     const res = await axiosInstance({
       method,
       url,
@@ -29,12 +36,13 @@ export async function callAPI({ method, url, data = null, params = null }) {
       params,
     });
 
-    // toast.success(url)
-    console.log(url)
+    console.log("%c[API RESPONSE]", "color:rgb(33, 129, 45); font-weight: bold");
+    console.log("Data:", res.data)
 
-    return res.data.result; // tương ứng với _response.Result
+    // toast.success(url)
+
+    return res.data; // tương ứng với _response
   } catch (err) {
-    console.log(err)
     const message =
       err.response?.data?.message || err.message || "Có lỗi xảy ra";
     toast.error(message);

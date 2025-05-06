@@ -72,8 +72,8 @@ const getCarouselPosts = (posts, minSlides = 6) => {
 
 
 const PriorityPostsSlider = () => {
-  // const { isPending, posts } = usePosts();
-  // console.log(posts)
+  // const {posts } = usePosts();
+  // const carouselPosts = getCarouselPosts(posts);
   const carouselPosts = getCarouselPosts(mockPosts);
 
   return (

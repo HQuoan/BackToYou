@@ -26,6 +26,10 @@ public static class PostFeatures
                         filters.Add(m => m.CategoryId == (Guid)value);
                         break;
 
+                    case nameof(PostQueryParameters.CategorySlug):
+                        filters.Add(m => m.Category.Slug == (string)value);
+                        break;
+
                     case nameof(PostQueryParameters.Slug):
                         filters.Add(m => m.Slug.ToLower().Contains(((string)value).ToLower()));
                         break;

@@ -1,13 +1,13 @@
 import { callAPI, HttpMethod } from "./apiClient";
 
-export async function getPosts() {
+export async function getPosts({page, filter}) {
   const data = await callAPI({
     method: HttpMethod.GET,
     url: "/posts",
-    // url: "/posts?PostType=Found",
-    // data: loginDto,
+    params: {...page, ...filter}
   });
 
-  return data;
+  return data
 }
 
+// pagination

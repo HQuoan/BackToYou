@@ -5,6 +5,7 @@ import "./PostCard.css";
 import PriorityLabel from "./PriorityLabel";
 import { Link } from "react-router-dom";
 import { formatDateVN } from "../utils/helpers";
+import LinkShareFb from "./LinkShareFb";
 
 const PostCard = ({ post }) => {
   return (
@@ -55,10 +56,11 @@ const PostCard = ({ post }) => {
               locale: vi,
             })}
           </span>
-          <span>
+          {/* <Link to>
             <i className="bi-share me-2"></i>
             Share
-          </span>
+          </Link> */}
+          <LinkShareFb slug={post.slug}/>
         </div>
       </div>
 
