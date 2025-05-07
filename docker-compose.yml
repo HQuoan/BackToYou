@@ -5,16 +5,31 @@ services:
     # postdb: 
     #     image: mcr.microsoft.com/mssql/server
 
+    yarpapigateway:
+        image: ${DOCKER_REGISTRY-}yarpapigateway
+        build:
+          context: .
+          dockerfile: ApiGateways/YarpApiGateway/Dockerfile
 
-    # yarpapigateway:
-    #     image: ${DOCKER_REGISTRY-}yarpapigateway
-    #     build:
-    #       context: .
-    #       dockerfile: ApiGateways/YarpApiGateway/Dockerfile
+    auth.api:
+        image: ${DOCKER_REGISTRY-}authapi
+        build:
+            context: .
+            dockerfile: Services/Auth/Auth.API/Dockerfile
+
+    postapi:
+        image: ${DOCKER_REGISTRY-}postapi
+        build:
+            context: .
+            dockerfile: Services/Post/PostAPI/Dockerfile
+
 
 
 volumes:
   sqlserver:
   # sqlserver_post:
   
+
+
+
 

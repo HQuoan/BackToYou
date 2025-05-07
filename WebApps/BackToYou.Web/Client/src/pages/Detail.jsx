@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import CommentsList from "../ui/CommentsList";
+import CommentsList from "../features/comments/CommentsList";
 import DetailPost from "../ui/DetailPost";
 import RecentPosts from "../ui/homepage/RecentPosts";
 
@@ -14,7 +14,7 @@ function Detail() {
         <div className="row justify-content-center">
           <div className="col-lg-10 col-12">
             <DetailPost post={post} />
-            <CommentsList comments={post.comments} />
+            <CommentsList postId={post.postId} />
           </div>
         </div>
       </div>

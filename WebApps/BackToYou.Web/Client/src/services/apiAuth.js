@@ -1,9 +1,10 @@
 import { callAPI, HttpMethod } from "./apiClient";
+import { ServiceRoutes } from "./ServiceRoutes";
 
 export async function login(loginDto) {
   const data = await callAPI({
     method: HttpMethod.POST,
-    url: "/auth/login",
+    url: `${ServiceRoutes.auth}/auth/login`,
     data: loginDto,
   });
 
@@ -13,7 +14,7 @@ export async function login(loginDto) {
 export async function loginWithGoogle(loginDto) {
   const data = await callAPI({
     method: HttpMethod.POST,
-    url: "/auth/signin-google",
+    url: `${ServiceRoutes.auth}/signin-google`,
     data: loginDto,
   });
 
@@ -23,7 +24,7 @@ export async function loginWithGoogle(loginDto) {
 export async function loginWithFacebook(loginDto) {
   const data = await callAPI({
     method: HttpMethod.POST,
-    url: "/auth/signin-facebook",
+    url: `${ServiceRoutes.auth}/signin-facebook`,
     data: loginDto,
   });
 

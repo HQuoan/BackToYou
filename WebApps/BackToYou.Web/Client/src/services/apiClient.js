@@ -25,6 +25,7 @@ export async function callAPI({ method, url, data = null, params = null }) {
     console.log("%c[API REQUEST]", "color: #2196f3; font-weight: bold");
     console.log("Method:", method.toUpperCase());
     console.log("URL:", url);
+    console.log("API_BASE_URL",API_BASE_URL)
     if (params) console.log("Params:", params);
     if (data) console.log("Data:", data);
 

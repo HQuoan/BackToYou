@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using System.Security.Claims;
 
 namespace Auth.API.Controllers;
@@ -9,9 +10,11 @@ public class AuthAPIController : ControllerBase
 {
     private readonly IAuthService _authService;
     private ResponseDto _response;
-    public AuthAPIController(IAuthService authService)
+    private readonly ApiSettings _apiSettings;
+    public AuthAPIController(IAuthService authService, IOptions<ApiSettings> apiSettings)
     {
         _authService = authService;
+        _apiSettings = apiSettings.Value;
         _response = new();
     }
 
@@ -30,8 +33,9 @@ public class AuthAPIController : ControllerBase
     {
         var result = await _authService.ConfirmEmail(userId, token);
 
-        _response.Message = "Email confirmed successfully.";
-        return Ok(_response);
+        //_response.Message = "Email confirmed successfully.";
+        //return Ok(_response);
+        return Redirect(_apiSettings.WebClientUrl);
     }
 
     [HttpPost("login")]

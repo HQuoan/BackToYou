@@ -13,6 +13,8 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Services/Post/PostAPI/PostAPI.csproj", "Services/Post/PostAPI/"]
+COPY ["BuildingBlocks/BuildingBlocks/BuildingBlocks.csproj", "BuildingBlocks/BuildingBlocks/"]
+COPY ["BuildingBlocks/ImageService/ImageService.csproj", "BuildingBlocks/ImageService/"]
 RUN dotnet restore "./Services/Post/PostAPI/PostAPI.csproj"
 COPY . .
 WORKDIR "/src/Services/Post/PostAPI"

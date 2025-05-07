@@ -3,13 +3,13 @@ using Microsoft.AspNetCore.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.Authority = "http://localhost:5002";
-        options.Audience = "api_gateway";
-        options.RequireHttpsMetadata = false;
-    });
+//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//    .AddJwtBearer(options =>
+//    {
+//        options.Authority = "http://localhost:5002";
+//        options.Audience = "api_gateway";
+//        options.RequireHttpsMetadata = false;
+//    });
 
 
 // Add services to the container.
@@ -27,8 +27,8 @@ builder.Services.AddRateLimiter(rateLimiterOptions =>
 
 var app = builder.Build();
 
-app.UseAuthentication();
-app.UseAuthorization();
+//app.UseAuthentication();
+//app.UseAuthorization();
 
 // Configure the HTTP request pipeline.
 app.UseRateLimiter();

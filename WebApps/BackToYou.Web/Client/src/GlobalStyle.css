@@ -156,6 +156,10 @@ select.form-select {
   font-size: 1rem;
 }
 
+.map .custom-block-info{
+  padding: 5px;
+}
+
 .badge-category {
   background-color: #FF7F50;
 }
