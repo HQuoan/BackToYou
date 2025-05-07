@@ -15,9 +15,9 @@ export const HttpMethod = Object.freeze({
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  // headers: {
+  //   "Content-Type": "application/json",
+  // },
 });
 
 export async function callAPI({ method, url, data = null, params = null }) {
@@ -29,12 +29,23 @@ export async function callAPI({ method, url, data = null, params = null }) {
     if (data) console.log("Data:", data);
 
 
+    const isFormData = data instanceof FormData;
+
     const res = await axiosInstance({
       method,
       url,
       data,
       params,
+      headers: isFormData ? {} : { "Content-Type": "application/json" },
     });
+    
+
+    // const res = await axiosInstance({
+    //   method,
+    //   url,
+    //   data,
+    //   params,
+    // });
 
     console.log("%c[API RESPONSE]", "color:rgb(33, 129, 45); font-weight: bold");
     console.log("Data:", res.data)

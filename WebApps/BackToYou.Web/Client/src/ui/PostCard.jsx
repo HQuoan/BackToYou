@@ -8,6 +8,7 @@ import { formatDateVN } from "../utils/helpers";
 import LinkShareFb from "./LinkShareFb";
 
 const PostCard = ({ post }) => {
+
   return (
     <div className="custom-block custom-block-full pb-3">
       <div className="custom-block-image-wrap img-wrapper">

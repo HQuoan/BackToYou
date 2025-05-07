@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Newtonsoft.Json;
 using PostAPI.Features.PostImages.Dtos;
 using PostAPI.Features.PostImages.Queries;
@@ -70,6 +72,35 @@ public class PostImageAPIController : ControllerBase
         return Ok(new ResponseDto { IsSuccess = true, Message = responseString });
     }
 
+    [HttpPost("embedding/all")]
+    public async Task<ActionResult<ResponseDto>> EmbeddingAll()
+    {
+        var query = new QueryParameters<PostImage>
+        {
+            PageSize = 0,
+        };
+
+        var images = await _unitOfWork.PostImage.GetAllAsync(query);
+
+        var data = _mapper.Map<IEnumerable<PostImageInput>>(images);
+
+        using var httpClient = new HttpClient();
+        var apiUrl = "http://localhost:8000/embedding/list";
+
+        var json = JsonConvert.SerializeObject(data); // thay vì System.Text.Json
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await httpClient.PostAsync(apiUrl, content);
+        var responseString = await response.Content.ReadAsStringAsync();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return BadRequest(new ResponseDto { IsSuccess = false, Message = responseString });
+        }
+
+        return Ok(new ResponseDto { IsSuccess = true, Message = responseString });
+    }
+
     public class SearchResponseDto
     {
         public List<Match> Matches { get; set; }
@@ -90,7 +121,8 @@ public class PostImageAPIController : ControllerBase
     public class AiSearchForm
     {
         public IFormFile File { get; set; }
-        public string TextQuery { get; set; }
+        public string? TextQuery { get; set; }
+        public int? Top { get; set; }
     }
 
     [HttpPost("ai-search")]
@@ -126,6 +158,8 @@ public class PostImageAPIController : ControllerBase
             {
                 return BadRequest("Missing file or text query");
             }
+            content.Add(new StringContent(form.Top.ToString()), "top_k");
+
 
             Console.WriteLine("Sending request to AI service...");
             var response = await httpClient.PostAsync(apiUrl, content);
@@ -140,16 +174,39 @@ public class PostImageAPIController : ControllerBase
             var resultObj = JsonConvert.DeserializeObject<SearchResponseDto>(responseString);
 
             var postIds = resultObj.Matches
-                                 .Select(m => Guid.Parse(m.PostId.ToString()))
-                                 .ToList();
+                                  .Select(m => Guid.Parse(m.PostId))
+                                  .Distinct()
+                                  .ToList();
 
-            var queryPost = new QueryParameters<Post>();
-            queryPost.Filters.Add(p => postIds.Contains(p.PostId));
+            var queryPost = new QueryParameters<Post>
+            {
+                Filters = { p => postIds.Contains(p.PostId) },
+                IncludeProperties = "Category,PostImages"
+            };
 
 
-            IEnumerable<Post> post = await _unitOfWork.Post.GetAllAsync(queryPost);
+            var posts = await _unitOfWork.Post.GetAllAsync(queryPost);
+            var postDtos = _mapper.Map<IEnumerable<PostDto>>(posts);
 
-            _response.Result = _mapper.Map<IEnumerable<PostDto>>(post);
+            var result = new List<object>();
+
+            foreach (var match in resultObj.Matches)
+            {
+                var post = postDtos.FirstOrDefault(p =>
+                    p.PostImages.Any(img => img.PostImageId.ToString() == match.PostImageId));
+
+                if (post != null)
+                {
+                    result.Add(new
+                    {
+                        Post = post,
+                        match.SimilarityScore,
+                        match.PostImageId
+                    });
+                }
+            }
+
+            _response.Result = result;
 
             return Ok(_response);
         }
