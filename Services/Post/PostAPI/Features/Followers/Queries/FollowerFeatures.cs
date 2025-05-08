@@ -33,27 +33,23 @@ public static class FollowerFeatures
     }
 
 
-    public static Func<IQueryable<Follower>, IOrderedQueryable<Follower>>? Sorting(FollowerQueryParameters queryParameters)
+    public static Func<IQueryable<Follower>, IOrderedQueryable<Follower>> Sorting(FollowerQueryParameters queryParameters)
     {
-        Func<IQueryable<Follower>, IOrderedQueryable<Follower>>? orderByFunc = null;
+        var isDescending = queryParameters.OrderBy?.StartsWith("-") ?? true;
+        var property = isDescending && queryParameters.OrderBy != null
+            ? queryParameters.OrderBy.Substring(1)
+            : queryParameters.OrderBy;
 
-        if (!string.IsNullOrEmpty(queryParameters.OrderBy))
+        return property?.ToLower() switch
         {
-            var isDescending = queryParameters.OrderBy.StartsWith("-");
-            var property = isDescending ? queryParameters.OrderBy.Substring(1) : queryParameters.OrderBy;
+            "postid" => isDescending
+                ? (q => q.OrderByDescending(m => m.FollowerId))
+                : q => q.OrderBy(m => m.FollowerId),
 
-            orderByFunc = property.ToLower() switch
-            {
-                "postid" => isDescending
-                    ? (q => q.OrderByDescending(m => m.FollowerId))
-                    : q => q.OrderBy(m => m.FollowerId),
-
-                _ => q => q.OrderByDescending(m => m.FollowerId)
-            };
-        }
-
-        return orderByFunc;
+            _ => q => q.OrderByDescending(m => m.CreatedAt)
+        };
     }
+
 
     public static QueryParameters<Follower> Build(FollowerQueryParameters queryParameters)
     {

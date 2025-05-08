@@ -2,12 +2,13 @@ import { useState } from "react";
 import mockComments from "../../data/mockComments";
 import CommentCard from "./CommentCard";
 import { useCreateComment } from "./useCreateComment";
+import { useComments } from "./useComments";
 
 function CommentsList({ postId }) {
   const [inputComment, setInputComment] = useState("");
-  let comments = [];
+  // let comments = [];
 
-  if (comments.length === 0) comments = mockComments;
+  // if (comments.length === 0) comments = mockComments;
 
   const { isCreating, createComment } = useCreateComment();
 
@@ -26,6 +27,8 @@ function CommentsList({ postId }) {
       }
     );
   }
+
+  const {comments} = useComments(postId);
 
   return (
     <div className="comments-list mt-5 mb-5">

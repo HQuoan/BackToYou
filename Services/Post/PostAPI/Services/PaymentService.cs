@@ -1,7 +1,5 @@
-﻿using CloudinaryDotNet;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using PostAPI.Features.Posts.Dtos;
-using PostAPI.Services.IServices;
 using System.Text;
 
 namespace PostAPI.Services;

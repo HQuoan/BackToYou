@@ -1,13 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Newtonsoft.Json;
 using PostAPI.Features.PostImages.Dtos;
 using PostAPI.Features.PostImages.Queries;
 using PostAPI.Features.Posts.Dtos;
-using PostAPI.Models;
 using System.Text;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace PostAPI.Features.PostImages;
 [Route("post-images")]
@@ -15,14 +11,18 @@ namespace PostAPI.Features.PostImages;
 public class PostImageAPIController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ITranslateService _translateService;
     private readonly IMapper _mapper;
     private ResponseDto _response;
+    private const string BASE_URL = "http://host.docker.internal:8000";
+    //private const string BASE_URL = "https://glowworm-precise-slightly.ngrok-free.app";
 
-    public PostImageAPIController(IMapper mapper, IUnitOfWork unitOfWork)
+    public PostImageAPIController(IMapper mapper, IUnitOfWork unitOfWork, ITranslateService translateService)
     {
         _mapper = mapper;
         _unitOfWork = unitOfWork;
         _response = new();
+        _translateService = translateService;
     }
 
     [HttpGet]
@@ -51,12 +51,14 @@ public class PostImageAPIController : ControllerBase
         return Ok(_response);
     }
 
+
     [HttpPost("embedding")]
     public async Task<ActionResult<ResponseDto>> Embedding([FromBody] List<PostImageDto> images)
     {
         var data = _mapper.Map<IEnumerable<PostImageInput>>(images);
         using var httpClient = new HttpClient();
-        var apiUrl = "http://localhost:8000/embedding/list";
+
+        var apiUrl = $"{BASE_URL}/embedding";
 
         var json = JsonConvert.SerializeObject(data); // thay vì System.Text.Json
         var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -72,7 +74,7 @@ public class PostImageAPIController : ControllerBase
         return Ok(new ResponseDto { IsSuccess = true, Message = responseString });
     }
 
-    [HttpPost("embedding/all")]
+    [HttpGet("embedding/all")]
     public async Task<ActionResult<ResponseDto>> EmbeddingAll()
     {
         var query = new QueryParameters<PostImage>
@@ -85,7 +87,9 @@ public class PostImageAPIController : ControllerBase
         var data = _mapper.Map<IEnumerable<PostImageInput>>(images);
 
         using var httpClient = new HttpClient();
-        var apiUrl = "http://localhost:8000/embedding/list";
+        var apiUrl = $"{BASE_URL}/embedding";
+
+
 
         var json = JsonConvert.SerializeObject(data); // thay vì System.Text.Json
         var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -133,7 +137,10 @@ public class PostImageAPIController : ControllerBase
         {
             using var httpClient = new HttpClient();
             httpClient.Timeout = TimeSpan.FromSeconds(300); // Tăng timeout
-            var apiUrl = "http://localhost:8000/compare";
+
+            var apiUrl = $"{BASE_URL}/compare";
+
+
             using var content = new MultipartFormDataContent();
 
             if (form.File != null)
@@ -152,6 +159,7 @@ public class PostImageAPIController : ControllerBase
             else if (!string.IsNullOrEmpty(form.TextQuery))
             {
                 Console.WriteLine($"Text query: {form.TextQuery}");
+
                 content.Add(new StringContent(form.TextQuery), "text_query");
             }
             else

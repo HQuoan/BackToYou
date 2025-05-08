@@ -32,31 +32,27 @@ public static class PostSettingFeatures
     }
 
 
-    public static Func<IQueryable<PostSetting>, IOrderedQueryable<PostSetting>>? Sorting(PostSettingQueryParameters queryParameters)
+    public static Func<IQueryable<PostSetting>, IOrderedQueryable<PostSetting>> Sorting(PostSettingQueryParameters queryParameters)
     {
-        Func<IQueryable<PostSetting>, IOrderedQueryable<PostSetting>>? orderByFunc = null;
+        var isDescending = queryParameters.OrderBy?.StartsWith("-") ?? true;
+        var property = isDescending && queryParameters.OrderBy != null
+            ? queryParameters.OrderBy.Substring(1)
+            : queryParameters.OrderBy;
 
-        if (!string.IsNullOrEmpty(queryParameters.OrderBy))
+        return property?.ToLower() switch
         {
-            var isDescending = queryParameters.OrderBy.StartsWith("-");
-            var property = isDescending ? queryParameters.OrderBy.Substring(1) : queryParameters.OrderBy;
+            "name" => isDescending
+                ? (q => q.OrderByDescending(m => m.Name))
+                : q => q.OrderBy(m => m.Name),
 
-            orderByFunc = property.ToLower() switch
-            {
-                "name" => isDescending
-                    ? (q => q.OrderByDescending(m => m.Name))
-                    : q => q.OrderBy(m => m.Name),
+            "value" => isDescending
+                ? (q => q.OrderByDescending(m => m.Value))
+                : q => q.OrderBy(m => m.Value),
 
-                "value" => isDescending
-                   ? (q => q.OrderByDescending(m => m.Value))
-                   : q => q.OrderBy(m => m.Value),
-
-                _ => q => q.OrderByDescending(m => m.PostSettingId)
-            };
-        }
-
-        return orderByFunc;
+            _ => q => q.OrderByDescending(m => m.Value)
+        };
     }
+
 
     public static QueryParameters<PostSetting> Build(PostSettingQueryParameters queryParameters)
     {

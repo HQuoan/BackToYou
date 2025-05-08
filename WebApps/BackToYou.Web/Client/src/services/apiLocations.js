@@ -24,7 +24,7 @@ export async function getDistricts(provinceCode, name) {
 export async function getWards(districtCode, name) {
   const data = await callAPI({
     method: HttpMethod.GET,
-    url: `${ServiceRoutes.post}/wards`,
+    url: `${ServiceRoutes.post}/locations/wards`,
     params: {districtCode,name}
   });
 

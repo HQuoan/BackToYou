@@ -32,27 +32,23 @@ public static class PostImageFeatures
     }
 
 
-    public static Func<IQueryable<PostImage>, IOrderedQueryable<PostImage>>? Sorting(PostImageQueryParameters queryParameters)
+    public static Func<IQueryable<PostImage>, IOrderedQueryable<PostImage>> Sorting(PostImageQueryParameters queryParameters)
     {
-        Func<IQueryable<PostImage>, IOrderedQueryable<PostImage>>? orderByFunc = null;
+        var isDescending = queryParameters.OrderBy?.StartsWith("-") ?? true;
+        var property = isDescending && queryParameters.OrderBy != null
+            ? queryParameters.OrderBy.Substring(1)
+            : queryParameters.OrderBy;
 
-        if (!string.IsNullOrEmpty(queryParameters.OrderBy))
+        return property?.ToLower() switch
         {
-            var isDescending = queryParameters.OrderBy.StartsWith("-");
-            var property = isDescending ? queryParameters.OrderBy.Substring(1) : queryParameters.OrderBy;
+            "postid" => isDescending
+                ? (q => q.OrderByDescending(m => m.PostId))
+                : q => q.OrderBy(m => m.PostId),
 
-            orderByFunc = property.ToLower() switch
-            {
-                "postid" => isDescending
-                    ? (q => q.OrderByDescending(m => m.PostId))
-                    : q => q.OrderBy(m => m.PostId),
-
-                _ => q => q.OrderByDescending(m => m.PostId)
-            };
-        }
-
-        return orderByFunc;
+            _ => q => q.OrderByDescending(m => m.PostImageId)
+        };
     }
+
 
     public static QueryParameters<PostImage> Build(PostImageQueryParameters queryParameters)
     {

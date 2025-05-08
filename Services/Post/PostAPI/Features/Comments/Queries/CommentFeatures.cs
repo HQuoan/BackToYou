@@ -42,27 +42,45 @@ public static class CommentFeatures
     }
 
 
-    public static Func<IQueryable<Comment>, IOrderedQueryable<Comment>>? Sorting(CommentQueryParameters queryParameters)
+    //public static Func<IQueryable<Comment>, IOrderedQueryable<Comment>>? Sorting(CommentQueryParameters queryParameters)
+    //{
+    //    Func<IQueryable<Comment>, IOrderedQueryable<Comment>>? orderByFunc = null;
+
+    //    if (!string.IsNullOrEmpty(queryParameters.OrderBy))
+    //    {
+    //        var isDescending = queryParameters.OrderBy.StartsWith("-");
+    //        var property = isDescending ? queryParameters.OrderBy.Substring(1) : queryParameters.OrderBy;
+
+    //        orderByFunc = property.ToLower() switch
+    //        {
+    //            "postid" => isDescending
+    //                ? (q => q.OrderByDescending(m => m.CommentId))
+    //                : q => q.OrderBy(m => m.CommentId),
+
+    //            _ => q => q.OrderByDescending(m => m.CreatedAt)
+    //        };
+    //    }
+
+    //    return orderByFunc;
+    //}
+
+    public static Func<IQueryable<Comment>, IOrderedQueryable<Comment>> Sorting(CommentQueryParameters queryParameters)
     {
-        Func<IQueryable<Comment>, IOrderedQueryable<Comment>>? orderByFunc = null;
+        var isDescending = queryParameters.OrderBy?.StartsWith("-") ?? true;
+        var property = isDescending && queryParameters.OrderBy != null
+            ? queryParameters.OrderBy.Substring(1)
+            : queryParameters.OrderBy;
 
-        if (!string.IsNullOrEmpty(queryParameters.OrderBy))
+        return property?.ToLower() switch
         {
-            var isDescending = queryParameters.OrderBy.StartsWith("-");
-            var property = isDescending ? queryParameters.OrderBy.Substring(1) : queryParameters.OrderBy;
+            "postid" => isDescending
+                ? (q => q.OrderByDescending(m => m.PostId))
+                : q => q.OrderBy(m => m.PostId),
 
-            orderByFunc = property.ToLower() switch
-            {
-                "postid" => isDescending
-                    ? (q => q.OrderByDescending(m => m.CommentId))
-                    : q => q.OrderBy(m => m.CommentId),
-
-                _ => q => q.OrderByDescending(m => m.CommentId)
-            };
-        }
-
-        return orderByFunc;
+            _ => q => q.OrderByDescending(m => m.CreatedAt)
+        };
     }
+
 
     public static QueryParameters<Comment> Build(CommentQueryParameters queryParameters)
     {

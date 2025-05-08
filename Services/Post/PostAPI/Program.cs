@@ -109,9 +109,15 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<BackendApiAuthenticationHttpClientHandler>();
 
 // Application Services
+builder.Services.AddScoped<ITranslateService, TranslateService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IImageUploader, CloudinaryUploader>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+
+
+builder.Services.Configure<LibreTranslateOptions>(
+    builder.Configuration.GetSection("LibreTranslate"));
+
 
 // HttpClient Configuration for External Services
 builder.Services.AddHttpClient(SD.HttpClient_Payment, u => u.BaseAddress = new Uri(builder.Configuration["ServiceUrls:PaymentAPI"]));

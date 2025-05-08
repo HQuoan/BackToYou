@@ -31,37 +31,30 @@ public static class CategoryFeatures
     }
 
 
-    public static Func<IQueryable<Category>, IOrderedQueryable<Category>>? Sorting(CategoryQueryParameters queryParameters)
+    public static Func<IQueryable<Category>, IOrderedQueryable<Category>> Sorting(CategoryQueryParameters queryParameters)
     {
-        Func<IQueryable<Category>, IOrderedQueryable<Category>>? orderByFunc = null;
+        var isDescending = queryParameters.OrderBy?.StartsWith("-") ?? true;
+        var property = isDescending && queryParameters.OrderBy != null
+            ? queryParameters.OrderBy.Substring(1)
+            : queryParameters.OrderBy;
 
-        if (!string.IsNullOrEmpty(queryParameters.OrderBy))
+        return property?.ToLower() switch
         {
-            var isDescending = queryParameters.OrderBy.StartsWith("-");
-            var property = isDescending ? queryParameters.OrderBy.Substring(1) : queryParameters.OrderBy;
+            "name" => isDescending
+                ? (q => q.OrderByDescending(m => m.Name))
+                : q => q.OrderBy(m => m.Name),
 
-            orderByFunc = property.ToLower() switch
-            {
-                "name" => isDescending
-                    ? (q => q.OrderByDescending(m => m.Name))
-                    : q => q.OrderBy(m => m.Name),
+            "slug" => isDescending
+                ? (q => q.OrderByDescending(m => m.Slug))
+                : q => q.OrderBy(m => m.Slug),
 
-                "slug" => isDescending
-                  ? (q => q.OrderByDescending(m => m.Slug))
-                  : q => q.OrderBy(m => m.Slug),
+            "categoryid" => isDescending
+                ? (q => q.OrderByDescending(m => m.CategoryId))
+                : q => q.OrderBy(m => m.CategoryId),
 
-                "categoryid" => isDescending
-                    ? (q => q.OrderByDescending(m => m.CategoryId))
-                    : q => q.OrderBy(m => m.CategoryId),
-
-                _ => q => q.OrderByDescending(m => m.CategoryId)
-            };
-        }
-
-        return orderByFunc;
+            _ => q => q.OrderByDescending(m => m.CreatedAt) // mặc định
+        };
     }
-
-
 
 
     public static QueryParameters<Category> Build(CategoryQueryParameters queryParameters)

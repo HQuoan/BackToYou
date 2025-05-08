@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react"; // Thêm useRef
 import PostCard from "../ui/PostCard";
 import ImageUploadPlaceholder from "../ui/ImageUploadPlaceholder";
 import { useAiSearch } from "../features/ai/useAISearch";
@@ -11,15 +11,22 @@ function AiSearchPage() {
   const [posts, setPosts] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
 
+  // Thêm ref để quản lý input file
+  const fileInputRef = useRef(null);
+
   const handleClear = (e) => {
     e.preventDefault();
     setSelectedImage(null);
     setPreviewUrl(null);
     setPosts([]);
     setIsDragging(false);
-
     setTextQuery("");
     setTop(5);
+
+    // Reset input file
+    if (fileInputRef.current) {
+      fileInputRef.current.value = null;
+    }
   };
 
   const handleImageChange = (e) => {
@@ -52,6 +59,11 @@ function AiSearchPage() {
   const handleRemoveImage = () => {
     setSelectedImage(null);
     setPreviewUrl(null);
+
+    // Reset input file
+    if (fileInputRef.current) {
+      fileInputRef.current.value = null;
+    }
   };
 
   const { isPending, aiSearch } = useAiSearch();
@@ -116,6 +128,7 @@ function AiSearchPage() {
                 accept="image/*"
                 onChange={handleImageChange}
                 className="hidden"
+                ref={fileInputRef} // Gắn ref vào input
               />
               {!previewUrl && (
                 <div className="d-flex justify-content-center">
@@ -164,6 +177,7 @@ function AiSearchPage() {
                     <option value={5}>5</option>
                     <option value={10}>10</option>
                     <option value={15}>15</option>
+                    <option value={20}>20</option>
                   </select>
                 </div>
               </div>

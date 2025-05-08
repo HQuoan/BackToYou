@@ -1,11 +1,12 @@
 import { callAPI, HttpMethod } from "./apiClient";
 import { ServiceRoutes } from "./ServiceRoutes";
 
-export async function aiSearch(formData) {
+
+
+export async function getMe() {
   const data = await callAPI({
-    method: HttpMethod.POST,
-    url: `${ServiceRoutes.post}/post-images/ai-search`,
-    data: formData
+    method: HttpMethod.GET,
+    url: `${ServiceRoutes.auth}/users/GetById`,
   });
 
   return data

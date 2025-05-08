@@ -1,9 +1,21 @@
 import { callAPI, HttpMethod } from "./apiClient";
+import { ServiceRoutes } from "./ServiceRoutes";
+
+
+export async function getComments({page, postId}) {
+  const data = await callAPI({
+    method: HttpMethod.GET,
+    url: `${ServiceRoutes.post}/comments`,
+    params: {...page, postId}
+  });
+
+  return data
+}
 
 export async function createComment(comment){
   const data = await callAPI({
     method: HttpMethod.POST,
-    url: "/comments",
+    url: `${ServiceRoutes.post}/comments`,
     data: comment
   })
 
@@ -13,7 +25,7 @@ export async function createComment(comment){
 export async function deleteComment(id){
   const data = await callAPI({
     method: HttpMethod.POST,
-    url: "/comments",
+    url: `${ServiceRoutes.post}/comments`,
     data: id
   })
 

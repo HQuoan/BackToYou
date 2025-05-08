@@ -1,7 +1,9 @@
-import { usePosts } from "../features/posts/usePosts";
+import { useUser } from "../features/users/useUsers";
 
 function Contact() {
+  const {profile} = useUser();
 
+  console.log(profile)
 
   return (
     <>

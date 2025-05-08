@@ -31,36 +31,31 @@ public static class WalletFeatures
     }
 
 
-    public static Func<IQueryable<Wallet>, IOrderedQueryable<Wallet>>? Sorting(WalletQueryParameters queryParameters)
+    public static Func<IQueryable<Wallet>, IOrderedQueryable<Wallet>> Sorting(WalletQueryParameters queryParameters)
     {
-        Func<IQueryable<Wallet>, IOrderedQueryable<Wallet>>? orderByFunc = null;
+        var isDescending = queryParameters.OrderBy?.StartsWith("-") ?? true;
+        var property = isDescending && queryParameters.OrderBy != null
+            ? queryParameters.OrderBy.Substring(1)
+            : queryParameters.OrderBy;
 
-        if (!string.IsNullOrEmpty(queryParameters.OrderBy))
+        return property?.ToLower() switch
         {
-            var isDescending = queryParameters.OrderBy.StartsWith("-");
-            var property = isDescending ? queryParameters.OrderBy.Substring(1) : queryParameters.OrderBy;
+            "userid" => isDescending
+                ? (q => q.OrderByDescending(m => m.UserId))
+                : q => q.OrderBy(m => m.UserId),
 
-            orderByFunc = property.ToLower() switch
-            {
-                "userid" => isDescending
-                    ? (Func<IQueryable<Wallet>, IOrderedQueryable<Wallet>>)(q => q.OrderByDescending(m => m.UserId))
-                    : q => q.OrderBy(m => m.UserId),
+            "balance" => isDescending
+                ? (q => q.OrderByDescending(m => m.Balance))
+                : q => q.OrderBy(m => m.Balance),
 
-                "balance" => isDescending
-                    ? (Func<IQueryable<Wallet>, IOrderedQueryable<Wallet>>)(q => q.OrderByDescending(m => m.Balance))
-                    : q => q.OrderBy(m => m.Balance),
+            "createdat" => isDescending
+                ? (q => q.OrderByDescending(m => m.CreatedAt))
+                : q => q.OrderBy(m => m.CreatedAt),
 
-                "createdat" => isDescending
-                    ? (Func<IQueryable<Wallet>, IOrderedQueryable<Wallet>>)(q => q.OrderByDescending(m => m.CreatedAt))
-                    : q => q.OrderBy(m => m.CreatedAt),
-
-                _ => q => q.OrderByDescending(m => m.WalletId)
-            };
-
-        }
-
-        return orderByFunc;
+            _ => q => q.OrderByDescending(m => m.CreatedAt) 
+        };
     }
+
 
 
     public static QueryParameters<Wallet> Build(WalletQueryParameters queryParameters)

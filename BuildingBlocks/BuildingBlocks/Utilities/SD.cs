@@ -24,7 +24,7 @@ public static class SD
 
     public const string HttpClient_Payment = "Payment";
 
-    public const string AccessTokenCookieName = "access_token";
+    public const string AccessTokenCookieName = "Bearer";
     
 
 }
@@ -40,7 +40,7 @@ public static class CookieHelper
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Lax,
+                SameSite = SameSiteMode.None,
                 Expires = DateTimeOffset.UtcNow.AddDays(7),
                 Path = "/"
             }
@@ -55,7 +55,7 @@ public static class CookieHelper
             {
                 HttpOnly = true,
                 Secure = true,
-                SameSite = SameSiteMode.Lax,
+                SameSite = SameSiteMode.None,
                 Path = "/"
             }
         );

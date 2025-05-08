@@ -43,32 +43,27 @@ public static class UserFeatures
     }
 
 
-    public static Func<IQueryable<ApplicationUser>, IOrderedQueryable<ApplicationUser>>? Sorting(UserQueryParameters queryParameters)
+    public static Func<IQueryable<ApplicationUser>, IOrderedQueryable<ApplicationUser>> Sorting(UserQueryParameters queryParameters)
     {
-        Func<IQueryable<ApplicationUser>, IOrderedQueryable<ApplicationUser>>? orderByFunc = null;
+        var isDescending = queryParameters.OrderBy?.StartsWith("-") ?? true;
+        var property = isDescending && queryParameters.OrderBy != null
+            ? queryParameters.OrderBy.Substring(1)
+            : queryParameters.OrderBy;
 
-        if (!string.IsNullOrEmpty(queryParameters.OrderBy))
+        return property?.ToLower() switch
         {
-            var isDescending = queryParameters.OrderBy.StartsWith("-");
-            var property = isDescending ? queryParameters.OrderBy.Substring(1) : queryParameters.OrderBy;
+            "fullname" => isDescending
+                ? (q => q.OrderByDescending(m => m.FullName))
+                : q => q.OrderBy(m => m.FullName),
 
-            orderByFunc = property.ToLower() switch
-            {
-                "fullname" => isDescending
-                    ? (Func<IQueryable<ApplicationUser>, IOrderedQueryable<ApplicationUser>>)(q => q.OrderByDescending(m => m.FullName))
-                    : q => q.OrderBy(m => m.FullName),
+            "email" => isDescending
+                ? (q => q.OrderByDescending(m => m.Email))
+                : q => q.OrderBy(m => m.Email),
 
-                "email" => isDescending
-                    ? (Func<IQueryable<ApplicationUser>, IOrderedQueryable<ApplicationUser>>)(q => q.OrderByDescending(m => m.Email))
-                    : q => q.OrderBy(m => m.Email),
-
-
-                _ => q => q.OrderByDescending(m => m.Id) // Mặc định sắp xếp theo UpdatedDate giảm dần
-            };
-        }
-
-        return orderByFunc;
+            _ => q => q.OrderByDescending(m => m.CreatedAt) // mặc định
+        };
     }
+
 
     public static QueryParameters<ApplicationUser> Build(UserQueryParameters queryParameters)
     {

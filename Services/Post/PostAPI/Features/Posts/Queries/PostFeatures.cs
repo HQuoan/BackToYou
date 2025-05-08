@@ -96,40 +96,35 @@ public static class PostFeatures
     }
 
 
-    public static Func<IQueryable<Post>, IOrderedQueryable<Post>>? Sorting(PostQueryParameters queryParameters)
+    public static Func<IQueryable<Post>, IOrderedQueryable<Post>> Sorting(PostQueryParameters queryParameters)
     {
-        Func<IQueryable<Post>, IOrderedQueryable<Post>>? orderByFunc = null;
+        var isDescending = queryParameters.OrderBy?.StartsWith("-") ?? true;
+        var property = isDescending && queryParameters.OrderBy != null
+            ? queryParameters.OrderBy.Substring(1)
+            : queryParameters.OrderBy;
 
-        if (!string.IsNullOrEmpty(queryParameters.OrderBy))
+        return property?.ToLower() switch
         {
-            var isDescending = queryParameters.OrderBy.StartsWith("-");
-            var property = isDescending ? queryParameters.OrderBy.Substring(1) : queryParameters.OrderBy;
+            "slug" => isDescending
+                ? (q => q.OrderByDescending(m => m.Slug))
+                : q => q.OrderBy(m => m.Slug),
 
-            orderByFunc = property.ToLower() switch
-            {
+            "postid" => isDescending
+                ? (q => q.OrderByDescending(m => m.PostId))
+                : q => q.OrderBy(m => m.PostId),
 
-                "slug" => isDescending
-                  ? (q => q.OrderByDescending(m => m.Slug))
-                  : q => q.OrderBy(m => m.Slug),
+            "lostorfounddate" => isDescending
+                ? (q => q.OrderByDescending(m => m.LostOrFoundDate))
+                : q => q.OrderBy(m => m.LostOrFoundDate),
 
-                "postid" => isDescending
-                    ? (q => q.OrderByDescending(m => m.PostId))
-                    : q => q.OrderBy(m => m.PostId),
+            "createdat" => isDescending
+                ? (q => q.OrderByDescending(m => m.CreatedAt))
+                : q => q.OrderBy(m => m.CreatedAt),
 
-                "lostorfounddate" => isDescending
-                   ? (q => q.OrderByDescending(m => m.LostOrFoundDate))
-                   : (q => q.OrderBy(m => m.LostOrFoundDate)),
-
-                "createdat" => isDescending
-                   ? (q => q.OrderByDescending(m => m.CreatedAt))
-                   : (q => q.OrderBy(m => m.CreatedAt)),
-
-                _ => q => q.OrderByDescending(m => m.CreatedAt)
-            };
-        }
-
-        return orderByFunc;
+            _ => q => q.OrderByDescending(m => m.CreatedAt)
+        };
     }
+
 
     public static QueryParameters<Post> Build(PostQueryParameters queryParameters)
     {

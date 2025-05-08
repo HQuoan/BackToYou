@@ -24,7 +24,7 @@ function CommentCard({ comment }) {
       <div className="flex-grow-1">
         <div className="d-flex align-items-center mb-2">
           <span className="me-2 fw-bold text-primary-custom">
-            {comment.createdBy}
+            {comment.createdBy.split(':')[0]}
           </span>
           <small className="text-muted">
             {new Date(comment.createdAt).toLocaleTimeString([], {

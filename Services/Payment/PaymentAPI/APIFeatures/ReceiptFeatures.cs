@@ -40,48 +40,43 @@ public static class ReceiptFeatures
     }
 
 
-    public static Func<IQueryable<Receipt>, IOrderedQueryable<Receipt>>? Sorting(ReceiptQueryParameters queryParameters)
+    public static Func<IQueryable<Receipt>, IOrderedQueryable<Receipt>> Sorting(ReceiptQueryParameters queryParameters)
     {
-        Func<IQueryable<Receipt>, IOrderedQueryable<Receipt>>? orderByFunc = null;
+        var isDescending = queryParameters.OrderBy?.StartsWith("-") ?? true;
+        var property = isDescending && queryParameters.OrderBy != null
+            ? queryParameters.OrderBy.Substring(1)
+            : queryParameters.OrderBy;
 
-        if (!string.IsNullOrEmpty(queryParameters.OrderBy))
+        return property?.ToLower() switch
         {
-            var isDescending = queryParameters.OrderBy.StartsWith("-");
-            var property = isDescending ? queryParameters.OrderBy.Substring(1) : queryParameters.OrderBy;
+            "receiptid" => isDescending
+                ? (q => q.OrderByDescending(m => m.ReceiptId))
+                : q => q.OrderBy(m => m.ReceiptId),
 
-            orderByFunc = property.ToLower() switch
-            {
-                "receiptid" => isDescending
-                    ? (Func<IQueryable<Receipt>, IOrderedQueryable<Receipt>>)(q => q.OrderByDescending(m => m.ReceiptId))
-                    : q => q.OrderBy(m => m.ReceiptId),
+            "userid" => isDescending
+                ? (q => q.OrderByDescending(m => m.UserId))
+                : q => q.OrderBy(m => m.UserId),
 
-                "userid" => isDescending
-                    ? (Func<IQueryable<Receipt>, IOrderedQueryable<Receipt>>)(q => q.OrderByDescending(m => m.UserId))
-                    : q => q.OrderBy(m => m.UserId),
+            "email" => isDescending
+                ? (q => q.OrderByDescending(m => m.Email))
+                : q => q.OrderBy(m => m.Email),
 
-                "email" => isDescending
-                    ? (Func<IQueryable<Receipt>, IOrderedQueryable<Receipt>>)(q => q.OrderByDescending(m => m.Email))
-                    : q => q.OrderBy(m => m.Email),
+            "amount" => isDescending
+                ? (q => q.OrderByDescending(m => m.Amount))
+                : q => q.OrderBy(m => m.Amount),
 
-                "amount" => isDescending
-                    ? (Func<IQueryable<Receipt>, IOrderedQueryable<Receipt>>)(q => q.OrderByDescending(m => m.Amount))
-                    : q => q.OrderBy(m => m.Amount),
+            "createdat" => isDescending
+                ? (q => q.OrderByDescending(m => m.CreatedAt))
+                : q => q.OrderBy(m => m.CreatedAt),
 
-                "createdat" => isDescending
-                    ? (Func<IQueryable<Receipt>, IOrderedQueryable<Receipt>>)(q => q.OrderByDescending(m => m.CreatedAt))
-                    : q => q.OrderBy(m => m.CreatedAt),
+            "status" => isDescending
+                ? (q => q.OrderByDescending(m => m.Status))
+                : q => q.OrderBy(m => m.Status),
 
-                "status" => isDescending
-                    ? (Func<IQueryable<Receipt>, IOrderedQueryable<Receipt>>)(q => q.OrderByDescending(m => m.Status))
-                    : q => q.OrderBy(m => m.Status),
-
-                _ => q => q.OrderByDescending(m => m.ReceiptId)
-            };
-
-        }
-
-        return orderByFunc;
+            _ => q => q.OrderByDescending(m => m.CreatedAt) // mặc định
+        };
     }
+
 
 
     public static QueryParameters<Receipt> Build(ReceiptQueryParameters queryParameters)
