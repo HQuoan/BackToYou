@@ -49,7 +49,6 @@ export function usePosts() {
   } = useQuery({
     queryKey: ["posts", page, filter],
     queryFn: () => getPosts({ page, filter }),
-    //keepPreviousData: true, // giữ lại data cũ khi chuyển trang để UX mượt hơn
   });
 
   const posts = data?.result ?? [];

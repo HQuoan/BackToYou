@@ -39,25 +39,19 @@ export async function callAPI({ method, url, data = null, params = null }) {
       params,
       headers: isFormData ? {} : { "Content-Type": "application/json" },
     });
-    
-
-    // const res = await axiosInstance({
-    //   method,
-    //   url,
-    //   data,
-    //   params,
-    // });
 
     console.log("%c[API RESPONSE]", "color:rgb(33, 129, 45); font-weight: bold");
     console.log("Data:", res.data)
 
-    // toast.success(url)
-
     return res.data; // tương ứng với _response
   } catch (err) {
     const message =
-      err.response?.data?.message || err.message || "Có lỗi xảy ra";
+      err.response?.data?.message || "Có lỗi xảy ra";
     toast.error(message);
-    throw new Error(message);
+    
+    console.log("%c[API RESPONSE ERRORS]", "color:rgb(221, 7, 7); font-weight: bold");
+    console.log("Data:", err.response?.data)
+
+    throw err.response?.data?.result || null;
   }
 }

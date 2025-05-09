@@ -1,9 +1,13 @@
 import { useFormContext } from "react-hook-form";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ImageUploadPlaceholder from "../../ui/ImageUploadPlaceholder";
 
 function PhotoUploadSection() {
-  const { setValue } = useFormContext();
+  const {
+    setValue,
+    register,
+    formState: { errors },
+  } = useFormContext();
   const [previews, setPreviews] = useState([]);
 
   const handleFilesChange = (e) => {
@@ -17,20 +21,28 @@ function PhotoUploadSection() {
     }));
 
     setPreviews(updatedPreviews);
-    setValue("photos", combinedFiles);
+    setValue("postImages", combinedFiles, { shouldValidate: true }); // trigger validation
   };
 
   const removeImage = (index) => {
     const updatedPreviews = previews.filter((_, i) => i !== index);
     setPreviews(updatedPreviews);
     setValue(
-      "photos",
-      updatedPreviews.map((p) => p.file)
+      "postImages",
+      updatedPreviews.map((p) => p.file),
+      { shouldValidate: true }
     );
   };
 
+  useEffect(() => {
+    register("postImages", {
+      validate: (files) =>
+        (files && files.length > 0) || "Vui lòng tải lên ít nhất 1 ảnh",
+    });
+  }, [register]);
+
   return (
-    <div id="photos" className="section mb-5 rounded card">
+    <div id="postImages" className="section mb-5 rounded card">
       <div className="card-header d-flex align-items-center">
         <span className="icon-circle me-2">
           <i className="bi bi-camera"></i>
@@ -38,7 +50,9 @@ function PhotoUploadSection() {
         <h5 className="mb-0">Ảnh</h5>
       </div>
       <div className="card-body">
-        <label className="form-label">Ảnh nhặt được (tối đa 3 ảnh)</label>
+        <label className="form-label fw-semibold">
+          Ảnh nhặt được (tối đa 3 ảnh)
+        </label>
 
         <div
           className="photo-upload-area border rounded d-flex flex-wrap gap-3 p-3 mb-2"
@@ -70,7 +84,7 @@ function PhotoUploadSection() {
             </div>
           ))}
 
-          {previews.length < 3 && <ImageUploadPlaceholder/>}
+          {previews.length < 3 && <ImageUploadPlaceholder />}
         </div>
 
         <input
@@ -82,9 +96,11 @@ function PhotoUploadSection() {
           onChange={handleFilesChange}
         />
 
-        <small className="form-text text-muted">
-          Mỗi ảnh tối đa 2MB. Tối đa 3 ảnh.
-        </small>
+        {errors.postImages && (
+          <div className="text-danger">{errors.postImages.message}</div>
+        )}
+
+        {/* <small className="form-text text-muted">Tối đa 3 ảnh.</small> */}
       </div>
     </div>
   );

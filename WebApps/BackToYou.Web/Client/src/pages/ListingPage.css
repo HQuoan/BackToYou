@@ -117,13 +117,6 @@
   padding: 10px 15px;
 }
 
-.form-label {
-  font-family: var(--body-font-family);
-  font-size: var(--p-font-size);
-  color: var(--dark-color);
-  font-weight: var(--font-weight-medium);
-}
-
 /* Textarea Buttons */
 .btn-icon {
   background: none;

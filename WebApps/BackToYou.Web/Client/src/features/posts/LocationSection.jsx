@@ -1,6 +1,6 @@
 import { useFormContext } from "react-hook-form";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "leaflet/dist/leaflet.css";
 import "leaflet-fullscreen";
 import "leaflet-fullscreen/dist/leaflet.fullscreen.css";
@@ -8,14 +8,36 @@ import "leaflet-fullscreen/dist/leaflet.fullscreen.css";
 import { geocodeAddress, getMyLocation } from "../../utils/locationHelpers";
 import RedIcon from "../../utils/RedIcon";
 import LocationMapSelector from "./LocationMapSelector";
-import LocationSelector from "./../../ui/LocationSelector";
+import LocationSelector2 from "./LocationSelector2";
 
-function LocationSection() {
-  const { register, setValue, watch } = useFormContext();
+function LocationSection({ setShowManual, showManual }) {
+  const {
+    register,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useFormContext();
+
   const lat = parseFloat(watch("latitude")) || 21.028333;
   const lng = parseFloat(watch("longitude")) || 105.854041;
   const [lock, setLock] = useState(true);
-  const [showManual, setShowManual] = useState(false);
+
+  useEffect(() => {
+    register("latitude", {
+      required: "Vui lòng nhập latitude",
+      validate: (value) => !isNaN(value) || "Latitude phải là số",
+    });
+    register("longitude", {
+      required: "Vui lòng nhập longitude",
+      validate: (value) => !isNaN(value) || "Longitude phải là số",
+    });
+  }, [register]);
+
+  useEffect(() => {
+    if (errors.latitude || errors.longitude) {
+      setShowManual(true);
+    }
+  }, [errors, setShowManual]);
 
   return (
     <div id="location" className="section mb-5 rounded card">
@@ -29,21 +51,39 @@ function LocationSection() {
         <div className="mb-3">
           <label className="form-label fw-bold">Địa chỉ rơi</label>
           <div className="d-flex listing-page">
-            <LocationSelector />
+            <LocationSelector2 />
           </div>
-          <div className="input-group">
+
+          {errors.province && (
+            <div className="text-danger">{errors.province.message}</div>
+          )}
+          {errors.district && (
+            <div className="text-danger">{errors.district.message}</div>
+          )}
+          {errors.ward && (
+            <div className="text-danger">{errors.ward.message}</div>
+          )}
+
+          <div className="input-group mt-2">
             <input
               type="search"
               className="form-control"
               placeholder='e.g. "131 Nguyễn Chánh"'
-              {...register("streetAddress")}
+              {...register("streetAddress", {
+                required: "Vui lòng nhập địa chỉ",
+              })}
             />
             <button
               className="btn btn-outline-secondary"
               type="button"
               onClick={() =>
                 geocodeAddress(
-                  [watch("streetAddress"), watch("ward"), watch("district"), watch("province")]
+                  [
+                    watch("streetAddress"),
+                    watch("ward"),
+                    watch("district"),
+                    watch("province"),
+                  ]
                     .filter(Boolean)
                     .join(", "),
                   setValue
@@ -60,6 +100,11 @@ function LocationSection() {
               <i className="bi bi-crosshair"></i>
             </button>
           </div>
+          {errors.streetAddress && (
+            <div className="text-danger mt-1">
+              {errors.streetAddress.message}
+            </div>
+          )}
         </div>
 
         <div className="mb-3 d-flex justify-content-between align-items-center">
@@ -89,20 +134,36 @@ function LocationSection() {
         {showManual && (
           <div className="row mb-3">
             <div className="col-md-6">
-              <label className="form-label">Latitude</label>
+              <label className="form-label fw-semibold">Latitude</label>
               <input
                 type="text"
                 className="form-control"
-                {...register("latitude")}
+                {...register("latitude", {
+                  required: "Vui lòng nhập latitude",
+                  validate: (value) => !isNaN(value) || "Latitude phải là số",
+                })}
               />
+              {errors.latitude && (
+                <div className="text-danger mt-1">
+                  {errors.latitude.message}
+                </div>
+              )}
             </div>
             <div className="col-md-6">
-              <label className="form-label">Longitude</label>
+              <label className="form-label fw-semibold">Longitude</label>
               <input
                 type="text"
                 className="form-control"
-                {...register("longitude")}
+                {...register("longitude", {
+                  required: "Vui lòng nhập longitude",
+                  validate: (value) => !isNaN(value) || "Longitude phải là số",
+                })}
               />
+              {errors.longitude && (
+                <div className="text-danger mt-1">
+                  {errors.longitude.message}
+                </div>
+              )}
             </div>
           </div>
         )}

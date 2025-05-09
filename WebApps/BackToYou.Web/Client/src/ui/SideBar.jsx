@@ -34,6 +34,8 @@ function SideBar() {
     const from = new Date(data.fromDate);
     const to = new Date(data.toDate);
 
+    console.log("hhhd")
+
     if (data.fromDate && data.toDate && from > to) {
       toast.error("Ngày bắt đầu không được lớn hơn ngày kết thúc.");
       return;

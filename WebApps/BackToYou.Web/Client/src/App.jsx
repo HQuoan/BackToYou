@@ -12,8 +12,8 @@ import Detail from "./pages/Detail";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { Toaster } from "react-hot-toast";
-import UpsertListingPage from "./pages/UpsertListingPage";
 import AiSearchPage from "./pages/AiSearchPage";
+import ListingPage from "./pages/ListingPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,7 +35,7 @@ function App() {
             <Route path="ai-search" element={<AiSearchPage />} />
             <Route path="map" element={<MapPage />} />
             <Route path="contact" element={<Contact />} />
-            <Route path="listing" element={<UpsertListingPage />} />
+            <Route path="listing" element={<ListingPage />} />
             <Route path="/:slug" element={<Detail />} />
           </Route>
 
