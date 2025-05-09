@@ -8,7 +8,7 @@ export function useCreateComment(){
   const {mutate: createComment, isPending: isCreating} = useMutation({
     mutationFn: createCommentAPI,
     onSuccess: (data, variables) => {
-      toast.success("New comment successfully created");
+      toast.success("Tạo bình luận thành công");
       queryClient.invalidateQueries({ queryKey: ["comments", variables.postId] });
     },
     onError: (err) => toast.error(err.message),

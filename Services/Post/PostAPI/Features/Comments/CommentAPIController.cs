@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PostAPI.Features.Comments.Dtos;
 using PostAPI.Features.Comments.Queries;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
 
 namespace PostAPI.Features.Comments;
@@ -68,6 +69,20 @@ public class CommentAPIController : ControllerBase
             throw new BadRequestException("Invalid or missing user ID claim.");
         }
         comment.UserId = userId;
+
+        var parentCmt = new Comment();
+        if (comment.ParentCommentId != null) {
+            parentCmt = await _unitOfWork.Comment.GetAsync(c => c.CommentId == commentDto.ParentCommentId);
+
+            if (parentCmt == null)
+                throw new NotFoundException("Comment parent", comment.ParentCommentId);
+
+            comment.PostId = parentCmt.PostId;
+        }
+
+        var post = await _unitOfWork.Post.GetAsync(p => p.PostId == comment.PostId);
+        if (post == null)
+            throw new PostNotFoundException(comment.PostId);
 
 
         await _unitOfWork.Comment.AddAsync(comment);

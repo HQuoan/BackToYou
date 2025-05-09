@@ -1,9 +1,11 @@
-﻿namespace PostAPI.Features.Comments.Dtos;
+﻿using System.ComponentModel;
+
+namespace PostAPI.Features.Comments.Dtos;
 
 public class CommentUpdateDto
 {
     public Guid CommentId { get; set; }
-    public Guid? CommentParentId { get; set; }
+    public Guid? ParentCommentId { get; set; }
     public Guid PostId { get; set; }
     public string Description { get; set; }
 }

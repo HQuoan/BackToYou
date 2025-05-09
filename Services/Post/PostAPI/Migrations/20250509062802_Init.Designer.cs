@@ -12,7 +12,7 @@ using PostAPI.Data;
 namespace PostAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250506082415_Init")]
+    [Migration("20250509062802_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -137,9 +137,6 @@ namespace PostAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("CommentParentId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -156,6 +153,9 @@ namespace PostAPI.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("ParentCommentId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("PostId")
                         .HasColumnType("uniqueidentifier");
 
@@ -163,6 +163,8 @@ namespace PostAPI.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("CommentId");
+
+                    b.HasIndex("ParentCommentId");
 
                     b.HasIndex("PostId");
 
@@ -453,11 +455,17 @@ namespace PostAPI.Migrations
 
             modelBuilder.Entity("PostAPI.Models.Comment", b =>
                 {
+                    b.HasOne("PostAPI.Models.Comment", "ParentComment")
+                        .WithMany()
+                        .HasForeignKey("ParentCommentId");
+
                     b.HasOne("PostAPI.Models.Post", "Post")
                         .WithMany("Comments")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("ParentComment");
 
                     b.Navigation("Post");
                 });

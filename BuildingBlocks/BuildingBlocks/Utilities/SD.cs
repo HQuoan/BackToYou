@@ -24,7 +24,7 @@ public static class SD
 
     public const string HttpClient_Payment = "Payment";
 
-    public const string AccessTokenCookieName = "Bearer";
+    public const string AccessTokenCookieName = "access_token";
     
 
 }

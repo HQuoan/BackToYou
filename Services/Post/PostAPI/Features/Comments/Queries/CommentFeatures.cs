@@ -18,8 +18,8 @@ public static class CommentFeatures
             {
                 switch (prop.Name)
                 {
-                    case nameof(CommentQueryParameters.CommentParentId):
-                        filters.Add(m => m.CommentParentId == (Guid)value);
+                    case nameof(CommentQueryParameters.ParentCommentId):
+                        filters.Add(m => m.ParentCommentId == (Guid)value);
                         break;
 
                     case nameof(CommentQueryParameters.UserId):

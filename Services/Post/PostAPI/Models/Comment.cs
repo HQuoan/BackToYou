@@ -6,7 +6,10 @@ public class Comment : BaseEntity
 {
     [Key]
     public Guid CommentId { get; set; }
-    public Guid? CommentParentId { get; set; }
+    public Guid? ParentCommentId { get; set; }
+    [ForeignKey(nameof(ParentCommentId))]
+    public Comment? ParentComment { get; set; }
+
     [Required]
     public Guid UserId { get; set; }
     [Required]
