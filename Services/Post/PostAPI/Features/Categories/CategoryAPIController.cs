@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PostAPI.Features.Categories.Queries;
 
 namespace PostAPI.Features.Categories;
@@ -19,7 +20,7 @@ public class CategoryAPIController : ControllerBase
     }
 
     [HttpGet]
-    //[Authorize(Roles = SD.AdminRole)]
+    [Authorize(Roles = SD.AdminRole)]
     public async Task<ActionResult<ResponseDto>> Get([FromQuery] CategoryQueryParameters queryParameters)
     {
         var query = CategoryFeatures.Build(queryParameters);

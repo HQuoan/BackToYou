@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PostAPI.Features.Posts.Dtos;
 using PostAPI.Features.Posts.Queries;
-using PostAPI.Services.IServices;
 using System.Security.Claims;
 
 namespace PostAPI.Features.Posts;

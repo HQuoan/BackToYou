@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using BuildingBlocks.Utilities;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using System.Net.Http.Headers;
 
@@ -20,4 +21,5 @@ public class BackendApiAuthenticationHttpClientHandler : DelegatingHandler
 
         return await base.SendAsync(request, cancellationToken);
     }
+
 }

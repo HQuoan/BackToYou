@@ -97,6 +97,10 @@ builder.Services.AddSwaggerGen(options =>
     }
 });
 
+// HttpContext & HTTP Client
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<BackendApiAuthenticationHttpClientHandler>();
+
 // Authentication & Authorization
 builder.AddAppAuthentication();
 builder.Services.AddAuthorization();
@@ -104,9 +108,7 @@ builder.Services.AddAuthorization();
 // Exception Handling
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
-// HttpContext & HTTP Client
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<BackendApiAuthenticationHttpClientHandler>();
+
 
 // Application Services
 builder.Services.AddScoped<ITranslateService, TranslateService>();
@@ -120,7 +122,7 @@ builder.Services.Configure<LibreTranslateOptions>(
 
 
 // HttpClient Configuration for External Services
-builder.Services.AddHttpClient(SD.HttpClient_Payment, u => u.BaseAddress = new Uri(builder.Configuration["ServiceUrls:PaymentAPI"]));
+builder.Services.AddHttpClient(SD.HttpClient_Payment, u => u.BaseAddress = new Uri(builder.Configuration["ServiceUrls:PaymentAPI"])).AddHttpMessageHandler<BackendApiAuthenticationHttpClientHandler>();
 
 // Add CORS
 builder.Services.AddCors(options =>

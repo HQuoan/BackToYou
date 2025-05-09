@@ -1,5 +1,6 @@
 ﻿using BuildingBlocks.Dtos;
 using BuildingBlocks.Utilities;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -55,6 +56,15 @@ public static class WebApplicationBuilderExtensions
                     if (!string.IsNullOrEmpty(accessToken))
                     {
                         context.Token = accessToken;
+
+                        // Lưu token vào AuthenticationProperties
+                        var authProps = new AuthenticationProperties();
+                        authProps.StoreTokens(new[]
+                        {
+                            new AuthenticationToken { Name = "access_token", Value = accessToken }
+                        });
+
+                        context.HttpContext.SignInAsync(JwtBearerDefaults.AuthenticationScheme, context.Principal, authProps);
                     }
 
                     return Task.CompletedTask;
@@ -75,7 +85,11 @@ public static class WebApplicationBuilderExtensions
                         Result = null
                     };
 
-                    var json = JsonSerializer.Serialize(response);
+                    var json = JsonSerializer.Serialize(response, new JsonSerializerOptions
+                    {
+                        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                    });
+
 
                     return context.Response.WriteAsync(json);
                 }

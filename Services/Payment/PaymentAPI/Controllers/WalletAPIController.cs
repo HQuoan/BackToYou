@@ -74,25 +74,37 @@ public class WalletAPIController : ControllerBase
     [Authorize(Roles = SD.AdminRole)]
     public async Task<ActionResult<ResponseDto>> Put([FromBody] WalletDto walletDto)
     {
-        Wallet walletFromDb = await _unitOfWork.Wallet.GetAsync(c => c.WalletId == walletDto.WalletId);
-        if (walletFromDb == null)
+        if (walletDto.WalletId == null)
         {
-            throw new WalletNotFoundException(walletDto.WalletId);
+            Wallet wallet = _mapper.Map<Wallet>(walletDto);
+            await _unitOfWork.Wallet.AddAsync(wallet);
+
+            _response.Result = _mapper.Map<WalletDto>(wallet);
+        }
+        else
+        {
+
+            Wallet walletFromDb = await _unitOfWork.Wallet.GetAsync(c => c.WalletId == walletDto.WalletId);
+            if (walletFromDb == null)
+            {
+                throw new WalletNotFoundException(walletDto.WalletId);
+            }
+
+            _mapper.Map(walletDto, walletFromDb);
+
+            await _unitOfWork.Wallet.UpdateAsync(walletFromDb);
+            _response.Result = _mapper.Map<WalletDto>(walletFromDb);
         }
 
-        _mapper.Map(walletDto, walletFromDb);
-
-        await _unitOfWork.Wallet.UpdateAsync(walletFromDb);
         await _unitOfWork.SaveAsync();
 
-        _response.Result = _mapper.Map<WalletDto>(walletFromDb);
 
         return Ok(_response);
     }
 
     [HttpPut("subtract-balance")]
-    [Authorize]
-    public async Task<ActionResult<ResponseDto>> SubtractBalance([FromQuery] decimal amount)
+    //[Authorize]
+    public async Task<ActionResult<ResponseDto>> SubtractBalance([FromBody] decimal amount)
     {
         if (amount <= 0)
             throw new BadRequestException("Amount must be greater than zero.");

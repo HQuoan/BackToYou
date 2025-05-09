@@ -37,5 +37,26 @@ public class PostCreateDtoValidator : AbstractValidator<PostCreateDto>
 
 
         RuleForEach(x => x.ImageFiles).SetValidator(new ImageFileValidator());
+
+        RuleFor(x => x.Location).NotNull().WithMessage("Location is required.");
+        When(x => x.Location is not null, () =>
+        {
+            RuleFor(x => x.Location.District)
+                .NotEmpty().WithMessage("District is required.");
+            RuleFor(x => x.Location.Province)
+                .NotEmpty().WithMessage("Province is required.");
+        });
+
+        RuleFor(x => x.PostContact).NotNull().WithMessage("Post contact is required.");
+        When(x => x.PostContact is not null, () =>
+        {
+            RuleFor(x => x.PostContact.Name)
+                .NotEmpty().WithMessage("Contact name is required.");
+            RuleFor(x => x.PostContact.Phone)
+                .NotEmpty().WithMessage("Phone number is required.");
+            RuleFor(x => x.PostContact.Email)
+                .NotEmpty().WithMessage("Email is required.")
+                .EmailAddress().WithMessage("Invalid email format.");
+        });
     }
 }

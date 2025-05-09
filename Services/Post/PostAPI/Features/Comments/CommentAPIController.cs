@@ -97,8 +97,8 @@ public class CommentAPIController : ControllerBase
     [Authorize]
     public async Task<ActionResult<ResponseDto>> Put([FromBody] CommentUpdateDto commentDto)
     {
-        Comment cateFromDb = await _unitOfWork.Comment.GetAsync(c => c.CommentId == commentDto.CommentId);
-        if (cateFromDb == null)
+        Comment cmtFromDb = await _unitOfWork.Comment.GetAsync(c => c.CommentId == commentDto.CommentId);
+        if (cmtFromDb == null)
         {
             throw new CommentNotFoundException(commentDto.CommentId);
         }
@@ -109,17 +109,17 @@ public class CommentAPIController : ControllerBase
             throw new BadRequestException("Invalid or missing user ID claim.");
         }
 
-        if (userId != cateFromDb.UserId)
+        if (userId != cmtFromDb.UserId)
         {
             throw new ForbiddenException();
         }
 
-        _mapper.Map(commentDto, cateFromDb);
+        _mapper.Map(commentDto, cmtFromDb);
 
-        await _unitOfWork.Comment.UpdateAsync(cateFromDb);
+        await _unitOfWork.Comment.UpdateAsync(cmtFromDb);
         await _unitOfWork.SaveAsync();
 
-        _response.Result = _mapper.Map<CommentDto>(cateFromDb);
+        _response.Result = _mapper.Map<CommentDto>(cmtFromDb);
 
         return Ok(_response);
     }

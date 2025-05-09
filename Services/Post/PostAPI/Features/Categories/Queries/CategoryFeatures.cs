@@ -52,7 +52,7 @@ public static class CategoryFeatures
                 ? (q => q.OrderByDescending(m => m.CategoryId))
                 : q => q.OrderBy(m => m.CategoryId),
 
-            _ => q => q.OrderByDescending(m => m.CreatedAt) // mặc định
+            _ => q => q.OrderBy(m => m.CategoryId) // mặc định
         };
     }
 
