@@ -74,36 +74,43 @@ public class WalletAPIController : ControllerBase
     [Authorize(Roles = SD.AdminRole)]
     public async Task<ActionResult<ResponseDto>> Put([FromBody] WalletDto walletDto)
     {
+        Wallet wallet;
+
         if (walletDto.WalletId == null)
         {
-            Wallet wallet = _mapper.Map<Wallet>(walletDto);
-            await _unitOfWork.Wallet.AddAsync(wallet);
-
-            _response.Result = _mapper.Map<WalletDto>(wallet);
+            wallet = await _unitOfWork.Wallet.GetAsync(c => c.UserId == walletDto.UserId);
+            if (wallet == null)
+            {
+                wallet = _mapper.Map<Wallet>(walletDto);
+                await _unitOfWork.Wallet.AddAsync(wallet);
+            }
+            else
+            {
+                _mapper.Map(walletDto, wallet);
+                await _unitOfWork.Wallet.UpdateAsync(wallet);
+            }
         }
         else
         {
-
-            Wallet walletFromDb = await _unitOfWork.Wallet.GetAsync(c => c.WalletId == walletDto.WalletId);
-            if (walletFromDb == null)
+            wallet = await _unitOfWork.Wallet.GetAsync(c => c.WalletId == walletDto.WalletId);
+            if (wallet == null)
             {
                 throw new WalletNotFoundException(walletDto.WalletId);
             }
 
-            _mapper.Map(walletDto, walletFromDb);
-
-            await _unitOfWork.Wallet.UpdateAsync(walletFromDb);
-            _response.Result = _mapper.Map<WalletDto>(walletFromDb);
+            _mapper.Map(walletDto, wallet);
+            await _unitOfWork.Wallet.UpdateAsync(wallet);
         }
 
         await _unitOfWork.SaveAsync();
 
-
+        _response.Result = _mapper.Map<WalletDto>(wallet);
         return Ok(_response);
     }
 
+
     [HttpPut("subtract-balance")]
-    //[Authorize]
+    [Authorize]
     public async Task<ActionResult<ResponseDto>> SubtractBalance([FromBody] decimal amount)
     {
         if (amount <= 0)

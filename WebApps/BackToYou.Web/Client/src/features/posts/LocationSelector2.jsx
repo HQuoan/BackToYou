@@ -1,5 +1,9 @@
 import { useFormContext } from "react-hook-form";
-import { useDistricts, useProvinces, useWards } from './../locations/useLocations';
+import {
+  useDistricts,
+  useProvinces,
+  useWards,
+} from "./../locations/useLocations";
 
 function LocationSelector2() {
   const {
@@ -13,10 +17,12 @@ function LocationSelector2() {
 
   const { provinces } = useProvinces();
 
-  const selectedProvinceCode = provinces.find((p) => p.name === province)?.code ?? "";
+  const selectedProvinceCode =
+    provinces.find((p) => p.name === province)?.code ?? "";
   const { districts } = useDistricts(selectedProvinceCode, "");
 
-  const selectedDistrictCode = districts.find((d) => d.name === district)?.code ?? "";
+  const selectedDistrictCode =
+    districts.find((d) => d.name === district)?.code ?? "";
   const { wards } = useWards(selectedDistrictCode, "");
 
   return (
@@ -46,7 +52,13 @@ function LocationSelector2() {
       </select>
       <select
         className="form-select mb-2"
-        {...register("ward", { required: "Vui lòng chọn phường/xã" })}
+        {...register("ward", {
+          validate: (value) => {
+            // Nếu có district code nhưng không có ward nào, thì cho phép bỏ trống
+            if (selectedDistrictCode && wards.length === 0) return true;
+            return value ? true : "Vui lòng chọn phường/xã";
+          },
+        })}
         disabled={!district}
       >
         <option value="">Phường/Xã</option>

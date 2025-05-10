@@ -1,25 +1,21 @@
 import { useUser } from "../features/users/useUsers";
+import Spinner from "../ui/Spinner";
 
 function Contact() {
-  const {profile} = useUser();
+  // const { profile } = useUser();
 
-  console.log(profile)
+  // console.log(profile);
 
   return (
     <>
       <div className="site-header"></div>
-      <section
-        className="latest-podcast-section section-padding pb-0"
-        style={{ minHeight: 400 }}
-      >
-        <div className="container"></div>
-        <h1>Contact page</h1>
-        {/* <Topics /> */}
+      <section style={{ minHeight: 400 }}>
+        <div className="d-flex justify-content-center align-items-center">
+          <Spinner />
+        </div>
       </section>
     </>
   );
 }
 
-
 export default Contact;
-

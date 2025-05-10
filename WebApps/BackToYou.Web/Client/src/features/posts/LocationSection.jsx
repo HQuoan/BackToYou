@@ -1,5 +1,5 @@
 import { useFormContext } from "react-hook-form";
-import { MapContainer, TileLayer, Marker } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { useEffect, useState } from "react";
 import "leaflet/dist/leaflet.css";
 import "leaflet-fullscreen";
@@ -9,6 +9,9 @@ import { geocodeAddress, getMyLocation } from "../../utils/locationHelpers";
 import RedIcon from "../../utils/RedIcon";
 import LocationMapSelector from "./LocationMapSelector";
 import LocationSelector2 from "./LocationSelector2";
+
+const hoangSaPosition = [16.831089, 112.33289];
+const truongSaPosition = [9.549071, 112.887067];
 
 function LocationSection({ setShowManual, showManual }) {
   const {
@@ -69,9 +72,10 @@ function LocationSection({ setShowManual, showManual }) {
               type="search"
               className="form-control"
               placeholder='e.g. "131 Nguyễn Chánh"'
-              {...register("streetAddress", {
-                required: "Vui lòng nhập địa chỉ",
-              })}
+              {...register("streetAddress")}
+              //  {...register("streetAddress", {
+              //   required: "Vui lòng nhập địa chỉ",
+              // })}
             />
             <button
               className="btn btn-outline-secondary"
@@ -100,11 +104,11 @@ function LocationSection({ setShowManual, showManual }) {
               <i className="bi bi-crosshair"></i>
             </button>
           </div>
-          {errors.streetAddress && (
+          {/* {errors.streetAddress && (
             <div className="text-danger mt-1">
               {errors.streetAddress.message}
             </div>
-          )}
+          )} */}
         </div>
 
         <div className="mb-3 d-flex justify-content-between align-items-center">
@@ -177,9 +181,17 @@ function LocationSection({ setShowManual, showManual }) {
           >
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+              // attribution='&copy; <a href="https://carto.com/">CARTO</a>'
             />
             <Marker position={[lat, lng]} icon={RedIcon} />
+
+            <Marker position={hoangSaPosition} icon={RedIcon}>
+              <Popup>Hoàng Sa là của Việt Nam</Popup>
+            </Marker>
+
+            <Marker position={truongSaPosition} icon={RedIcon}>
+              <Popup>Trường Sa là của Việt Nam</Popup>
+            </Marker>
             <LocationMapSelector lat={lat} lng={lng} lock={lock} />
           </MapContainer>
         </div>

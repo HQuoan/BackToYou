@@ -11,6 +11,17 @@ export async function getPosts({page, filter}) {
   return data
 }
 
+
+export async function getPostBySlug(slug){
+ const data = await callAPI({
+    method: HttpMethod.GET,
+    url: `${ServiceRoutes.post}/posts/by-slug/${slug}`,
+  });
+
+  return data
+}
+
+
 export async function createPost(formData){
 
   const fd = new FormData();

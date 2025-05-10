@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import "leaflet-fullscreen";
+import "leaflet-fullscreen/dist/leaflet.fullscreen.css";
 import L from "leaflet";
 
 import MapLogic from "./MapLogic";
@@ -14,6 +16,9 @@ import Pagination from "../Pagination";
 import { getMyLocation } from "../../utils/locationHelpers";
 
 const defaultPosition = [21.028511, 105.804817]; // Hà Nội
+const hoangSaPosition = [16.831089, 112.33289];
+const truongSaPosition = [9.549071, 112.887067];
+// const defaultPosition = [21.028511, 105.804817]; // Hà Nội
 
 const createAvatarIcon = (imgUrl) => {
   return L.divIcon({
@@ -67,6 +72,7 @@ export default function Map() {
           center={userPosition}
           zoom={5}
           style={{ height: "80vh", width: "100%" }}
+           fullscreenControl={true}
         >
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
@@ -76,6 +82,15 @@ export default function Map() {
           <Marker position={userPosition} icon={RedIcon}>
             <Popup>Bạn đang ở đây</Popup>
           </Marker>
+
+          <Marker position={hoangSaPosition} icon={RedIcon}>
+            <Popup>Hoàng Sa là của Việt Nam</Popup>
+          </Marker>
+
+           <Marker position={truongSaPosition} icon={RedIcon}>
+            <Popup>Trường Sa là của Việt Nam</Popup>
+          </Marker>
+
 
           {showSpinner ? (
             <Spinner />

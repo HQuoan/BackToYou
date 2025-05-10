@@ -26,14 +26,14 @@ public class PaymentService : IPaymentService
 
             var response = await client.PutAsync("/wallets/refund", content);
 
-            if (!response.IsSuccessStatusCode)
-                throw new BadRequestException("Refund request failed.");
+            //if (!response.IsSuccessStatusCode)
+            //    throw new BadRequestException("Refund request failed.");
 
             var apiContent = await response.Content.ReadAsStringAsync();
             var resp = JsonConvert.DeserializeObject<ResponseDto>(apiContent);
 
             if (resp == null || !resp.IsSuccess)
-                throw new BadRequestException("Refund was not successful.");
+                throw new BadRequestException($"Refund was not successful.  {resp.Message}");
 
             return true;
         }
@@ -43,7 +43,7 @@ public class PaymentService : IPaymentService
         }
         catch (Exception ex)
         {
-            throw new BadRequestException("An unexpected error occurred during refund.");
+            throw new BadRequestException(ex.Message);
         }
     }
 
@@ -60,14 +60,14 @@ public class PaymentService : IPaymentService
 
             var response = await client.PutAsync($"/wallets/subtract-balance", content);
 
-            if (!response.IsSuccessStatusCode)
-                throw new BadRequestException("Subtract balance request failed.");
+            //if (!response.IsSuccessStatusCode)
+            //    throw new BadRequestException("Subtract balance request failed.");
 
             var apiContent = await response.Content.ReadAsStringAsync();
             var resp = JsonConvert.DeserializeObject<ResponseDto>(apiContent);
 
             if (resp == null || !resp.IsSuccess)
-                throw new BadRequestException("Balance subtraction was not successful.");
+                throw new BadRequestException($"Balance subtraction was not successful. {resp.Message}");
 
             return true;
         }
@@ -77,7 +77,7 @@ public class PaymentService : IPaymentService
         }
         catch (Exception ex)
         {
-            throw new BadRequestException("An unexpected error occurred during balance subtraction.");
+            throw new BadRequestException(ex.Message);
         }
     }
 

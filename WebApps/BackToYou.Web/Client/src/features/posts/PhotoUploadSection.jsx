@@ -1,5 +1,5 @@
 import { useFormContext } from "react-hook-form";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import ImageUploadPlaceholder from "../../ui/ImageUploadPlaceholder";
 
 function PhotoUploadSection() {
@@ -8,23 +8,36 @@ function PhotoUploadSection() {
     register,
     formState: { errors },
   } = useFormContext();
+
   const [previews, setPreviews] = useState([]);
+  const inputRef = useRef();
 
   const handleFilesChange = (e) => {
     const newFiles = Array.from(e.target.files);
     const currentFiles = previews.map((p) => p.file);
-    const combinedFiles = [...currentFiles, ...newFiles].slice(0, 3); // max 3
 
+    // Revoke old URLs to avoid memory leaks
+    previews.forEach((p) => URL.revokeObjectURL(p.url));
+
+    const combinedFiles = [...currentFiles, ...newFiles].slice(0, 3); // max 3
     const updatedPreviews = combinedFiles.map((file) => ({
       file,
       url: URL.createObjectURL(file),
     }));
 
     setPreviews(updatedPreviews);
-    setValue("postImages", combinedFiles, { shouldValidate: true }); // trigger validation
+    setValue("postImages", combinedFiles, { shouldValidate: true });
+
+    // Reset input to allow re-selection of the same file
+    if (inputRef.current) {
+      inputRef.current.value = null;
+    }
   };
 
   const removeImage = (index) => {
+    const removed = previews[index];
+    if (removed) URL.revokeObjectURL(removed.url); // Clean up URL
+
     const updatedPreviews = previews.filter((_, i) => i !== index);
     setPreviews(updatedPreviews);
     setValue(
@@ -42,13 +55,14 @@ function PhotoUploadSection() {
   }, [register]);
 
   return (
-    <div id="postImages" className="section mb-5 rounded card">
+    <div id="photos" className="section mb-5 rounded card">
       <div className="card-header d-flex align-items-center">
         <span className="icon-circle me-2">
           <i className="bi bi-camera"></i>
         </span>
         <h5 className="mb-0">Ảnh</h5>
       </div>
+
       <div className="card-body">
         <label className="form-label fw-semibold">
           Ảnh nhặt được (tối đa 3 ảnh)
@@ -57,7 +71,7 @@ function PhotoUploadSection() {
         <div
           className="photo-upload-area border rounded d-flex flex-wrap gap-3 p-3 mb-2"
           style={{ cursor: "pointer", minHeight: "100px" }}
-          onClick={() => document.getElementById("photoInput").click()}
+          onClick={() => inputRef.current?.click()}
         >
           {previews.map((img, idx) => (
             <div key={idx} style={{ position: "relative" }}>
@@ -89,6 +103,7 @@ function PhotoUploadSection() {
 
         <input
           id="photoInput"
+          ref={inputRef}
           type="file"
           accept="image/*"
           multiple
@@ -99,8 +114,6 @@ function PhotoUploadSection() {
         {errors.postImages && (
           <div className="text-danger">{errors.postImages.message}</div>
         )}
-
-        {/* <small className="form-text text-muted">Tối đa 3 ảnh.</small> */}
       </div>
     </div>
   );
