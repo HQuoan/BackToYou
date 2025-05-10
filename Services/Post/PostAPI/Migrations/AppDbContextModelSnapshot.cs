@@ -453,7 +453,7 @@ namespace PostAPI.Migrations
             modelBuilder.Entity("PostAPI.Models.Comment", b =>
                 {
                     b.HasOne("PostAPI.Models.Comment", "ParentComment")
-                        .WithMany()
+                        .WithMany("ChildComments")
                         .HasForeignKey("ParentCommentId");
 
                     b.HasOne("PostAPI.Models.Post", "Post")
@@ -540,15 +540,18 @@ namespace PostAPI.Migrations
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<string>("Email")
+                                .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Facebook")
                                 .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Name")
+                                .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
                             b1.Property<string>("Phone")
+                                .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
                             b1.HasKey("PostId");
@@ -622,6 +625,11 @@ namespace PostAPI.Migrations
             modelBuilder.Entity("PostAPI.Models.Category", b =>
                 {
                     b.Navigation("Posts");
+                });
+
+            modelBuilder.Entity("PostAPI.Models.Comment", b =>
+                {
+                    b.Navigation("ChildComments");
                 });
 
             modelBuilder.Entity("PostAPI.Models.District", b =>

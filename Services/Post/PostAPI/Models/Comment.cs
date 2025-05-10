@@ -18,4 +18,6 @@ public class Comment : BaseEntity
     public Post? Post { get; set; }
     [Required]
     public string Description { get; set; }
+
+    public ICollection<Comment>? ChildComments { get; set; }
 }

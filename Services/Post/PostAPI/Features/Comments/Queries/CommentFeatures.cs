@@ -18,9 +18,17 @@ public static class CommentFeatures
             {
                 switch (prop.Name)
                 {
-                    case nameof(CommentQueryParameters.ParentCommentId):
-                        filters.Add(m => m.ParentCommentId == (Guid)value);
+                    case nameof(CommentQueryParameters.IsParentCommentNull):
+                        if ((bool)value)
+                            filters.Add(m => m.ParentCommentId == null);
                         break;
+
+                    case nameof(CommentQueryParameters.ParentCommentId):
+                        // Nếu IsParentCommentNull đã được xử lý, bỏ qua ParentCommentId
+                        if (!(queryParameters.IsParentCommentNull ?? false))
+                            filters.Add(m => m.ParentCommentId == (Guid)value);
+                        break;
+
 
                     case nameof(CommentQueryParameters.UserId):
                         filters.Add(m => m.UserId == (Guid)value);

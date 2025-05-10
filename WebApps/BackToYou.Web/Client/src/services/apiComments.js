@@ -6,7 +6,7 @@ export async function getComments({page, postId}) {
   const data = await callAPI({
     method: HttpMethod.GET,
     url: `${ServiceRoutes.post}/comments`,
-    params: {...page, postId}
+    params: {...page, postId, isParentCommentNull:true,includeProperties:"ChildComments" }
   });
 
   return data

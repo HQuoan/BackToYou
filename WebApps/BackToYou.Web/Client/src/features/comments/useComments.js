@@ -36,13 +36,6 @@ export function useComments(postId) {
     });
   }
 
-  if (pageNumber > 1) {
-    const prevPage = { pageNumber: pageNumber - 1, pageSize };
-    queryClient.prefetchQuery({
-      queryKey: ["comments", postId],
-      queryFn: () => getComments({ page: prevPage, postId }),
-    });
-  }
 
   return { isPending, error, comments, pagination };
 }

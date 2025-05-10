@@ -125,7 +125,7 @@ public class WalletAPIController : ControllerBase
         Wallet walletFromDb = await _unitOfWork.Wallet.GetAsync(c => c.UserId == userId);
         if (walletFromDb == null)
         {
-            throw new WalletNotFoundException(userId);
+            throw new BadRequestException("You haven't created a wallet yet.");
         }
 
         if (walletFromDb.Balance < amount)

@@ -27,6 +27,7 @@ public class CommentAPIController : ControllerBase
     public async Task<ActionResult<ResponseDto>> Get([FromQuery] CommentQueryParameters queryParameters)
     {
         var query = CommentFeatures.Build(queryParameters);
+
         IEnumerable<Comment> comments = await _unitOfWork.Comment.GetAllAsync(query);
 
         _response.Result = _mapper.Map<IEnumerable<CommentDto>>(comments);
