@@ -1,8 +1,11 @@
 import { useState } from "react";
 import CommentForm from "./CommentForm";
+import { useDeleteComment } from "./useDeleteComment";
 
-function CommentItem({ comment, replies = [], postId }) {
+function CommentItem({ comment, postId, deleteCmt }) {
   const [isReplying, setIsReplying] = useState(false);
+  const [child, setChild] = useState(comment.childComments ?? []);
+  const { deleteComment } = useDeleteComment();
 
   const initials = comment.createdBy
     .split(" ")
@@ -10,7 +13,28 @@ function CommentItem({ comment, replies = [], postId }) {
     .join("")
     .toUpperCase();
 
+  function handleNewChildComment(newComment) {
+    setChild((prev) => [...prev, newComment]);
+    setIsReplying(false);
+  }
+
+  function deleteChildComment(commentId) {
+    commentId &&
+      setChild((prev) => {
+        return prev.filter((c) => c.commentId != commentId);
+      });
+  }
+
   const isParent = !comment.parentCommentId;
+
+  function handleDeleteComment(id) {
+    console.log("id", id);
+    deleteComment(id, {
+      onSuccess: () => {
+        deleteCmt(id)
+      },
+    });
+  }
 
   return (
     <div className="mb-3 ms-0">
@@ -34,6 +58,13 @@ function CommentItem({ comment, replies = [], postId }) {
                 minute: "2-digit",
               })}
             </small>
+            <button
+              type="button"
+              className="btn text-danger"
+              onClick={() => handleDeleteComment(comment.commentId)}
+            >
+              Xóa
+            </button>
           </div>
           <p className="mb-1">{comment.description}</p>
 
@@ -54,21 +85,22 @@ function CommentItem({ comment, replies = [], postId }) {
               <CommentForm
                 postId={postId}
                 parentCommentId={comment.commentId}
-                onSuccess={() => setIsReplying(false)}
+                onSuccess={handleNewChildComment}
               />
             </div>
           )}
         </div>
       </div>
 
-      {/* render replies */}
-      {replies.length > 0 && (
+      {/* Render child comments*/}
+      {child?.length > 0 && (
         <div className="ms-5 mt-3">
-          {replies.map((reply) => (
+          {child.map((reply) => (
             <CommentItem
               key={reply.commentId}
               comment={reply}
               postId={postId}
+              deleteCmt={deleteChildComment}
             />
           ))}
         </div>

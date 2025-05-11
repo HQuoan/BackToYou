@@ -1,15 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useCreateComment } from "./useCreateComment";
 
 function CommentForm({ postId, parentCommentId = null, onSuccess }) {
   const [inputComment, setInputComment] = useState("");
   const { isCreating, createComment } = useCreateComment();
-  // const textareaRef = useRef(null);
-
-  // useEffect(() => {
-  //   // Focus vào ô nhập khi component được render
-  //   textareaRef.current?.focus();
-  // }, []);
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -20,9 +14,10 @@ function CommentForm({ postId, parentCommentId = null, onSuccess }) {
         parentCommentId,
       },
       {
-        onSuccess: () => {
+        onSuccess: (data) => {
+          console.log("cmtform", data?.result)
           setInputComment("");
-          onSuccess?.();
+          onSuccess?.(data?.result);
         },
       }
     );
@@ -31,7 +26,6 @@ function CommentForm({ postId, parentCommentId = null, onSuccess }) {
   return (
     <form onSubmit={handleSubmit}>
       <textarea
-        // ref={textareaRef}
         className="form-control"
         placeholder="Nhập bình luận tại đây..."
         value={inputComment}

@@ -12,7 +12,7 @@ using PostAPI.Data;
 namespace PostAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250510130459_Init")]
+    [Migration("20250511093947_Init")]
     partial class Init
     {
         /// <inheritdoc />

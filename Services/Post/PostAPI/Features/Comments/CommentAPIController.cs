@@ -125,11 +125,43 @@ public class CommentAPIController : ControllerBase
         return Ok(_response);
     }
 
-    [HttpDelete]
+    //[HttpDelete("{id}")]
+    //[Authorize]
+    //public async Task<ActionResult> Delete(Guid id)
+    //{
+    //    var comment = await _unitOfWork.Comment.GetAsync(c => c.CommentId == id);
+    //    if (comment == null)
+    //    {
+    //        throw new CommentNotFoundException(id);
+    //    }
+
+    //    bool isAdmin = User.IsInRole(SD.AdminRole);
+
+    //    var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+    //    if (!Guid.TryParse(userIdClaim.Value, out Guid userId))
+    //    {
+    //        throw new BadRequestException("Invalid or missing user ID claim.");
+    //    }
+
+    //    if (!isAdmin && userId != comment.UserId)
+    //    {
+    //        throw new ForbiddenException();
+    //    }
+
+    //    await _unitOfWork.Comment.RemoveAsync(comment);
+    //    await _unitOfWork.SaveAsync();
+
+    //    return Ok(_response);
+    //}
+
+    [HttpDelete("{id}")]
     [Authorize]
     public async Task<ActionResult> Delete(Guid id)
     {
-        var comment = await _unitOfWork.Comment.GetAsync(c => c.CommentId == id);
+        // Lấy comment cùng các comment con
+        var comment = await _unitOfWork.Comment
+            .GetAsync(c => c.CommentId == id, includeProperties: "ChildComments");
+
         if (comment == null)
         {
             throw new CommentNotFoundException(id);
@@ -138,7 +170,7 @@ public class CommentAPIController : ControllerBase
         bool isAdmin = User.IsInRole(SD.AdminRole);
 
         var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-        if (!Guid.TryParse(userIdClaim.Value, out Guid userId))
+        if (!Guid.TryParse(userIdClaim?.Value, out Guid userId))
         {
             throw new BadRequestException("Invalid or missing user ID claim.");
         }
@@ -148,9 +180,32 @@ public class CommentAPIController : ControllerBase
             throw new ForbiddenException();
         }
 
-        await _unitOfWork.Comment.RemoveAsync(comment);
-        await _unitOfWork.SaveAsync();
+        // Đệ quy xóa comment con
+        await DeleteCommentRecursive(comment);
 
+        await _unitOfWork.SaveAsync();
         return Ok(_response);
     }
+
+    // Hàm đệ quy xóa comment và con của nó
+    private async Task DeleteCommentRecursive(Comment comment)
+    {
+        // Load ChildComments nếu chưa có (tránh null)
+        if (comment.ChildComments == null)
+        {
+            var query = new QueryParameters<Comment>();
+            query.Filters.Add(c => c.ParentCommentId == comment.CommentId);
+
+            comment.ChildComments = (ICollection<Comment>?)await _unitOfWork.Comment
+                .GetAllAsync(query);
+        }
+
+        foreach (var child in comment.ChildComments.ToList())
+        {
+            await DeleteCommentRecursive(child);
+        }
+
+        await _unitOfWork.Comment.RemoveAsync(comment);
+    }
+
 }

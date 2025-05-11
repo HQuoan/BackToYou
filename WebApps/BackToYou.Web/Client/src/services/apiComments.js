@@ -24,9 +24,8 @@ export async function createComment(comment){
 
 export async function deleteComment(id){
   const data = await callAPI({
-    method: HttpMethod.POST,
-    url: `${ServiceRoutes.post}/comments`,
-    data: id
+    method: HttpMethod.DELETE,
+    url: `${ServiceRoutes.post}/comments/${id}`,
   })
 
   return data;

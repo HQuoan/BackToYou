@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace PostAPI.Data;
 public class AppDbContext : DbContext
@@ -66,7 +67,7 @@ public class AppDbContext : DbContext
 
 
         builder.Entity<Post>()
-            .HasOne(p => p.Category)
+           .HasOne(p => p.Category)
            .WithMany(c => c.Posts)
            .HasForeignKey(p => p.CategoryId)
            .OnDelete(DeleteBehavior.Restrict); // Cấm xóa Category nếu có Post liên kết
