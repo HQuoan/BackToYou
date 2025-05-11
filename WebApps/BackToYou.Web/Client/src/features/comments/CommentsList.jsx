@@ -5,65 +5,64 @@ import CommentForm from "./CommentForm";
 
 function CommentsList({ postId }) {
   const [pageNumber, setPageNumber] = useState(1);
-  const [allComments, setAllComments] = useState([]);
-  
+  const [commentList, setCommentList] = useState([]);
+  const [totalComments, setTotalComments] = useState(0);
+
   const { comments, pagination, isPending } = useComments(postId, pageNumber);
-  
-  const [totalItems, setTotalItems] = useState(pagination?.totalItems || 0)
 
   useEffect(() => {
-    setAllComments((prev) => {
-      const existingIds = new Set(prev.map((c) => c.commentId));
-      const merged = [...prev];
-      comments.forEach((c) => {
-        if (!existingIds.has(c.commentId)) merged.push(c);
+    setCommentList((prevComments) => {
+      const existingIds = new Set(prevComments.map((c) => c.commentId));
+      const mergedComments = [...prevComments];
+
+      comments.forEach((comment) => {
+        if (!existingIds.has(comment.commentId)) {
+          mergedComments.push(comment);
+        }
       });
-      return merged;
+
+      return mergedComments;
     });
 
-    setTotalItems(pagination?.totalItems)
-  }, [comments]);
+    if (pagination?.totalItems !== undefined) {
+      setTotalComments(pagination.totalItems);
+    }
+  }, [comments, pagination]);
 
+  const hasMorePages = pagination && pageNumber < pagination.totalPages;
 
-  const hasMore = pagination && pageNumber < pagination.totalPages;
+  const handleLoadMore = () => setPageNumber((prev) => prev + 1);
 
-  function handleLoadMore() {
-    setPageNumber((prev) => prev + 1);
-  }
+  const handleNewComment = (newComment) => {
+    setCommentList((prev) => [newComment, ...prev]);
+    setTotalComments((prev) => prev + 1);
+  };
 
-  function handleNewComment(newComment) {
-    setAllComments((prev) => [newComment, ...prev]);
-    setTotalItems((prev) => (prev + 1))
-  }
+  const handleDeleteComment = (commentId) => {
+    if (!commentId) return;
 
-  function handleDeleteParentComment(commentId) {
-    commentId &&
-      setTotalItems((prev) => (prev - 1))
-      setAllComments((prev) => {
-        return prev.filter((c) => c.commentId != commentId);
-      });
-  }
+    setCommentList((prev) => prev.filter((c) => c.commentId !== commentId));
+    setTotalComments((prev) => prev - 1);
+  };
 
   return (
     <div className="comments-list mt-5 mb-5">
-      <h4 className="section-title mb-3">
-        Bình luận ({totalItems})
-      </h4>
+      <h4 className="section-title mb-3">Bình luận ({totalComments})</h4>
 
       <div className="mb-4">
         <CommentForm postId={postId} onSuccess={handleNewComment} />
       </div>
 
-      {allComments.map((parent) => (
+      {commentList.map((comment) => (
         <CommentItem
-          key={parent.commentId}
-          comment={parent}
+          key={comment.commentId}
+          comment={comment}
           postId={postId}
-          deleteCmt={handleDeleteParentComment}
+          onDelete={handleDeleteComment}
         />
       ))}
 
-      {hasMore && (
+      {hasMorePages && (
         <div className="mb-4">
           <div className="d-flex justify-content-end mt-2">
             <button

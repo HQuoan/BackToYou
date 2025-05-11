@@ -2,9 +2,9 @@ import { useState } from "react";
 import CommentForm from "./CommentForm";
 import { useDeleteComment } from "./useDeleteComment";
 
-function CommentItem({ comment, postId, deleteCmt }) {
+function CommentItem({ comment, postId, onDelete }) {
   const [isReplying, setIsReplying] = useState(false);
-  const [child, setChild] = useState(comment.childComments ?? []);
+  const [replies, setReplies] = useState(comment.childComments ?? []);
   const { deleteComment } = useDeleteComment();
 
   const initials = comment.createdBy
@@ -13,28 +13,23 @@ function CommentItem({ comment, postId, deleteCmt }) {
     .join("")
     .toUpperCase();
 
-  function handleNewChildComment(newComment) {
-    setChild((prev) => [...prev, newComment]);
+  const isParentComment = !comment.parentCommentId;
+
+  const handleAddReply = (newReply) => {
+    setReplies((prev) => [...prev, newReply]);
     setIsReplying(false);
-  }
+  };
 
-  function deleteChildComment(commentId) {
-    commentId &&
-      setChild((prev) => {
-        return prev.filter((c) => c.commentId != commentId);
-      });
-  }
+  const handleDeleteReply = (replyId) => {
+    if (!replyId) return;
+    setReplies((prev) => prev.filter((c) => c.commentId !== replyId));
+  };
 
-  const isParent = !comment.parentCommentId;
-
-  function handleDeleteComment(id) {
-    console.log("id", id);
-    deleteComment(id, {
-      onSuccess: () => {
-        deleteCmt(id)
-      },
+  const handleDelete = () => {
+    deleteComment(comment.commentId, {
+      onSuccess: () => onDelete(comment.commentId),
     });
-  }
+  };
 
   return (
     <div className="mb-3 ms-0">
@@ -58,17 +53,13 @@ function CommentItem({ comment, postId, deleteCmt }) {
                 minute: "2-digit",
               })}
             </small>
-            <button
-              type="button"
-              className="btn text-danger"
-              onClick={() => handleDeleteComment(comment.commentId)}
-            >
+            <button type="button" className="btn text-danger" onClick={handleDelete}>
               Xóa
             </button>
           </div>
           <p className="mb-1">{comment.description}</p>
 
-          {isParent && (
+          {isParentComment && (
             <div className="mt-2">
               <button
                 className="btn btn-sm border-btn-custom rounded-pill px-3"
@@ -85,22 +76,22 @@ function CommentItem({ comment, postId, deleteCmt }) {
               <CommentForm
                 postId={postId}
                 parentCommentId={comment.commentId}
-                onSuccess={handleNewChildComment}
+                onSuccess={handleAddReply}
               />
             </div>
           )}
         </div>
       </div>
 
-      {/* Render child comments*/}
-      {child?.length > 0 && (
+      {/* Replies */}
+      {replies.length > 0 && (
         <div className="ms-5 mt-3">
-          {child.map((reply) => (
+          {replies.map((reply) => (
             <CommentItem
               key={reply.commentId}
               comment={reply}
               postId={postId}
-              deleteCmt={deleteChildComment}
+              onDelete={handleDeleteReply}
             />
           ))}
         </div>
