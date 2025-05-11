@@ -2,8 +2,14 @@ import { Link, NavLink } from "react-router-dom";
 import Logo from "./Logo";
 import SearchForm from "./SearchForm";
 import { useEffect } from "react";
+import { FaUserCircle } from "react-icons/fa";
+import { useUser } from "../features/authentication/useUser";
+import { useLogout } from "../features/authentication/useLogout";
 
 function Header() {
+  const { isAuthenticated, user } = useUser();
+  const {logout} = useLogout();
+
   useEffect(() => {
     const navbar = document.querySelector(".navbar");
 
@@ -78,13 +84,26 @@ function Header() {
             </li>
           </ul>
         </div>
-        <div className="ms-4">
-          <Link
-            to="/login"
-            className="btn custom-btn custom-border-btn smoothscroll"
-          >
-            Đăng nhập
-          </Link>
+        <div className="ms-4 d-flex align-items-center gap-2">
+          {isAuthenticated ? (
+            <div>
+              <Link
+                to="/profile"
+                className="d-flex align-items-center text-decoration-none text-dark"
+              >
+                <FaUserCircle size={24} className="me-2" />
+                <span>{user?.shortName || user?.fullName || "User"}</span>
+              </Link>
+              <button className="btn custom-btn custom-border-btn" onClick={() => logout()}>Logout</button>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="btn custom-btn custom-border-btn"
+            >
+              Đăng nhập
+            </Link>
+          )}
         </div>
       </div>
     </nav>

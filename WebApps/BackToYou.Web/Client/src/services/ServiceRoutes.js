@@ -1,6 +1,6 @@
 export const ServiceRoutes = {
-  // auth: "/auth-service",
-  auth: "",
-  // post: "/post-service",
-  post: "",
+  auth: "/auth-service",
+  post: "/post-service",
+  // auth: "",
+  // post: "",
 };

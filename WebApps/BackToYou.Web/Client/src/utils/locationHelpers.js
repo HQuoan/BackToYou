@@ -37,8 +37,6 @@ export function getMyLocation(setValue) {
 export async function geocodeAddress(address, setValue) {
   if (!address) return;
 
-  // console.log("geo", address)
-
   try {
     const response = await fetch(
       `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`

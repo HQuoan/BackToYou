@@ -1,3 +1,29 @@
+// import { useMutation, useQueryClient } from "@tanstack/react-query";
+// import { createPost as createPostAPI } from "../../services/apiPost";
+// import toast from "react-hot-toast";
+
+// export function useCreatePost() {
+//   const queryClient = useQueryClient();
+
+//   const {
+//     mutateAsync: createPost,
+//     isPending: isCreating,
+//     error,
+//   } = useMutation({
+//     mutationFn: createPostAPI,
+//     // onError: (err) => toast.error(err.message),
+//   });
+
+//   const handleCreatePost = async (data) => {
+//     const result = await createPost(data);
+//     toast.success("Tạo bài đăng thành công");
+//     queryClient.invalidateQueries({ queryKey: ["posts"] });
+//     return result?.result;
+//   };
+
+//   return { isCreating, createPost: handleCreatePost, error };
+// }
+
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createPost as createPostAPI } from "../../services/apiPost";
 import toast from "react-hot-toast";
@@ -11,7 +37,9 @@ export function useCreatePost() {
     error,
   } = useMutation({
     mutationFn: createPostAPI,
-    // onError: (err) => toast.error(err.message),
+    onError: (err) => {
+      toast.error(err.message);
+    },
   });
 
   const handleCreatePost = async (data) => {
@@ -23,4 +51,3 @@ export function useCreatePost() {
 
   return { isCreating, createPost: handleCreatePost, error };
 }
-

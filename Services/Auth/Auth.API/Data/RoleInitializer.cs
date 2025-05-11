@@ -50,5 +50,37 @@ public class RoleInitializer
                 throw new Exception("Failed to create admin user.");
             }
         }
+
+        // Create default customer user
+        var customerEmail = "user@gmail.com";
+
+        var customerUserFromDb = await userManager.FindByEmailAsync(customerEmail);
+        if (customerUserFromDb == null)
+        {
+            ApplicationUser customerUser = new()
+            {
+                Id = "6a2e79a1-2bdf-4b9f-901b-8c9280de9e99",
+                UserName = customerEmail,
+                FullName = "Default User",
+                ShortName = "user",
+                Email = customerEmail,
+                Avatar = null,
+                NormalizedEmail = customerEmail.ToUpper(),
+                Sex = SD.Male,
+                DateOfBirth = DateTime.Now,
+                EmailConfirmed = true,
+            };
+
+            var result = await userManager.CreateAsync(customerUser, "User@123");
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(customerUser, SD.CustomerRole);
+            }
+            else
+            {
+                throw new Exception("Failed to create customer user.");
+            }
+        }
+
     }
 }

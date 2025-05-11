@@ -1,8 +1,11 @@
 import { useState } from "react";
 import CommentForm from "./CommentForm";
 import { useDeleteComment } from "./useDeleteComment";
+import { useCanEdit } from "../authentication/useCanEdit";
 
 function CommentItem({ comment, postId, onDelete }) {
+  const canEdit = useCanEdit(comment.userId);
+
   const [isReplying, setIsReplying] = useState(false);
   const [replies, setReplies] = useState(comment.childComments ?? []);
   const { deleteComment } = useDeleteComment();
@@ -53,9 +56,15 @@ function CommentItem({ comment, postId, onDelete }) {
                 minute: "2-digit",
               })}
             </small>
-            <button type="button" className="btn text-danger" onClick={handleDelete}>
-              Xóa
-            </button>
+            {canEdit && (
+              <button
+                type="button"
+                className="btn text-danger ms-2"
+                onClick={handleDelete}
+              >
+                Xóa
+              </button>
+            )}
           </div>
           <p className="mb-1">{comment.description}</p>
 

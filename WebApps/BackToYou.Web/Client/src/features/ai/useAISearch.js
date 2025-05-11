@@ -5,7 +5,9 @@ import { aiSearch as aiSearchAPI } from "../../services/apiAI";
 export function useAiSearch(){
   const {mutateAsync: aiSearch, isPending} = useMutation({
     mutationFn: aiSearchAPI,
-    onError: (err) => toast.error(err.message),
+    onError: (error) => {
+      toast.error(error.message);
+    },
   });
 
   return { isPending, aiSearch };

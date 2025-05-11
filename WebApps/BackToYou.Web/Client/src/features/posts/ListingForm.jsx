@@ -25,7 +25,6 @@ function ListingForm() {
     } else {
       const post = await createPost(data);
 
-      console.log("listing", post)
       if (post?.slug) {
         navigate(`/${post.slug}`);
       }

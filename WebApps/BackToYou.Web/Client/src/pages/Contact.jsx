@@ -1,10 +1,8 @@
-import { useUser } from "../features/users/useUsers";
+import { useUser } from "../features/authentication/useUser";
 import Spinner from "../ui/Spinner";
 
 function Contact() {
-  // const { profile } = useUser();
 
-  // console.log(profile);
 
   return (
     <>

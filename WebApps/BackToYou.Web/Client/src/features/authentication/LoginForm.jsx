@@ -1,9 +1,6 @@
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
-import { LoginRequestDto } from "../../dtos/authDtos";
-import { login } from "../../services/apiAuth";
-import { useMutation } from "@tanstack/react-query";
-import toast from "react-hot-toast";
+import { useLogin } from "./useLogin";
 
 function LoginForm() {
   const {
@@ -17,28 +14,18 @@ function LoginForm() {
     },
   });
 
-  const { isPending, mutate } = useMutation({
-    mutationFn: ({ email, password }) => {
-      const dto = new LoginRequestDto(email, password);
-      return login(dto);
-    },
-    onSuccess: (data) => {
-      toast.success("Đăng nhập thành công!");
-      console.log(data);
-    },
-    onError: (error) => {
-      toast.error("Đăng nhập thất bại: " + (error?.message || "Lỗi không xác định"));
-      console.error(error);
-    },
-  });
+  const { isPending, login } = useLogin();
 
   const onSubmit = (data) => {
-    mutate(data);
+    login(data);
   };
 
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)} className="p-4 border rounded bg-light">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="p-4 border rounded bg-light"
+      >
         <div className="mb-3">
           <label htmlFor="email" className="form-label">
             Nhập email của bạn
@@ -50,7 +37,9 @@ function LoginForm() {
             placeholder="email@gmail.com"
             {...register("email", { required: "Email không được để trống" })}
           />
-          {errors.email && <p className="text-danger mt-2 ms-2">{errors.email.message}</p>}
+          {errors.email && (
+            <p className="text-danger mt-2 ms-2">{errors.email.message}</p>
+          )}
         </div>
 
         <div className="mb-4">
@@ -62,9 +51,13 @@ function LoginForm() {
             className="form-control"
             id="password"
             placeholder="******"
-            {...register("password", { required: "Mật khẩu không được để trống" })}
+            {...register("password", {
+              required: "Mật khẩu không được để trống",
+            })}
           />
-          {errors.password && <p className="text-danger mt-2 ms-2">{errors.password.message}</p>}
+          {errors.password && (
+            <p className="text-danger mt-2 ms-2">{errors.password.message}</p>
+          )}
         </div>
 
         <div className="d-grid">

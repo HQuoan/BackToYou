@@ -15,7 +15,6 @@ function CommentForm({ postId, parentCommentId = null, onSuccess }) {
       },
       {
         onSuccess: (data) => {
-          console.log("cmtform", data?.result)
           setInputComment("");
           onSuccess?.(data?.result);
         },

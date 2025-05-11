@@ -37,6 +37,8 @@ namespace Auth.API.Migrations
                     Avatar = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CoinBalance = table.Column<int>(type: "int", nullable: false),
                     ReputationScore = table.Column<float>(type: "real", nullable: false),
+                    FacebookId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    GoogleId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),

@@ -33,9 +33,6 @@ export async function createPost(formData){
   fd.append("postLabel", formData.postLabel);
   fd.append("lostOrFoundDate", formData.lostOrFoundDate);
 
-  // console.log("lostOrFoundDate (ISO):", new Date(formData.lostOrFoundDate).toISOString());
-
-
   // Location fields
   fd.append("location.latitude", formData.latitude || 0);
   fd.append("location.longitude", formData.longitude || 0);

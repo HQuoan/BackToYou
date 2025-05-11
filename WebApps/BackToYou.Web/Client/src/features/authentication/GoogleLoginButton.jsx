@@ -1,28 +1,12 @@
 import { GoogleLogin } from "@react-oauth/google";
-import { useMutation } from "@tanstack/react-query";
-import { loginWithGoogle } from "../../services/apiAuth";
-import toast from "react-hot-toast";
+import { useLoginWithGoogle } from "./useLogin";
 
 function GoogleLoginButton() {
-
-  const { isPending, mutate } = useMutation({
-    mutationFn: (data) => {
-      return loginWithGoogle(data);
-    },
-    onSuccess: (data) => {
-      toast.success("Đăng nhập thành công!");
-      console.log(data);
-    },
-    onError: (error) => {
-      toast.error("Đăng nhập thất bại: " + (error?.message || "Lỗi không xác định"));
-      console.error(error);
-    },
-  });
+  const { loginWithGoogle } = useLoginWithGoogle();
 
   const responseGoogle = (response) => {
     if (response.credential) {
-      mutate({ token: response.credential });
-
+      loginWithGoogle({ token: response.credential });
     } else {
       console.error("No credential found", response);
     }
