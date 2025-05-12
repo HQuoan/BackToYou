@@ -141,7 +141,7 @@ function LocationSection({ setShowManual, showManual }) {
               <label className="form-label fw-semibold">Latitude</label>
               <input
                 type="text"
-                className="form-control"
+                className={`form-control ${errors.latitude ? "is-invalid" : ""}`}
                 {...register("latitude", {
                   required: "Vui lòng nhập latitude",
                   validate: (value) => !isNaN(value) || "Latitude phải là số",
@@ -157,7 +157,7 @@ function LocationSection({ setShowManual, showManual }) {
               <label className="form-label fw-semibold">Longitude</label>
               <input
                 type="text"
-                className="form-control"
+                className={`form-control ${errors.longitude ? "is-invalid" : ""}`}
                 {...register("longitude", {
                   required: "Vui lòng nhập longitude",
                   validate: (value) => !isNaN(value) || "Longitude phải là số",

@@ -28,7 +28,7 @@ function LocationSelector2() {
   return (
     <>
       <select
-        className="form-select mb-2"
+        className={`form-select mb-2 ${errors.province ? "is-invalid" : ""}`}
         {...register("province", { required: "Vui lòng chọn tỉnh/thành phố" })}
       >
         <option value="">Tỉnh/Thành phố</option>
@@ -39,7 +39,7 @@ function LocationSelector2() {
         ))}
       </select>
       <select
-        className="form-select mb-2"
+        className={`form-select mb-2 ${errors.district ? "is-invalid" : ""}`}
         {...register("district", { required: "Vui lòng chọn quận/huyện" })}
         disabled={!province}
       >
@@ -51,7 +51,7 @@ function LocationSelector2() {
         ))}
       </select>
       <select
-        className="form-select mb-2"
+        className={`form-select mb-2 ${errors.ward ? "is-invalid" : ""}`}
         {...register("ward", {
           validate: (value) => {
             // Nếu có district code nhưng không có ward nào, thì cho phép bỏ trống

@@ -2,6 +2,8 @@ import { useState } from "react";
 import CommentForm from "./CommentForm";
 import { useDeleteComment } from "./useDeleteComment";
 import { useCanEdit } from "../authentication/useCanEdit";
+import { getInitials } from "../../utils/helpers";
+import PlaceholderAvatar from "../../ui/PlaceholderAvatar";
 
 function CommentItem({ comment, postId, onDelete }) {
   const canEdit = useCanEdit(comment.userId);
@@ -9,12 +11,6 @@ function CommentItem({ comment, postId, onDelete }) {
   const [isReplying, setIsReplying] = useState(false);
   const [replies, setReplies] = useState(comment.childComments ?? []);
   const { deleteComment } = useDeleteComment();
-
-  const initials = comment.createdBy
-    .split(" ")
-    .map((word) => word[0])
-    .join("")
-    .toUpperCase();
 
   const isParentComment = !comment.parentCommentId;
 
@@ -38,12 +34,7 @@ function CommentItem({ comment, postId, onDelete }) {
     <div className="mb-3 ms-0">
       <div className="d-flex p-3 bg-light rounded shadow">
         <div className="me-3">
-          <div
-            className="d-flex justify-content-center align-items-center bg-secondary rounded-circle"
-            style={{ width: 50, height: 50, fontSize: 16, color: "#fff" }}
-          >
-            {initials}
-          </div>
+          <PlaceholderAvatar name={comment?.createdBy}/>
         </div>
         <div className="flex-grow-1">
           <div className="d-flex align-items-center mb-2">

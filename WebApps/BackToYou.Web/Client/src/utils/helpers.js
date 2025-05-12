@@ -8,6 +8,16 @@ export function formatPhoneNumber(phone) {
   return phone // fallback nếu không parse được
 }
 
+export function getInitials(name) {
+  if (!name) return "";
+  return name
+    .split(" ")
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase();
+}
+
+
 export function formatDateVN(dateString ) {
   const date = new Date(dateString);
   return date.toLocaleDateString("vi-VN", {

@@ -20,7 +20,7 @@ public class RegistrationRequestDto
     [DefaultValue(SD.Male)]
     public string Sex { get; set; } = SD.Male;
 
-    public DateTime DateOfBirth { get; set; }
+    public DateTime DateOfBirth { get; set; } = new DateTime(2000, 1, 1);
 }
 
 

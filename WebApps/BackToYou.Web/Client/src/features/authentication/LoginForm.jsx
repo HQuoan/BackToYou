@@ -32,7 +32,7 @@ function LoginForm() {
           </label>
           <input
             type="email"
-            className="form-control"
+            className={`form-control ${errors.email ? "is-invalid" : ""}`}
             id="email"
             placeholder="email@gmail.com"
             {...register("email", { required: "Email không được để trống" })}
@@ -48,7 +48,7 @@ function LoginForm() {
           </label>
           <input
             type="password"
-            className="form-control"
+            className={`form-control ${errors.password ? "is-invalid" : ""}`}
             id="password"
             placeholder="******"
             {...register("password", {

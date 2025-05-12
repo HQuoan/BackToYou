@@ -22,7 +22,7 @@ function GeneralInfoSection() {
           <label className="form-label fw-semibold">Tiêu đề</label>
           <input
             type="text"
-            className="form-control"
+            className={`form-control ${errors.title ? "is-invalid" : ""}`}
             {...register("title", { required: "Tiêu đề là bắt buộc" })}
           />
           {errors.title && (
@@ -73,7 +73,9 @@ function GeneralInfoSection() {
             <label className="form-label fw-semibold">Ngày mất</label>
             <input
               type="date"
-              className="form-control"
+              className={`form-control ${
+                errors.lostOrFoundDate ? "is-invalid" : ""
+              }`}
               {...register("lostOrFoundDate", {
                 required: "Ngày mất là bắt buộc",
               })}
@@ -92,7 +94,7 @@ function GeneralInfoSection() {
           <div className="col-md-6 mb-3">
             <label className="form-label fw-semibold">Loại</label>
             <select
-              className="form-select"
+              className={`form-select ${errors.postType ? "is-invalid" : ""}`}
               {...register("postType", { required: "Loại là bắt buộc" })}
             >
               <option value="">Select an option</option>
@@ -107,7 +109,7 @@ function GeneralInfoSection() {
           <div className="col-md-6 mb-3">
             <label className="form-label fw-semibold">Danh mục</label>
             <select
-              className="form-select"
+              className={`form-select ${errors.categoryId ? "is-invalid" : ""}`}
               {...register("categoryId", {
                 required: "Vui lòng chọn danh mục",
               })}
@@ -129,7 +131,7 @@ function GeneralInfoSection() {
         <div className="mb-3">
           <label className="form-label fw-semibold">Mô tả chi tiết</label>
           <textarea
-            className="form-control"
+            className={`form-control ${errors.description ? "is-invalid" : ""}`}
             rows="4"
             {...register("description", {
               required: "Mô tả không được để trống",

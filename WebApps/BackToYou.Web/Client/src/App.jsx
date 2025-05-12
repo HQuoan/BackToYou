@@ -14,6 +14,11 @@ import { Toaster } from "react-hot-toast";
 import AiSearchPage from "./pages/AiSearchPage";
 import ListingPage from "./pages/ListingPage";
 import ProtectedRoute from "./ui/ProtectedRoute";
+import AccountPage from "./pages/AccountPage";
+import AccountInfo from "./features/account/AccountInfo";
+import ViewingHistory from "./features/account/ViewingHistory";
+import UpdateInfoForm from "./features/account/UpdateInfoForm";
+import ChangePasswordForm from "./features/account/ChangePasswordForm";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -42,6 +47,11 @@ function App() {
             <Route path="map" element={<MapPage />} />
             <Route path="contact" element={<Contact />} />
             <Route path="listing" element={<ListingPage />} />
+            <Route path="account" element={<AccountPage />}>
+              <Route path="profile" element={<UpdateInfoForm />} />
+              <Route path="change-password" element={<ChangePasswordForm />} />
+              <Route path="history" element={<ViewingHistory />} />
+            </Route>
             <Route path="/:slug" element={<Detail />} />
           </Route>
 

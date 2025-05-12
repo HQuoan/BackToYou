@@ -41,7 +41,8 @@ select.form-select {
 /* Navbar */
 .navbar.scrolled {
   position: fixed;
-  background-image: url('../images/templatemo-wave-header.jpg'), linear-gradient(#348CD2, #FFFFFF);
+  background-image: url("../images/templatemo-wave-header.jpg"),
+    linear-gradient(#348cd2, #ffffff);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -88,7 +89,6 @@ select.form-select {
   height: 250px;
 }
 
-
 /* custome detail page */
 .img-wrapper.detail-page {
   overflow: visible;
@@ -130,7 +130,7 @@ select.form-select {
   min-height: 2.5em;
 }
 
-.line-clamp-detail-title{
+.line-clamp-detail-title {
   min-height: 2.2em;
 }
 
@@ -144,7 +144,7 @@ select.form-select {
 /* Badges */
 .badge {
   background-color: var(--custom-btn-bg-color, #007bff);
-  font-family: var(--title-font-family, 'Montserrat', sans-serif);
+  font-family: var(--title-font-family, "Montserrat", sans-serif);
   border-radius: var(--border-radius-large, 20px);
   color: var(--white-color, #ffffff);
   padding-bottom: 5px;
@@ -156,28 +156,28 @@ select.form-select {
   font-size: 1rem;
 }
 
-.map .custom-block-info{
+.map .custom-block-info {
   padding: 5px;
 }
 
 .badge-category {
-  background-color: #FF7F50;
+  background-color: #ff7f50;
 }
 
 .badge-location {
-  background-color: #0066CC;
+  background-color: #0066cc;
 }
 
 .badge-lost {
-  background-color: #FF4D4D;
+  background-color: #ff4d4d;
 }
 
 .badge-found {
-  background-color: #00B894;
+  background-color: #00b894;
 }
 
 .badge-lost-or-found-date {
-  background-color: #4D90FE;
+  background-color: #4d90fe;
 }
 
 /* Post Labels */
@@ -185,7 +185,7 @@ select.form-select {
   display: inline-block;
   background-color: var(--highlight-color, #ff9800);
   color: var(--white-color, #ffffff);
-  font-family: var(--title-font-family, 'Montserrat', sans-serif);
+  font-family: var(--title-font-family, "Montserrat", sans-serif);
   font-weight: 600;
   font-size: 0.875rem;
   padding: 4px 12px;
@@ -239,16 +239,15 @@ select.form-select {
 
 .border-btn-custom {
   background: transparent;
-  border: 2px solid #FF7F50;
-  color: #FF7F50;
+  border: 2px solid #ff7f50;
+  color: #ff7f50;
 }
 
 .border-btn-custom:hover {
-  border-color: #FF4D4D;
+  border-color: #ff4d4d;
   color: #ffffff;
-  background: #FF4D4D;
+  background: #ff4d4d;
 }
-
 
 .btn-link-custom {
   color: var(--primary-color);
@@ -316,7 +315,6 @@ select.form-select {
   margin: auto;
 }
 
-
 .ai-upload-zone {
   min-height: 250px;
   background: linear-gradient(135deg, #f0f0ff, #f7f9fc);
@@ -328,7 +326,7 @@ select.form-select {
 }
 
 .listing-page select {
-  margin-right: 12px; 
+  margin-right: 12px;
 }
 
 /* Xóa margin phải của thằng cuối cùng để không bị dư khoảng trắng */
@@ -336,3 +334,55 @@ select.form-select {
   margin-right: 0;
 }
 
+/* ///////////////////////////////// */
+/* Profile Dropdown */
+.profile-dropdown-toggle {
+  background: transparent;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar-profile {
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+
+.profile-dropdown-toggle:focus {
+  outline: none;
+}
+
+.profile-dropdown-menu {
+  background: var(--color-grey-100);
+  border-radius: var(--border-radius-small);
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 200px;
+  margin-top: 10px;
+  padding: 10px 0;
+  z-index: 1000;
+}
+
+.profile-dropdown-item {
+  display: block;
+  color: var(--color-grey-800);
+  font-family: var(--body-font-family);
+  font-size: var(--menu-font-size);
+  font-weight: var(--font-weight-medium);
+  padding: 10px 20px;
+  text-decoration: none;
+  transition: all 0.3s;
+  min-width: 230px;
+}
+
+.profile-dropdown-item:hover {
+  background: var(--color-grey-200);
+  color: var(--primary-color);
+}

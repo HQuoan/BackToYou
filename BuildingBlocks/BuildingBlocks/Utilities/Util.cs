@@ -24,4 +24,23 @@ public static class Util
         var match = Regex.Match(message, @"IX_\w+_(\w+)");
         return match.Success ? match.Groups[1].Value : null;
     }
+
+    public static string GetPublicIdFromUrl(string imageUrl)
+    {
+        if (string.IsNullOrEmpty(imageUrl)) return null;
+
+        try
+        {
+            var uri = new Uri(imageUrl);
+            var segments = uri.Segments;
+            var filename = segments.Last(); // fa2n0uehjzqvmnbq6ir1.jpg
+            var publicId = Path.GetFileNameWithoutExtension(filename);
+            return publicId;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
 }

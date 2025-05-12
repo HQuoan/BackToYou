@@ -1,6 +1,17 @@
 import { callAPI, HttpMethod } from "./apiClient";
 import { ServiceRoutes } from "./ServiceRoutes";
 
+
+export async function register(registerData) {
+  const data = await callAPI({
+    method: HttpMethod.POST,
+    url: `${ServiceRoutes.auth}/auth/register`,
+    data: registerData,
+  });
+
+  return data?.result;
+}
+
 export async function login(loginDto) {
   const data = await callAPI({
     method: HttpMethod.POST,
@@ -35,5 +46,13 @@ export async function logout() {
   await callAPI({
     method: HttpMethod.POST,
     url: `${ServiceRoutes.auth}/auth/logout`,
+  });
+}
+
+export async function changePassword(formData) {
+  await callAPI({
+    method: HttpMethod.POST,
+    url: `${ServiceRoutes.auth}/auth/change-password`,
+    data: formData
   });
 }

@@ -1,5 +1,8 @@
 ﻿using Auth.API.Exceptions;
+using Auth.API.Models.Dtos;
 using BuildingBlocks.Extensions;
+using CloudinaryDotNet;
+using ImageService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -14,14 +17,16 @@ public class UserController : ControllerBase
     private readonly IMapper _mapper;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly IImageUploader _imageUploader;
 
-    public UserController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper, AppDbContext db)
+    public UserController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper, AppDbContext db, IImageUploader imageUploader)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _mapper = mapper;
         _db = db;
         _response = new();
+        _imageUploader = imageUploader;
     }
 
     [HttpGet]
@@ -104,7 +109,7 @@ public class UserController : ControllerBase
         return Ok(_response);
     }
 
-    [HttpGet("GetById")]
+    [HttpGet("get-by-id")]
     [Authorize]
     public async Task<IActionResult> GetById([FromQuery] string? id)
     {
@@ -142,7 +147,7 @@ public class UserController : ControllerBase
         return Ok(_response);
     }
 
-    [HttpGet("GetByEmail/{email}")]
+    [HttpGet("get-by-email/{email}")]
     [Authorize]
     public async Task<IActionResult> GetByEmail(string email)
     {
@@ -167,7 +172,7 @@ public class UserController : ControllerBase
         return Ok(_response);
     }
 
-    [HttpPut("UpdateInformation")]
+    [HttpPut("update-info")]
     [Authorize]
     public async Task<IActionResult> UpdateInformation(UserInformation userInformation)
     {
@@ -197,14 +202,14 @@ public class UserController : ControllerBase
 
         user.FullName = userInformation.FullName;
         user.ShortName = userInformation.FullName.ToShortName();
-        user.Avatar = userInformation.Avatar;
         user.Sex = userInformation.Sex;
         user.DateOfBirth = userInformation.DateOfBirth;
+        user.PhoneNumber = userInformation.PhoneNumber;
 
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)
         {
-            return BadRequest(result.Errors);
+            throw new BadRequestException("Update information failed!");
         }
 
         _response.Result = userInformation;
@@ -235,12 +240,46 @@ public class UserController : ControllerBase
         return NoContent();
     }
 
-    [HttpPost("UploadAvatar")]
+    [HttpPut("upload-avatar")]
     [Authorize]
-    public async Task<IActionResult> UploadAvatar(IFormFile file, string pictureName, string? folder = null)
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> UploadAvatar([FromForm] UploadAvatarDto dto)
     {
-       
+        string userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+            throw new BadRequestException("Invalid or missing user ID claim.");
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            throw new UserNotFoundException(userId);
+
+
+        if (user.Avatar != null)
+        {
+            var publicId = Util.GetPublicIdFromUrl(user.Avatar);
+            if (!string.IsNullOrEmpty(publicId))
+            {
+                var a = await _imageUploader.DeleteImageAsync($"avatar/{publicId}");
+            }
+        }
+
+
+        var imageResult = await _imageUploader.UploadImageAsync(dto.Avatar);
+
+        if (!imageResult.IsSuccess)
+            throw new BadRequestException(imageResult.ErrorMessage);
+
+      
+
+        user.Avatar = imageResult.Url;
+        var result = await _userManager.UpdateAsync(user);
+
+        if (!result.Succeeded)
+            throw new BadRequestException("Update information failed!");
+
+        _response.Result = imageResult.Url;
+
+
         return Ok(_response);
     }
-
 }

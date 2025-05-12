@@ -20,7 +20,7 @@ function ContactInfoSection() {
           <label className="form-label fw-semibold">Họ và tên</label>
           <input
             type="text"
-            className="form-control"
+            className={`form-control ${errors.name ? "is-invalid" : ""}`}
             {...register("name", { required: "Họ và tên là bắt buộc" })}
           />
           {errors.name && <p className="text-danger mt-1">{errors.name.message}</p>}
@@ -31,7 +31,7 @@ function ContactInfoSection() {
           <label className="form-label fw-semibold">Số điện thoại</label>
           <input
             type="text"
-            className="form-control"
+            className={`form-control ${errors.phone ? "is-invalid" : ""}`}
             {...register("phone", {
               required: "Số điện thoại là bắt buộc",
               pattern: {
@@ -48,7 +48,7 @@ function ContactInfoSection() {
           <label className="form-label fw-semibold">Email</label>
           <input
             type="email"
-            className="form-control"
+            className={`form-control ${errors.email ? "is-invalid" : ""}`}
             {...register("email", {
               required: "Email là bắt buộc",
               pattern: {

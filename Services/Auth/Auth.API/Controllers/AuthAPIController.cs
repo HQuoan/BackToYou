@@ -35,7 +35,7 @@ public class AuthAPIController : ControllerBase
 
         //_response.Message = "Email confirmed successfully.";
         //return Ok(_response);
-        return Redirect(_apiSettings.WebClientUrl);
+        return Redirect($"{_apiSettings.WebClientUrl}/login");
     }
 
     [HttpPost("login")]
@@ -75,7 +75,10 @@ public class AuthAPIController : ControllerBase
         {
             throw new BadRequestException("Password change failed.");
         }
-        _response.Message = "Password changed successfully.";
+
+        CookieHelper.RemoveAuthCookie(Response);
+
+        _response.Message = "Password changed successfully. Please login again.";
         return Ok(_response);
     }
 

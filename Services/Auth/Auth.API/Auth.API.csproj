@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\BuildingBlocks\BuildingBlocks\BuildingBlocks.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\EmailService\EmailService.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\ImageService\ImageService.csproj" />
   </ItemGroup>
 
 </Project>

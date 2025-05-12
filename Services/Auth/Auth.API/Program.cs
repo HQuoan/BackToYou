@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text.Json.Serialization;
-using System.Text.Json;
+using ImageService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +20,7 @@ builder.Services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>(
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEmailService, EmailService.EmailService>();
+builder.Services.AddScoped<IImageUploader, CloudinaryUploader>();
 
 // DbContext Configuration
 builder.Services.AddDbContext<AppDbContext>((sp, options) =>

@@ -1,14 +1,34 @@
 import { Link, NavLink } from "react-router-dom";
 import Logo from "./Logo";
 import SearchForm from "./SearchForm";
-import { useEffect } from "react";
-import { FaUserCircle } from "react-icons/fa";
+import { useEffect, useRef, useState } from "react";
 import { useUser } from "../features/authentication/useUser";
 import { useLogout } from "../features/authentication/useLogout";
+import PlaceholderAvatar from "./PlaceholderAvatar";
 
 function Header() {
   const { isAuthenticated, user } = useUser();
-  const {logout} = useLogout();
+  const { logout } = useLogout();
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Xử lý click bên ngoài để đóng dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    // Thêm sự kiện click vào document
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Dọn dẹp sự kiện khi component unmount
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     const navbar = document.querySelector(".navbar");
@@ -60,47 +80,52 @@ function Header() {
                 Contact
               </NavLink>
             </li>
-            <li className="nav-item dropdown">
-              <a
-                className="nav-link dropdown-toggle"
-                href="#"
-                role="button"
-                data-bs-toggle="dropdown"
-              >
-                Pages
-              </a>
-              <ul className="dropdown-menu dropdown-menu-light">
-                <li>
-                  <NavLink to="/listing-page" className="dropdown-item">
-                    Listing Page
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/detail-page" className="dropdown-item">
-                    Detail Page
-                  </NavLink>
-                </li>
-              </ul>
-            </li>
           </ul>
         </div>
-        <div className="ms-4 d-flex align-items-center gap-2">
+        <div className="ms-4 d-flex align-items-center gap-2 position-relative">
           {isAuthenticated ? (
-            <div>
-              <Link
-                to="/profile"
-                className="d-flex align-items-center text-decoration-none text-dark"
+            <div className="dropdown" ref={dropdownRef}>
+              <div
+                className="profile-dropdown-toggle d-flex align-items-center gap-2 bg-transparent border-0 p-0"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                style={{ cursor: "pointer" }}
               >
-                <FaUserCircle size={24} className="me-2" />
-                <span>{user?.shortName || user?.fullName || "User"}</span>
-              </Link>
-              <button className="btn custom-btn custom-border-btn" onClick={() => logout()}>Logout</button>
+                <span className="me-2 text-white">
+                  {user?.shortName || user?.fullName || "User"}
+                </span>
+
+                {user?.avatar ? (
+                  <img
+                    src={user.avatar}
+                    className="profile-block-image"
+                    alt="avatar"
+                  />
+                ) : (
+                  <PlaceholderAvatar name={user?.shortName} />
+                )}
+              </div>
+              {isDropdownOpen && (
+                <div className="profile-dropdown-menu">
+                  <Link to="/account/profile" className="profile-dropdown-item">
+                    <i className="bi bi-person-fill me-2" />
+                    Thông tin tài khoản
+                  </Link>
+                  <Link to="/account/history" className="profile-dropdown-item">
+                    <i className="bi bi-pencil-square me-2"></i>
+                    Bài đăng
+                  </Link>
+                  <button
+                    className="btn profile-dropdown-item"
+                    onClick={() => logout()}
+                  >
+                    <i className="bi bi-box-arrow-right me-2"></i>
+                    Đăng xuất
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
-            <Link
-              to="/login"
-              className="btn custom-btn custom-border-btn"
-            >
+            <Link to="/login" className="btn custom-btn custom-border-btn">
               Đăng nhập
             </Link>
           )}

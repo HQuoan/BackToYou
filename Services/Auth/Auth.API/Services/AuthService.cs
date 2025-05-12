@@ -25,6 +25,12 @@ public class AuthService : IAuthService
     }
     public async Task<UserDto> Register(RegistrationRequestDto registrationRequestDto)
     {
+        var userDb = await _userManager.FindByEmailAsync(registrationRequestDto.Email);
+        if (userDb != null)
+        {
+            throw new BadRequestException("The email is already in use.");
+        }
+
         ApplicationUser user = new()
         {
             Email = registrationRequestDto.Email,
@@ -100,16 +106,16 @@ public class AuthService : IAuthService
     {
         var user = _db.ApplicationUsers.FirstOrDefault(c => c.Email.ToLower() == loginRequestDto.Email.ToLower());
 
+        if (!user.EmailConfirmed)
+        {
+            throw new BadRequestException("Please confirm your email to login.");
+        }
+
         bool isValid = await _userManager.CheckPasswordAsync(user, loginRequestDto.Password);
 
         if (user == null || isValid == false)
         {
             return new LoginResponseDto() { User = null, Token = "" };
-        }
-
-        if (!user.EmailConfirmed)
-        {
-            throw new BadRequestException("Please confirm your email to login.");
         }
 
         LoginResponseDto loginResponseDto = new LoginResponseDto();
@@ -190,7 +196,7 @@ public class AuthService : IAuthService
 
         if (user.PasswordHash == null)
         {
-            throw new BadRequestException("Password change is not allowed for users who logged in with a Google account.");
+            throw new BadRequestException("Password change is not allowed for users who logged in with a Google/Facebook account.");
         }
 
         // Kiểm tra mật khẩu cũ
