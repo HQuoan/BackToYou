@@ -56,3 +56,19 @@ export async function changePassword(formData) {
     data: formData
   });
 }
+
+export async function forgotPassword(formData) {
+  await callAPI({
+    method: HttpMethod.POST,
+    url: `${ServiceRoutes.auth}/auth/forgot-password`,
+    data: formData
+  });
+}
+
+export async function resetPassword(formData) {
+  await callAPI({
+    method: HttpMethod.POST,
+    url: `${ServiceRoutes.auth}/auth/reset-password`,
+    data: formData
+  });
+}

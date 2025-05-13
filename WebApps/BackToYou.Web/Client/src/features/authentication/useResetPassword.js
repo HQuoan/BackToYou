@@ -1,14 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { changePassword as changePasswordAPI } from "../../services/apiAuth";
+import { resetPassword as resetPasswordAPI } from "../../services/apiAuth";
 import toast from "react-hot-toast";
 
-export function useChangePassword() {
+export function useResetPassword() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const { mutate: changePassword, isPending } = useMutation({
-    mutationFn: changePasswordAPI,
+  const { mutate: resetPassword, isPending } = useMutation({
+    mutationFn: resetPasswordAPI,
     onSuccess: () => {
       toast.success("Thay đổi mật khẩu thành công. Vui lòng đăng nhập lại!")
       queryClient.removeQueries();
@@ -19,5 +19,5 @@ export function useChangePassword() {
     },
   });
 
-  return { changePassword, isPending };
+  return { resetPassword, isPending };
 }

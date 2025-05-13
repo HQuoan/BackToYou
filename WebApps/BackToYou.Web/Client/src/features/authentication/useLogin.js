@@ -62,8 +62,8 @@ import {
   loginWithFacebook as loginWithFacebookAPI,
   loginWithGoogle as loginWithGoogleAPI,
 } from "../../services/apiAuth";
-import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export function useLogin() {
   const navigate = useNavigate();

@@ -2,11 +2,15 @@ import { useState, useEffect } from "react";
 import { useComments } from "./useComments";
 import CommentItem from "./CommentItem";
 import CommentForm from "./CommentForm";
+import { useUser } from "../authentication/useUser";
+import { Link } from "react-router-dom";
 
 function CommentsList({ postId }) {
   const [pageNumber, setPageNumber] = useState(1);
   const [commentList, setCommentList] = useState([]);
   const [totalComments, setTotalComments] = useState(0);
+
+  const { isAuthenticated } = useUser();
 
   const { comments, pagination, isPending } = useComments(postId, pageNumber);
 
@@ -50,7 +54,15 @@ function CommentsList({ postId }) {
       <h4 className="section-title mb-3">Bình luận ({totalComments})</h4>
 
       <div className="mb-4">
-        <CommentForm postId={postId} onSuccess={handleNewComment} />
+        {isAuthenticated ? (
+          <CommentForm postId={postId} onSuccess={handleNewComment} />
+        ) : (
+          <div className="d-flex justify-content-center">
+            <Link to="/login">
+              <button className="custom-btn">Đăng nhập để bình luận</button>
+            </Link>
+          </div>
+        )}
       </div>
 
       {commentList.map((comment) => (

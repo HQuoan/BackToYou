@@ -3,6 +3,7 @@ using BuildingBlocks.Extensions;
 using Google.Apis.Auth;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using System.Web;
 
 namespace Auth.API.Services;
 
@@ -233,17 +234,24 @@ public class AuthService : IAuthService
 
         if (user.PasswordHash == null)
         {
-            throw new BadRequestException("Password change is not allowed for users who logged in with a Google account.");
+            throw new BadRequestException("Password change is not allowed for users who logged in with a Google/Facebook account.");
         }
 
         // Tạo token để đặt lại mật khẩu
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
+        var baseUrl = _apiSettings.WebClientUrl; // Ví dụ: http://localhost:5000
+        var resetLink = $"{baseUrl}/reset-password?email={HttpUtility.UrlEncode(user.Email)}&token={HttpUtility.UrlEncode(token)}";
+
         EmailRequest emailRequest = new EmailRequest()
         {
             To = user.Email,
             Subject = "Reset your password",
-            Message = $"Your token: {token}"
+            Message = $@"
+            <p>Click the link below to reset your password:</p>
+            <p><a href='{resetLink}'>Reset Password</a></p>
+            <p>If you did not request this, you can ignore this email.</p>
+            <p>Your token: {token}</p>"
         };
 
         var emailResponse = await _emailService.SendEmailAsync(emailRequest);
@@ -255,6 +263,7 @@ public class AuthService : IAuthService
 
         return true;
     }
+
 
     public async Task<bool> ResetPassword(ResetPasswordDto resetPasswordDto)
     {

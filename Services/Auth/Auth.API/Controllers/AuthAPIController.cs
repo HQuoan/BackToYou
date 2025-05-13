@@ -83,9 +83,9 @@ public class AuthAPIController : ControllerBase
     }
 
     [HttpPost("forgot-password")]
-    public async Task<IActionResult> ForgotPassword(string email)
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
     {
-        var result = await _authService.ForgotPassword(email);
+        var result = await _authService.ForgotPassword(forgotPasswordDto.Email);
         if (!result)
         {
             throw new BadRequestException("Failed to send reset password email.");

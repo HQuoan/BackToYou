@@ -24,7 +24,7 @@ function LoginForm() {
     <>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="p-4 border rounded bg-light"
+        className="p-4 pb-1 border rounded bg-light"
       >
         <div className="mb-3">
           <label htmlFor="email" className="form-label">
@@ -64,6 +64,11 @@ function LoginForm() {
           <button type="submit" className="btn custom-btn" disabled={isPending}>
             {isPending ? "Đang xử lý..." : "Đăng nhập"}
           </button>
+        </div>
+        <div className="text-center mt-1">
+          <Link to="/forgot-password" className="text-primary-custom ms-2">
+            Quên mật khẩu ?
+          </Link>
         </div>
       </form>
 

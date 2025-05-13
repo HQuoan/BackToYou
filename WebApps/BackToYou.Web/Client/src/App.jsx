@@ -8,17 +8,19 @@ import SearchPage from "./pages/SearchPage";
 import Homepage from "./pages/HomePage";
 import MapPage from "./pages/MapPage";
 import Detail from "./pages/Detail";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
 import { Toaster } from "react-hot-toast";
 import AiSearchPage from "./pages/AiSearchPage";
 import ListingPage from "./pages/ListingPage";
 import ProtectedRoute from "./ui/ProtectedRoute";
 import AccountPage from "./pages/AccountPage";
-import AccountInfo from "./features/account/AccountInfo";
 import ViewingHistory from "./features/account/ViewingHistory";
 import UpdateInfoForm from "./features/account/UpdateInfoForm";
 import ChangePasswordForm from "./features/account/ChangePasswordForm";
+import AuthPage from "./pages/AuthPage";
+import LoginForm from "./features/authentication/LoginForm";
+import RegisterForm from "./features/authentication/RegisterForm";
+import ForgotPasswordForm from "./features/authentication/ForgotPasswordForm";
+import ResetPasswordForm from "./features/authentication/ResetPasswordForm";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,29 +36,45 @@ function App() {
       <ReactQueryDevtools initialIsOpen={false} />
       <BrowserRouter>
         <Routes>
-          <Route
-            element={
-              <ProtectedRoute>
-                <AppLayout />
-              </ProtectedRoute>
-            }
-          >
+          <Route element={<AppLayout />}>
             <Route index element={<Homepage />} />
             <Route path="search" element={<SearchPage />} />
             <Route path="ai-search" element={<AiSearchPage />} />
             <Route path="map" element={<MapPage />} />
             <Route path="contact" element={<Contact />} />
-            <Route path="listing" element={<ListingPage />} />
-            <Route path="account" element={<AccountPage />}>
+
+            <Route
+              path="listing"
+              element={
+                <ProtectedRoute>
+                  <ListingPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="account"
+              element={
+                <ProtectedRoute>
+                  {" "}
+                  <AccountPage />
+                </ProtectedRoute>
+              }
+            >
               <Route path="profile" element={<UpdateInfoForm />} />
               <Route path="change-password" element={<ChangePasswordForm />} />
               <Route path="history" element={<ViewingHistory />} />
             </Route>
+
             <Route path="/:slug" element={<Detail />} />
           </Route>
 
-          <Route path="login" element={<Login />} />
-          <Route path="register" element={<Register />} />
+          <Route path="/" element={<AuthPage />}>
+            <Route path="login" element={<LoginForm />} />
+            <Route path="register" element={<RegisterForm />} />
+            <Route path="forgot-password" element={<ForgotPasswordForm />} />
+            <Route path="reset-password" element={<ResetPasswordForm />} />
+          </Route>
+
           {/* <Route path="*" element={<PageNotFound />} /> */}
         </Routes>
       </BrowserRouter>

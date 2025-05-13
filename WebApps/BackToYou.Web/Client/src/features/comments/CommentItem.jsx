@@ -2,11 +2,13 @@ import { useState } from "react";
 import CommentForm from "./CommentForm";
 import { useDeleteComment } from "./useDeleteComment";
 import { useCanEdit } from "../authentication/useCanEdit";
-import { getInitials } from "../../utils/helpers";
 import PlaceholderAvatar from "../../ui/PlaceholderAvatar";
+import { useUser } from "../authentication/useUser";
 
 function CommentItem({ comment, postId, onDelete }) {
   const canEdit = useCanEdit(comment.userId);
+
+  const {isAuthenticated} = useUser();
 
   const [isReplying, setIsReplying] = useState(false);
   const [replies, setReplies] = useState(comment.childComments ?? []);
@@ -59,7 +61,7 @@ function CommentItem({ comment, postId, onDelete }) {
           </div>
           <p className="mb-1">{comment.description}</p>
 
-          {isParentComment && (
+          {isAuthenticated && isParentComment && (
             <div className="mt-2">
               <button
                 className="btn btn-sm border-btn-custom rounded-pill px-3"
