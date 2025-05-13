@@ -234,17 +234,11 @@
 /* ACCOUNT HEADER */
 
 .account-header {
-  background: linear-gradient(to right, #072849, #3498db);
   color: white;
   text-align: center;
-  padding: 30px 20px;
+  padding: 5px 20px;
   border-radius: 10px;
   margin-bottom: 30px;
-}
-
-.account-header h2 {
-  font-size: 24px;
-  margin-bottom: 20px;
 }
 
 .account-nav {
@@ -260,12 +254,138 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: all 0.2s;
-}
+  transition: all 0.2s ease-in-out;
+} 
 
 .account-header .nav-link:hover,
 .account-header .nav-link.active {
   color: #00ffff;
   border-bottom: 2px solid #00ffff;
   padding-bottom: 2px;
+}
+
+
+
+/* //////////// PAYMENT ////////// */
+.payment-page h2 {
+  font-size: var(--h3-font-size);
+}
+
+
+.payment-page {
+  background: var(--color-grey-50);
+  border-radius: var(--border-radius-small);
+}
+
+.wallet-section {
+  max-width: 600px;
+  margin: 0 auto 40px;
+  padding: 30px;
+}
+
+.wallet-balance {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0;
+  padding: 20px;
+  background: var(--color-grey-100);
+  border-radius: var(--border-radius-medium);
+  border: 2px solid var(--primary-color);
+}
+
+.balance-amount {
+  font-size: var(--h3-font-size);
+  font-weight: var(--font-weight-bold);
+  color: var(--dark-color);
+}
+
+.balance-currency {
+  font-size: var(--p-font-size);
+  color: var(--color-grey-600);
+}
+
+.top-up-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.top-up-form .form-floating {
+  position: relative;
+}
+
+.top-up-form .form-control {
+  padding: 12px 20px;
+  border: 2px solid var(--color-grey-300);
+}
+
+.top-up-form .custom-btn {
+  background: var(--primary-color);
+  padding: 12px;
+  font-size: var(--p-font-size);
+}
+
+.top-up-form .custom-btn:hover {
+  background: var(--secondary-color);
+}
+
+.receipts-section {
+  max-width: 800px;
+  margin: 0 auto 40px;
+  padding: 30px;
+}
+
+.receipts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.receipt-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  background: var(--color-grey-100);
+  border-radius: var(--border-radius-medium);
+  border: 1px solid var(--color-grey-200);
+}
+
+.receipt-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.receipt-amount {
+  font-size: var(--p-font-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--dark-color);
+}
+
+.receipt-status {
+  padding: 5px 10px;
+  border-radius: var(--border-radius-small);
+  font-size: var(--menu-font-size);
+  text-align: center;
+}
+
+
+.status-pending {
+  background: #ffd700;
+  color: var(--dark-color);
+}
+
+.status-completed {
+  background: var(--primary-color);
+  color: var(--white-color);
+}
+
+.status-session_created {
+  background: #4d50ff;
+  color: var(--white-color);
+}
+
+.receipt-details p {
+  margin: 5px 0;
 }

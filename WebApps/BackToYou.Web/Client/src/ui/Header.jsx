@@ -110,6 +110,10 @@ function Header() {
                     <i className="bi bi-person-fill me-2" />
                     Thông tin tài khoản
                   </Link>
+                  <Link to="/account/payment" className="profile-dropdown-item">
+                    <i className="bi bi-wallet2 me-2"></i>
+                    Ví của bạn
+                  </Link>
                   <Link to="/account/history" className="profile-dropdown-item">
                     <i className="bi bi-pencil-square me-2"></i>
                     Bài đăng

@@ -1,6 +1,6 @@
 ﻿namespace PaymentAPI.Models.Dtos;
 
-public class ReceiptDto
+public class ReceiptDto: BaseEntity
 {
     public Guid ReceiptId { get; set; }
     public Guid UserId { get; set; }

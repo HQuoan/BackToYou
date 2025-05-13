@@ -18,7 +18,7 @@ public static class SD
 
     public const string Status_Pending = "Pending";
     public const string Status_Session_Created = "Session_Created";
-    public const string Status_Approved = "Approved";
+    public const string Status_Completed = "Completed";
 
     public const string PostLabel_Priority_Price = "10000";
 

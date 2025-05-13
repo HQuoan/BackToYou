@@ -15,7 +15,7 @@ public class ReceiptAPIController : ControllerBase
     //private readonly IUserService _userService;
     private readonly IPaymentService _paymentService;
 
-    public ReceiptAPIController(IUnitOfWork unitOfWork, IMapper mapper,  IPaymentService paymentService)
+    public ReceiptAPIController(IUnitOfWork unitOfWork, IMapper mapper, IPaymentService paymentService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
@@ -109,7 +109,7 @@ public class ReceiptAPIController : ControllerBase
 
     [HttpGet("me")]
     [Authorize]
-    public async Task<ActionResult<ResponseDto>> GetOrdersByMe()
+    public async Task<ActionResult<ResponseDto>> GetReceiptsByMe()
     {
         var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
         if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
@@ -161,7 +161,7 @@ public class ReceiptAPIController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = receipt.ReceiptId }, _response);
     }
 
-    [HttpPost("CreateSession")]
+    [HttpPost("create-session")]
     public async Task<ActionResult<ResponseDto>> CreateSession([FromBody] PaymentRequestDto paymentRequestDto)
     {
         var paymentSessionUrl = await _paymentService.CreateSession(paymentRequestDto);
@@ -172,13 +172,13 @@ public class ReceiptAPIController : ControllerBase
         return Ok(_response);
     }
 
-    [HttpPost("ValidateSession/{receiptId}")]
+    [HttpPost("validate-session/{receiptId}")]
     public async Task<ActionResult<ResponseDto>> ValidateSession(Guid receiptId)
     {
         return Ok(await _paymentService.ValidateSession(receiptId));
     }
 
-    [HttpDelete]
+    [HttpDelete("{id}")]
     [Authorize]
     public async Task<ActionResult<ResponseDto>> Delete(Guid id)
     {
@@ -194,7 +194,7 @@ public class ReceiptAPIController : ControllerBase
             throw new BadRequestException("Invalid or missing user ID claim.");
         }
 
-        if (!(User.IsInRole(SD.AdminRole) || (userId == receipt.UserId && receipt.Status == SD.Status_Pending)))
+        if (!(User.IsInRole(SD.AdminRole) || (userId == receipt.UserId && receipt.Status != SD.Status_Completed )))
         {
             throw new ForbiddenException();
         }

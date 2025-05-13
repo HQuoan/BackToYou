@@ -14,24 +14,48 @@ function CommentsList({ postId }) {
 
   const { comments, pagination, isPending } = useComments(postId, pageNumber);
 
+  // useEffect(() => {
+  //   setCommentList((prevComments) => {
+  //     const existingIds = new Set(prevComments.map((c) => c.commentId));
+  //     const mergedComments = [...prevComments];
+
+  //     comments.forEach((comment) => {
+  //       if (!existingIds.has(comment.commentId)) {
+  //         mergedComments.push(comment);
+  //       }
+  //     });
+
+  //     return mergedComments;
+  //   });
+
+  //   if (pagination?.totalItems !== undefined) {
+  //     setTotalComments(pagination.totalItems);
+  //   }
+  // }, [comments, pagination]);
+
   useEffect(() => {
-    setCommentList((prevComments) => {
-      const existingIds = new Set(prevComments.map((c) => c.commentId));
-      const mergedComments = [...prevComments];
+    if (!comments || comments.length === 0) return;
 
-      comments.forEach((comment) => {
-        if (!existingIds.has(comment.commentId)) {
-          mergedComments.push(comment);
-        }
+    if (pageNumber === 1) {
+      // Lần đầu load, thay thế luôn commentList
+      setCommentList(comments);
+    } else {
+      // Merge nếu là trang tiếp theo
+      setCommentList((prevComments) => {
+        const existingIds = new Set(prevComments.map((c) => c.commentId));
+        const newComments = comments.filter(
+          (c) => !existingIds.has(c.commentId)
+        );
+        return [...prevComments, ...newComments];
       });
+    }
+  }, [comments, pageNumber]);
 
-      return mergedComments;
-    });
-
+  useEffect(() => {
     if (pagination?.totalItems !== undefined) {
       setTotalComments(pagination.totalItems);
     }
-  }, [comments, pagination]);
+  }, [pagination?.totalItems]);
 
   const hasMorePages = pagination && pageNumber < pagination.totalPages;
 

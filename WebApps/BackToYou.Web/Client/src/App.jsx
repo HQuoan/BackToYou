@@ -21,11 +21,13 @@ import LoginForm from "./features/authentication/LoginForm";
 import RegisterForm from "./features/authentication/RegisterForm";
 import ForgotPasswordForm from "./features/authentication/ForgotPasswordForm";
 import ResetPasswordForm from "./features/authentication/ResetPasswordForm";
+import Payment from './features/payment/Payment';
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 60 * 1000,
+      // staleTime: 60 * 1000,
+      staleTime: 0,
     },
   },
 });
@@ -55,7 +57,6 @@ function App() {
               path="account"
               element={
                 <ProtectedRoute>
-                  {" "}
                   <AccountPage />
                 </ProtectedRoute>
               }
@@ -63,6 +64,7 @@ function App() {
               <Route path="profile" element={<UpdateInfoForm />} />
               <Route path="change-password" element={<ChangePasswordForm />} />
               <Route path="history" element={<ViewingHistory />} />
+              <Route path="payment" element={<Payment />} />
             </Route>
 
             <Route path="/:slug" element={<Detail />} />

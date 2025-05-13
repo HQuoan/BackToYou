@@ -93,7 +93,7 @@ const PriorityPostsSlider = () => {
                 Đăng bài
               </Link>
               <Link
-                to="/search-ai"
+                to="/ai-search"
                 className="btn custom-btn btn2 smoothscroll mt-3 ms-1"
               >
                 <i className="bi-robot me-2"></i>

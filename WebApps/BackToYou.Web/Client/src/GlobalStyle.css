@@ -229,6 +229,15 @@ select.form-select {
   display: inline-block;
 }
 
+.custom-btn.cancel-btn {
+  background: #dc3545; /* đỏ nhạt */
+}
+
+.custom-btn.cancel-btn:hover {
+  background: #c82333; /* đỏ đậm hơn */
+  color: #ffffff;
+}
+
 .custom-btn:disabled {
   background-color: var(--color-grey-300);
   color: var(--color-grey-600);
@@ -352,7 +361,6 @@ select.form-select {
   object-fit: cover;
 }
 
-
 .profile-dropdown-toggle:focus {
   outline: none;
 }
@@ -386,7 +394,6 @@ select.form-select {
   background: var(--color-grey-200);
   color: var(--primary-color);
 }
-
 
 /* Custom Modal Styling for LoginRequiredModal */
 .custom-modal .modal-dialog {

@@ -7,6 +7,11 @@ function AccountHeader() {
         <NavLink to="/account/profile" className="nav-link">
           <i className="bi bi-person-fill"></i> Thông tin tài khoản
         </NavLink>
+        <NavLink to="/account/payment" className="nav-link">
+          <i className="bi bi-wallet2 me-2"></i>
+          Ví của bạn
+        </NavLink>
+
         <NavLink to="/account/change-password" className="nav-link">
           <i className="bi bi-shield-lock"></i> Đổi mật khẩu
         </NavLink>

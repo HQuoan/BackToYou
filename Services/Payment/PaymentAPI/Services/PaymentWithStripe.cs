@@ -20,8 +20,8 @@ public class PaymentWithStripe : IPaymentMethod
         {
             PriceData = new SessionLineItemPriceDataOptions
             {
-                UnitAmount = (long)(receipt.Amount * 100), // $20.99 -> 2099
-                Currency = "usd",
+                UnitAmount = (long)(receipt.Amount * 1), // $20.99 -> 2099
+                Currency = "vnd",
                 ProductData = new SessionLineItemPriceDataProductDataOptions
                 {
                     Name = "BackToYou Wallet Top-up",

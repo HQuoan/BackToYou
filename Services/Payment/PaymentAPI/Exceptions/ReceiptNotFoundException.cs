@@ -2,7 +2,7 @@
 
 public class ReceiptNotFoundException : NotFoundException
 {
-    public ReceiptNotFoundException(object key) : base("Post", key)
+    public ReceiptNotFoundException(object key) : base("Receipt", key)
     {
     }
 }

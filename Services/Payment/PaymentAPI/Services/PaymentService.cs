@@ -29,7 +29,7 @@ public class PaymentService : IPaymentService
             return receiptFromDb.PaymentSessionUrl;
         }
 
-        if (receiptFromDb.Status == SD.Status_Approved)
+        if (receiptFromDb.Status == SD.Status_Completed)
         {
             throw new BadRequestException("The receipt  has already been paid.");
         }
@@ -58,7 +58,7 @@ public class PaymentService : IPaymentService
             throw new NotFoundException($"Receipt with ID: {receiptId} not found.");
         }
 
-        if (receipt.Status == SD.Status_Approved)
+        if (receipt.Status == SD.Status_Completed)
         {
             responseDto.IsSuccess = true;
             responseDto.Message = "The receipt has been paid.";
@@ -72,7 +72,7 @@ public class PaymentService : IPaymentService
             {
                 // Payment successful
                 //receipt.PaymentIntentId = paymentIntent.Id;
-                receipt.Status = SD.Status_Approved;
+                receipt.Status = SD.Status_Completed;
                 receipt.PaymentSessionUrl = null;
 
                 await _unitOfWork.Receipt.UpdateAsync(receipt);
@@ -112,19 +112,19 @@ public class PaymentService : IPaymentService
                 };
 
                 // Gửi email gia hạn gói thành công 
-                var responeSendMail = await _emailService.SendEmailAsync(new EmailRequest
-                {
-                    //To = membershipToReturn.UserEmail,
-                    To = receipt.Email,
-                    Subject = "Payment Successful",
-                    //Message = GenerateEmailBody.PaymentSuccess(receipt, package, membershipToReturn)
-                    Message = ""
-                });
+                //var responeSendMail = await _emailService.SendEmailAsync(new EmailRequest
+                //{
+                //    //To = membershipToReturn.UserEmail,
+                //    To = receipt.Email,
+                //    Subject = "Payment Successful",
+                //    //Message = GenerateEmailBody.PaymentSuccess(receipt, package, membershipToReturn)
+                //    Message = ""
+                //});
 
                 responseDto.Result = new
                 {
                     result,
-                    responeSendMail
+                    //responeSendMail
                 };
             }
             else
