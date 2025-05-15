@@ -34,7 +34,6 @@ const PostCard = ({ post }) => {
           <span className="badge badge-lost-or-found-date mb-1">
             <i className="bi-calendar-fill me-1"></i>
              {formatDateVN(post.createdAt)}
-             {/* {formatDateVN(post.lostOrFoundDate)} */}
           </span>
         </div>
 

@@ -1,46 +1,55 @@
+// External imports
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+
+// Hooks
 import { useCreateReceipt } from "./useCreateReceipt";
 import { useReceipts } from "./useReceipts";
 import { useBalance } from "./useBalance";
 import { useCreateSession } from "./useCreateSession";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useValidateSession } from "./useValidateSession";
-import { useEffect, useRef, useState } from "react";
 import { useDeleteReceipt } from "./useDeleteReceipt";
+
+// UI Components
 import Spinner from "./../../ui/Spinner";
 import Pagination from "../../ui/Pagination";
 
 const Payment = () => {
+  // State & Refs
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const [statusFilter, setStatusFilter] = useState(undefined);
   const filterNavRef = useRef(null);
-
   const pageNumber = Number(searchParams.get("PageNumber")) || 1;
 
+  // Scroll đến filter nav khi đổi trang
   useEffect(() => {
-    if (pageNumber !== 1) {
-      if (filterNavRef.current) {
-        filterNavRef.current.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }
+    if (pageNumber !== 1 && filterNavRef.current) {
+      filterNavRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     }
   }, [pageNumber]);
 
-  const { isPending, receipts, pagination } = useReceipts({
-    status: statusFilter,
-  });
-
+  // API Hooks
+  const { isPending, receipts, pagination } = useReceipts({ status: statusFilter });
   const { isPending: isLoadingBalance, balance } = useBalance();
   const { isCreating, createReceipt } = useCreateReceipt();
   const { isCreating: isCreatingSession, createSession } = useCreateSession();
-
-  const receptIdValidate = searchParams.get("receiptId") || undefined;
-
   const { validateSession } = useValidateSession();
+  const { isDeleting, deleteReceipt } = useDeleteReceipt();
 
+  // React Hook Form
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  // Validate session nếu có receiptId trên URL
+  const receptIdValidate = searchParams.get("receiptId") || undefined;
   useEffect(() => {
     if (receptIdValidate) {
       validateSession(receptIdValidate).finally(() => {
@@ -53,17 +62,12 @@ const Payment = () => {
     }
   }, [receptIdValidate, validateSession, searchParams, navigate]);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
-
+  // Submit form tạo giao dịch mới
   const onSubmit = (data) => {
     createReceipt(data, {
       onSuccess: (receipt) => {
-        console.log("session", receipt);
-        if (data.paymentMethod === "STRIPE" || data.paymentMethod === "PAYOS") {
+        const { paymentMethod } = data;
+        if (paymentMethod === "STRIPE" || paymentMethod === "PAYOS") {
           const url = `http://localhost:5000/account/payment?receiptId=${receipt.receiptId}`;
           createSession(
             {
@@ -82,18 +86,20 @@ const Payment = () => {
     });
   };
 
+  // Tạo lại phiên thanh toán nếu chưa có URL
   function handleCreateSession(receiptId) {
     const url = `http://localhost:5000/account/payment?receiptId=${receiptId}`;
     createSession({ receiptId, approvedUrl: url, cancelUrl: url });
   }
 
-  const { isDeleting, deleteReceipt } = useDeleteReceipt();
+  // Xử lý hủy giao dịch
   function handleDeleteReceipt(receiptId) {
     deleteReceipt(receiptId);
   }
 
   return (
     <div className="payment-page">
+      {/* Title */}
       <div className="text-center p-3">
         <h2>Ví & Thanh toán</h2>
       </div>
@@ -110,8 +116,9 @@ const Payment = () => {
           </div>
         )}
 
-        {/* Top-up Form */}
+        {/* Nạp tiền */}
         <form className="top-up-form" onSubmit={handleSubmit(onSubmit)}>
+          {/* Số xu */}
           <div className="form-floating mb-3">
             <input
               type="number"
@@ -120,10 +127,7 @@ const Payment = () => {
               placeholder="Nhập số lượng"
               {...register("amount", {
                 required: "Vui lòng nhập số xu",
-                min: {
-                  value: 10000,
-                  message: "Số lượng tối thiểu là 10,000",
-                },
+                min: { value: 10000, message: "Số lượng tối thiểu là 10,000" },
                 validate: (value) => value >= 0 || "Số lượng không được âm",
               })}
             />
@@ -133,6 +137,7 @@ const Payment = () => {
             )}
           </div>
 
+          {/* Phương thức thanh toán */}
           <div ref={filterNavRef} className="form-floating mb-3">
             <select
               className="form-control"
@@ -151,20 +156,20 @@ const Payment = () => {
         </form>
       </div>
 
-      {/* Receipts Section */}
+      {/* Lịch sử giao dịch */}
       <div className="receipts-section custom-block">
         <h3 className="text-black-custom">Lịch sử giao dịch</h3>
+
+        {/* Filter status */}
         <div className="receipts-filter-nav account-nav">
           {["All", "Pending", "Session_Created", "Completed"].map((status) => (
             <button
               key={status}
               onClick={() => {
-                setStatusFilter(status === "All" ? undefined : status)
-
+                setStatusFilter(status === "All" ? undefined : status);
                 const newParams = new URLSearchParams(searchParams.toString());
                 newParams.delete("PageNumber");
                 newParams.delete("PageSize");
-                
                 setSearchParams(newParams);
               }}
               className={`nav-link ${
@@ -178,6 +183,7 @@ const Payment = () => {
           ))}
         </div>
 
+        {/* List receipts */}
         {receipts.length === 0 ? (
           <p className="text-grey-custom">Hiện không có giao dịch nào.</p>
         ) : isPending ? (
@@ -188,7 +194,6 @@ const Payment = () => {
               {receipts.map((receipt) => (
                 <div key={receipt.receiptId} className="receipt-item row">
                   <div className="col-4">
-                    {" "}
                     <div className="receipt-info">
                       <span className="receipt-amount">
                         {receipt.amount.toLocaleString()} Xu
@@ -211,6 +216,8 @@ const Payment = () => {
                       <p className="text-grey-custom">
                         ID giao dịch: {receipt.receiptId}
                       </p>
+
+                      {/* Tạo lại session nếu cần */}
                       {receipt.status === "Pending" &&
                         !receipt.paymentSessionUrl && (
                           <button
@@ -224,6 +231,8 @@ const Payment = () => {
                               : "Tạo lại phiên thanh toán"}
                           </button>
                         )}
+
+                      {/* Link thanh toán nếu đã có session */}
                       {receipt.status === "Session_Created" &&
                         receipt.paymentSessionUrl && (
                           <button className="custom-btn">
@@ -236,6 +245,7 @@ const Payment = () => {
                           </button>
                         )}
 
+                      {/* Nút hủy nếu chưa completed */}
                       {receipt.status !== "Completed" && (
                         <button
                           className="custom-btn cancel-btn ms-3"
@@ -250,6 +260,8 @@ const Payment = () => {
                 </div>
               ))}
             </div>
+
+            {/* Pagination */}
             <div className="row">
               <Pagination pagination={pagination} pageSize={5} />
             </div>

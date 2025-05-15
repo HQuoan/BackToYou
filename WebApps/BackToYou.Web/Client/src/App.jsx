@@ -13,7 +13,6 @@ import AiSearchPage from "./pages/AiSearchPage";
 import ListingPage from "./pages/ListingPage";
 import ProtectedRoute from "./ui/ProtectedRoute";
 import AccountPage from "./pages/AccountPage";
-import ViewingHistory from "./features/account/ViewingHistory";
 import UpdateInfoForm from "./features/account/UpdateInfoForm";
 import ChangePasswordForm from "./features/account/ChangePasswordForm";
 import AuthPage from "./pages/AuthPage";
@@ -22,6 +21,7 @@ import RegisterForm from "./features/authentication/RegisterForm";
 import ForgotPasswordForm from "./features/authentication/ForgotPasswordForm";
 import ResetPasswordForm from "./features/authentication/ResetPasswordForm";
 import Payment from './features/payment/Payment';
+import PostHistory from "./features/account/PostHistory";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -63,7 +63,7 @@ function App() {
             >
               <Route path="profile" element={<UpdateInfoForm />} />
               <Route path="change-password" element={<ChangePasswordForm />} />
-              <Route path="history" element={<ViewingHistory />} />
+              <Route path="history" element={<PostHistory />} />
               <Route path="payment" element={<Payment />} />
             </Route>
 

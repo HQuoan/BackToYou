@@ -132,8 +132,33 @@
 
 .history-item {
   display: flex;
-  gap: 20px;
+  /* gap: 20px; */
   align-items: center;
+}
+
+.history-item .cancel-btn {
+  background: #dc3545;
+  border: none;
+  color: var(--white-color);
+  font-size: var(--menu-font-size);
+  font-weight: var(--font-weight-semibold);
+  padding: 8px 16px;
+  border-radius: var(--border-radius-small);
+  transition: all 0.3s;
+}
+
+.history-item .cancel-btn:hover {
+  background: #c82333;
+}
+
+.history-item-reason {
+  font-size: var(--menu-font-size);
+  color: var(--color-grey-600);
+  margin-top: 10px;
+  padding: 10px;
+  background: var(--color-grey-200);
+  border-radius: var(--border-radius-small);
+  width: 100%;
 }
 
 .history-item-image-wrapper {
@@ -152,7 +177,7 @@
 .history-item-info {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  /* gap: 5px; */
 }
 
 .history-item-title {
@@ -180,7 +205,6 @@
   color: var(--secondary-color);
 }
 
-/* Profile Dropdown (Giữ nguyên từ trước) */
 .profile-dropdown-toggle {
   background: transparent;
   border: none;
@@ -377,15 +401,34 @@
   color: var(--dark-color);
 }
 
+.status-session_created {
+  background: #4d50ff;
+  color: var(--white-color);
+}
+
 .status-completed {
   background: var(--primary-color);
   color: var(--white-color);
 }
 
-.status-session_created {
-  background: #4d50ff;
+
+/* POST STATUS */
+.status-processing {
+  background: var(--secondary-color);
   color: var(--white-color);
 }
+
+.status-approved {
+  background: var(--primary-color);
+  color: var(--white-color);
+}
+
+.status-rejected {
+  background: #e74c3c;
+  color: var(--white-color)
+}
+
+
 
 .receipt-details p {
   margin: 5px 0;
