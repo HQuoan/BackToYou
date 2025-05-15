@@ -13,7 +13,7 @@ export async function getBalance() {
 export async function getMyReceipts({page, filter}) {
   const data = await callAPI({
     method: HttpMethod.GET,
-    url: `${ServiceRoutes.payment}/receipts`,
+    url: `${ServiceRoutes.payment}/receipts/me`,
     params: {...page, ...filter}
   });
 

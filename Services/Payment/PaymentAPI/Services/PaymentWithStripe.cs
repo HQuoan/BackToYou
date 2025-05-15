@@ -12,7 +12,7 @@ public class PaymentWithStripe : IPaymentMethod
             CancelUrl = paymentRequestDto.CancelUrl,
             LineItems = new List<SessionLineItemOptions>(),
             Mode = "payment",
-            CustomerEmail = receipt.Email
+            CustomerEmail = receipt.Email,
         };
 
 

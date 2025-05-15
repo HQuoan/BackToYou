@@ -109,7 +109,7 @@ public class ReceiptAPIController : ControllerBase
 
     [HttpGet("me")]
     [Authorize]
-    public async Task<ActionResult<ResponseDto>> GetReceiptsByMe()
+    public async Task<ActionResult<ResponseDto>> GetReceiptsByMe([FromQuery] ReceiptQueryParameters queryParameters)
     {
         var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
         if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
@@ -117,12 +117,23 @@ public class ReceiptAPIController : ControllerBase
             throw new BadRequestException("Invalid or missing user ID claim.");
         }
 
-        var query = new QueryParameters<Receipt>();
+        var query = ReceiptFeatures.Build(queryParameters);
+
+        //var query = new QueryParameters<Receipt>();
         query.Filters.Add(c => c.UserId == userId);
 
         IEnumerable<Receipt> receipts = await _unitOfWork.Receipt.GetAllAsync(query);
 
         _response.Result = _mapper.Map<IEnumerable<ReceiptDto>>(receipts);
+
+        int totalItems = await _unitOfWork.Receipt.CountAsync(query);
+        _response.Pagination = new PaginationDto
+        {
+            TotalItems = totalItems,
+            TotalItemsPerPage = queryParameters.PageSize,
+            CurrentPage = queryParameters.PageNumber,
+            TotalPages = (int)Math.Ceiling((double)totalItems / queryParameters.PageSize)
+        };
 
         return Ok(_response);
     }

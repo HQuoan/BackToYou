@@ -14,8 +14,8 @@ public class PostImageAPIController : ControllerBase
     private readonly ITranslateService _translateService;
     private readonly IMapper _mapper;
     private ResponseDto _response;
-    private const string BASE_URL = "http://host.docker.internal:8000";
-    //private const string BASE_URL = "https://glowworm-precise-slightly.ngrok-free.app";
+    //private const string BASE_URL = "http://host.docker.internal:8000";
+    private const string BASE_URL = "https://glowworm-precise-slightly.ngrok-free.app";
 
     public PostImageAPIController(IMapper mapper, IUnitOfWork unitOfWork, ITranslateService translateService)
     {

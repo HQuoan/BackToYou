@@ -5,19 +5,37 @@ import { useBalance } from "./useBalance";
 import { useCreateSession } from "./useCreateSession";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useValidateSession } from "./useValidateSession";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDeleteReceipt } from "./useDeleteReceipt";
 import Spinner from "./../../ui/Spinner";
+import Pagination from "../../ui/Pagination";
 
 const Payment = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const [statusFilter, setStatusFilter] = useState(undefined);
+  const filterNavRef = useRef(null);
 
-  const { balance } = useBalance();
+  const pageNumber = Number(searchParams.get("PageNumber")) || 1;
+
+  useEffect(() => {
+    if (pageNumber !== 1) {
+      if (filterNavRef.current) {
+        filterNavRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    }
+  }, [pageNumber]);
+
+  const { isPending, receipts, pagination } = useReceipts({
+    status: statusFilter,
+  });
+
+  const { isPending: isLoadingBalance, balance } = useBalance();
   const { isCreating, createReceipt } = useCreateReceipt();
   const { isCreating: isCreatingSession, createSession } = useCreateSession();
-
-  const { isPending, receipts } = useReceipts();
 
   const receptIdValidate = searchParams.get("receiptId") || undefined;
 
@@ -83,10 +101,14 @@ const Payment = () => {
       {/* Wallet Section */}
       <div className="wallet-section custom-block">
         <h3 className="text-black-custom">Ví của bạn</h3>
-        <div className="wallet-balance">
-          <span className="balance-amount">{balance.toLocaleString()}</span>
-          <span className="balance-currency">Xu</span>
-        </div>
+        {isLoadingBalance ? (
+          <Spinner />
+        ) : (
+          <div className="wallet-balance">
+            <span className="balance-amount">{balance.toLocaleString()}</span>
+            <span className="balance-currency">Xu</span>
+          </div>
+        )}
 
         {/* Top-up Form */}
         <form className="top-up-form" onSubmit={handleSubmit(onSubmit)}>
@@ -111,7 +133,7 @@ const Payment = () => {
             )}
           </div>
 
-          <div className="form-floating mb-3">
+          <div ref={filterNavRef} className="form-floating mb-3">
             <select
               className="form-control"
               {...register("paymentMethod", { required: true })}
@@ -131,71 +153,107 @@ const Payment = () => {
 
       {/* Receipts Section */}
       <div className="receipts-section custom-block">
-        <h3 className="text-black-custom">Transaction History</h3>
+        <h3 className="text-black-custom">Lịch sử giao dịch</h3>
+        <div className="receipts-filter-nav account-nav">
+          {["All", "Pending", "Session_Created", "Completed"].map((status) => (
+            <button
+              key={status}
+              onClick={() => {
+                setStatusFilter(status === "All" ? undefined : status)
+
+                const newParams = new URLSearchParams(searchParams.toString());
+                newParams.delete("PageNumber");
+                newParams.delete("PageSize");
+                
+                setSearchParams(newParams);
+              }}
+              className={`nav-link ${
+                statusFilter === status || (status === "All" && !statusFilter)
+                  ? "active"
+                  : ""
+              }`}
+            >
+              {status}
+            </button>
+          ))}
+        </div>
+
         {receipts.length === 0 ? (
-          <p className="text-grey-custom">No transactions yet</p>
+          <p className="text-grey-custom">Hiện không có giao dịch nào.</p>
         ) : isPending ? (
           <Spinner />
         ) : (
-          <div className="receipts-list">
-            {receipts.map((receipt) => (
-              <div key={receipt.receiptId} className="receipt-item">
-                <div className="receipt-info">
-                  <span className="receipt-amount">
-                    {receipt.amount.toLocaleString()} Coins
-                  </span>
-                  <span
-                    className={`receipt-status status-${receipt.status.toLowerCase()}`}
-                  >
-                    {receipt.status}
-                  </span>
-                </div>
-                <div className="receipt-details">
-                  <p className="text-grey-custom">
-                    Date: {new Date(receipt.createdAt).toLocaleString()}
-                  </p>
-                  <p className="text-grey-custom">
-                    Method: {receipt.paymentMethod}
-                  </p>
-                  <p className="text-grey-custom">
-                    Transaction ID: {receipt.receiptId}
-                  </p>
-                  {receipt.status === "Pending" &&
-                    !receipt.paymentSessionUrl && (
-                      <button
-                        onClick={() => handleCreateSession(receipt.receiptId)}
-                        className="custom-btn"
+          <>
+            <div className="receipts-list">
+              {receipts.map((receipt) => (
+                <div key={receipt.receiptId} className="receipt-item row">
+                  <div className="col-4">
+                    {" "}
+                    <div className="receipt-info">
+                      <span className="receipt-amount">
+                        {receipt.amount.toLocaleString()} Xu
+                      </span>
+                      <span
+                        className={`receipt-status status-${receipt.status.toLowerCase()}`}
                       >
-                        {isCreatingSession
-                          ? "Đang tạo phiên..."
-                          : "Tạo lại phiên thanh toán"}
-                      </button>
-                    )}
-                  {receipt.status === "Session_Created" &&
-                    receipt.paymentSessionUrl && (
-                      <button className="custom-btn">
-                        <Link
-                          to={receipt.paymentSessionUrl}
-                          className="text-white"
-                        >
-                          Thanh toán
-                        </Link>
-                      </button>
-                    )}
+                        {receipt.status}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="col-8">
+                    <div className="receipt-details">
+                      <p className="text-grey-custom">
+                        Ngày: {new Date(receipt.createdAt).toLocaleString()}
+                      </p>
+                      <p className="text-grey-custom">
+                        Phương thức: {receipt.paymentMethod}
+                      </p>
+                      <p className="text-grey-custom">
+                        ID giao dịch: {receipt.receiptId}
+                      </p>
+                      {receipt.status === "Pending" &&
+                        !receipt.paymentSessionUrl && (
+                          <button
+                            onClick={() =>
+                              handleCreateSession(receipt.receiptId)
+                            }
+                            className="custom-btn"
+                          >
+                            {isCreatingSession
+                              ? "Đang tạo phiên..."
+                              : "Tạo lại phiên thanh toán"}
+                          </button>
+                        )}
+                      {receipt.status === "Session_Created" &&
+                        receipt.paymentSessionUrl && (
+                          <button className="custom-btn">
+                            <Link
+                              to={receipt.paymentSessionUrl}
+                              className="text-white"
+                            >
+                              Thanh toán
+                            </Link>
+                          </button>
+                        )}
 
-                  {receipt.status !== "Completed" && (
-                    <button
-                      className="custom-btn cancel-btn ms-3"
-                      onClick={() => handleDeleteReceipt(receipt.receiptId)}
-                      disabled={isDeleting}
-                    >
-                      {isDeleting ? "Đang xử lý..." : "Hủy"}
-                    </button>
-                  )}
+                      {receipt.status !== "Completed" && (
+                        <button
+                          className="custom-btn cancel-btn ms-3"
+                          onClick={() => handleDeleteReceipt(receipt.receiptId)}
+                          disabled={isDeleting}
+                        >
+                          {isDeleting ? "Đang xử lý..." : "Hủy"}
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+            <div className="row">
+              <Pagination pagination={pagination} pageSize={5} />
+            </div>
+          </>
         )}
       </div>
     </div>
