@@ -143,9 +143,19 @@ public class WalletAPIController : ControllerBase
     }
 
     [HttpPut("refund")]
-    [Authorize(Roles = SD.AdminRole)]
+    [Authorize]
     public async Task<ActionResult<ResponseDto>> Refund([FromBody] RefundDto refundDto)
     {
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+        {
+            throw new BadRequestException("Invalid or missing user ID claim.");
+        }
+
+        if (userId != refundDto.UserId) {
+            throw new ForbiddenException();
+        }
+
         if (refundDto.Amount <= 0)
             throw new BadRequestException("Amount must be greater than zero.");
 

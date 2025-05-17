@@ -26,7 +26,7 @@ function ListingForm() {
       const post = await createPost(data);
 
       if (post?.slug) {
-        navigate(`/${post.slug}`);
+        navigate(`/account/history`);
       }
     }
   };

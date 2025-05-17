@@ -10,7 +10,7 @@ public class UserDto
     public string? Avatar { get; set; }
     public string Sex { get; set; }
     public DateTime DateOfBirth { get; set; }
-    public string Role { get; set; }
+    public string? Role { get; set; }
     public string? FacebookId { get; set; }
     public string? GoogleId { get; set; }
 }

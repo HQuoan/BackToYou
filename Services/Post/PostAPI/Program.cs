@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text.Json.Serialization;
 using ImageService;
 using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -111,18 +110,21 @@ builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
 
 // Application Services
-builder.Services.AddScoped<ITranslateService, TranslateService>();
+//builder.Services.AddScoped<ITranslateService, TranslateService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IImageUploader, CloudinaryUploader>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 
-builder.Services.Configure<LibreTranslateOptions>(
-    builder.Configuration.GetSection("LibreTranslate"));
+//builder.Services.Configure<LibreTranslateOptions>(
+//    builder.Configuration.GetSection("LibreTranslate"));
 
 
 // HttpClient Configuration for External Services
 builder.Services.AddHttpClient(SD.HttpClient_Payment, u => u.BaseAddress = new Uri(builder.Configuration["ServiceUrls:PaymentAPI"])).AddHttpMessageHandler<BackendApiAuthenticationHttpClientHandler>();
+
+builder.Services.AddHttpClient(SD.HttpClient_User, u => u.BaseAddress = new Uri(builder.Configuration["ServiceUrls:AuthAPI"])).AddHttpMessageHandler<BackendApiAuthenticationHttpClientHandler>();
 
 // Add CORS
 builder.Services.AddCors(options =>

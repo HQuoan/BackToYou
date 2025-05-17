@@ -14,7 +14,7 @@
 // }
 
 import { useQuery } from "@tanstack/react-query";
-import { getPostBySlug } from "../../services/apiPost";
+import { getPostBySlug } from "../../services/apiPosts";
 import toast from "react-hot-toast";
 
 export function usePost(slug, enabled = true) {

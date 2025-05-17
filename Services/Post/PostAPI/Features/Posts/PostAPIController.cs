@@ -10,18 +10,20 @@ namespace PostAPI.Features.Posts;
 [ApiController]
 public class PostAPIController : ControllerBase
 {
+    private readonly IUserService _userService;
     private readonly IPaymentService _paymentService;
     private readonly IImageUploader _imageUploader;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private ResponseDto _response;
-    public PostAPIController(IUnitOfWork unitOfWork, IMapper mapper, IImageUploader imageUploader, IPaymentService paymentService)
+    public PostAPIController(IUnitOfWork unitOfWork, IMapper mapper, IImageUploader imageUploader, IPaymentService paymentService, IUserService userService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _response = new();
         _imageUploader = imageUploader;
         _paymentService = paymentService;
+        _userService = userService;
     }
 
     [HttpGet]
@@ -40,6 +42,54 @@ public class PostAPIController : ControllerBase
         _response.Result = _mapper.Map<IEnumerable<PostDto>>(posts);
 
         int totalItems = await _unitOfWork.Post.CountAsync(query);
+        _response.Pagination = new PaginationDto
+        {
+            TotalItems = totalItems,
+            TotalItemsPerPage = queryParameters.PageSize,
+            CurrentPage = queryParameters.PageNumber,
+            TotalPages = (int)Math.Ceiling((double)totalItems / queryParameters.PageSize)
+        };
+
+        return Ok(_response);
+    }
+
+    [HttpGet("posts-with-users")]
+    //[Authorize(Roles = SD.AdminRole)]
+    public async Task<IActionResult> GetPostsWithUsers([FromQuery] PostQueryParameters? queryParameters)
+    {
+        var query = PostFeatures.Build(queryParameters);
+        query.IncludeProperties = "Category,PostImages";
+
+        var posts = await _unitOfWork.Post.GetAllAsync(query);
+        var postDtos = _mapper.Map<List<PostDto>>(posts);
+
+        var userIds = posts.Select(p => p.UserId.ToString()).Distinct().ToList();
+
+        List<UserDto> userDtos = new();
+        if (userIds.Count > 0)
+        {
+            try
+            {
+                userDtos = await _userService.GetUsersByIds(userIds);
+            }
+            catch
+            {
+                // Bỏ qua lỗi → userDtos = empty
+            }
+        }
+
+        if (userDtos != null && userDtos.Count > 0)
+        {
+            foreach (var post in postDtos)
+            {
+                post.User = userDtos.FirstOrDefault(u => u.Id == post.UserId.ToString());
+            }
+        }
+
+
+        int totalItems = await _unitOfWork.Post.CountAsync(query);
+
+        _response.Result = postDtos;
         _response.Pagination = new PaginationDto
         {
             TotalItems = totalItems,
@@ -148,22 +198,55 @@ public class PostAPIController : ControllerBase
             throw new PostNotFoundException(slug);
         }
 
-        if (post.PostStatus != PostStatus.Approved)
-        {
-            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-            if (!Guid.TryParse(userIdClaim.Value, out Guid userId))
-            {
-                throw new BadRequestException("Invalid or missing user ID claim.");
-            }
+        //if (post.PostStatus != PostStatus.Approved)
+        //{
+        //    var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        //    if (!Guid.TryParse(userIdClaim.Value, out Guid userId))
+        //    {
+        //        throw new BadRequestException("Invalid or missing user ID claim.");
+        //    }
 
-            if (userId != post.UserId)
-            {
-                throw new ForbiddenException();
-            }
-        }
+        //    if (userId != post.UserId)
+        //    {
+        //        throw new ForbiddenException();
+        //    }
+        //}
 
         _response.Result = _mapper.Map<PostDto>(post);
 
+        return Ok(_response);
+    }
+
+    [HttpGet("by-slug-with-user/{slug}")]
+    public async Task<ActionResult<ResponseDto>> GetBySlugWithUser(string slug)
+    {
+        //bool isAdmin = User.IsInRole(SD.AdminRole);
+
+        var post = await _unitOfWork.Post.GetAsync(
+                  p => p.Slug == slug,
+                  includeProperties: "Category,PostImages");
+           
+
+        if (post == null)
+            throw new PostNotFoundException(slug);
+
+        List<UserDto> userDtos = new();
+        try
+        {
+            userDtos = await _userService.GetUsersByIds(new[] { post.UserId.ToString() });
+        }
+        catch
+        {
+            // Bỏ qua lỗi → userDtos = empty
+        }
+
+        // --- Lấy thông tin tác giả ---
+        var author = userDtos.FirstOrDefault(); 
+
+        var postDto = _mapper.Map<PostDto>(post);
+        postDto.User = author;
+      
+        _response.Result = postDto;
         return Ok(_response);
     }
 
@@ -384,8 +467,8 @@ public class PostAPIController : ControllerBase
         return Ok(_response);
     }
 
-    [HttpPut("/post-label-status")]
-    [Authorize(Roles = SD.AdminRole)]
+    [HttpPut("post-label-status")]
+    //[Authorize(Roles = SD.AdminRole)]
     public async Task<ActionResult<ResponseDto>> UpdatePostUpdateLabelAndStatus([FromBody] PostUpdateLabelAndStatus postDto)
     {
         Post postFromDb = await _unitOfWork.Post.GetAsync(c => c.PostId == postDto.PostId);
@@ -393,13 +476,20 @@ public class PostAPIController : ControllerBase
             throw new PostNotFoundException(postDto.PostId);
 
         // check trường hợp rejected thì trả tiền (nếu là priority)
-        if(postDto.PostStatus == PostStatus.Rejected && postFromDb.PostLabel == PostLabel.Priority)
-        {
-            // trả lại tiền
-            await _paymentService.Refund(new RefundDto { UserId = postFromDb.UserId, Amount = postFromDb.Price});
-        }
+        //if(postDto.PostStatus == PostStatus.Rejected && postFromDb.PostLabel == PostLabel.Priority)
+        //{
+        //    // trả lại tiền
+        //    await _paymentService.Refund(new RefundDto { UserId = postFromDb.UserId, Amount = postFromDb.Price});
+        //}
 
-        _mapper.Map(postDto, postFromDb);
+        if (postDto.PostLabel.HasValue)
+            postFromDb.PostLabel = postDto.PostLabel.Value;
+
+        if (postDto.PostStatus.HasValue)
+            postFromDb.PostStatus = postDto.PostStatus.Value;
+
+        if (postDto.RejectionReason != null)
+            postFromDb.RejectionReason = postDto.RejectionReason;
 
         await _unitOfWork.Post.UpdateAsync(postFromDb);
         await _unitOfWork.SaveAsync();
@@ -409,14 +499,25 @@ public class PostAPIController : ControllerBase
         return Ok(_response);
     }
 
-    [HttpDelete]
-    //[Authorize(Roles = SD.AdminRole)]
+    [HttpDelete("{id}")]
+    [Authorize]
     public async Task<ActionResult<ResponseDto>> Delete(Guid id)
     {
         var post = await _unitOfWork.Post.GetAsync(c => c.PostId == id);
         if (post == null)
         {
             throw new PostNotFoundException(id);
+        }
+
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+        {
+            throw new BadRequestException("Invalid or missing user ID claim.");
+        }
+
+        if (post.UserId != userId)
+        {
+            throw new ForbiddenException("You are not allowed to access data that does not belong to you.");
         }
 
         // xóa ảnh trên cloud
@@ -428,11 +529,24 @@ public class PostAPIController : ControllerBase
 
         foreach (var img in existingImages)
         {
-            var result = await _imageUploader.DeleteImageAsync(img.PublicId);
-            if (!result.IsSuccess)
+            try
             {
-                throw new BadRequestException(result.ErrorMessage);
+                var result = await _imageUploader.DeleteImageAsync(img.PublicId);
+                if (!result.IsSuccess)
+                {
+                    throw new BadRequestException(result.ErrorMessage);
+                }
             }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        if ((post.PostStatus == PostStatus.Rejected || post.PostStatus == PostStatus.Pending) && post.PostLabel == PostLabel.Priority)
+        {
+            // trả lại tiền
+            await _paymentService.Refund(new RefundDto { UserId = post.UserId, Amount = post.Price });
         }
 
         // xóa post và post images

@@ -147,6 +147,27 @@ public class UserController : ControllerBase
         return Ok(_response);
     }
 
+    [HttpPost("get-by-ids")]
+    //[Authorize(Roles = SD.AdminRole)]
+    public async Task<IActionResult> GetByIds([FromBody] IEnumerable<string> ids)
+    {
+        if (ids == null || !ids.Any())
+            throw new BadRequestException("List of user ids is empty.");
+
+        var users = await _userManager.Users
+                          .Where(u => ids.Contains(u.Id))
+                          .ToListAsync();
+
+        if (!users.Any())
+            throw new UserNotFoundException(string.Join(", ", ids));
+
+        var userDtos = _mapper.Map<List<UserDto>>(users);
+
+        _response.Result = userDtos;
+        return Ok(_response);
+    }
+
+
     [HttpGet("get-by-email/{email}")]
     [Authorize]
     public async Task<IActionResult> GetByEmail(string email)

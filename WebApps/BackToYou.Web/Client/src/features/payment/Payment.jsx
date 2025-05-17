@@ -185,7 +185,7 @@ const Payment = () => {
 
         {/* List receipts */}
         {receipts.length === 0 ? (
-          <p className="text-grey-custom">Hiện không có giao dịch nào.</p>
+          <p className="text-grey-custom text-center min-height-200">Hiện không có giao dịch nào.</p>
         ) : isPending ? (
           <Spinner />
         ) : (

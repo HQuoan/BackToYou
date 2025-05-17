@@ -6,6 +6,7 @@ public class PostDto : BaseEntity
 {
     public Guid PostId { get; set; }
     public Guid UserId { get; set; }
+    public UserDto? User { get; set; }
     public Guid CategoryId { get; set; }
     public CategoryDto? Category { get; set; }
     public string Title { get; set; }
@@ -19,6 +20,7 @@ public class PostDto : BaseEntity
     public PostStatus PostStatus { get; set; }
     public DateTime LostOrFoundDate { get; set; }
     public decimal? Price { get; set; }
+    public string? RejectionReason { get; set; }
 
     public ICollection<PostImageDto>? PostImages { get; set; }
     public ICollection<CommentDto>? Comments { get; set; }

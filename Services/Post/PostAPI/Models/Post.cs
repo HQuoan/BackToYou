@@ -27,6 +27,7 @@ public class Post : BaseEntity
     public PostStatus PostStatus { get; set; } = PostStatus.Pending;
     public DateTime LostOrFoundDate { get; set; } = DateTime.Now;
     public decimal Price { get; set; } = decimal.Zero;
+    public string? RejectionReason { get; set; }
 
     public ICollection<PostImage> PostImages { get; set; }
     public ICollection<Comment> Comments { get; set; }  

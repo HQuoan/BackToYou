@@ -6,6 +6,10 @@
   min-height: 300px;
 }
 
+.min-height-200 {
+  min-height: 200px;
+}
+
 .hidden {
   opacity: 0;
 }
@@ -498,4 +502,36 @@ select.form-select {
 .receipts-filter-nav .nav-link.active {
   color: var(--primary-color);
   border-bottom: 2px solid var(--primary-color);
+}
+
+
+/* MODAL */
+/* Overlay phủ toàn màn hình */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hộp modal */
+.modal-box {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Button */
+.modal-box .btn {
+  min-width: 100px;
 }

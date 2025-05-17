@@ -26,8 +26,8 @@ public class PaymentService : IPaymentService
 
             var response = await client.PutAsync("/wallets/refund", content);
 
-            //if (!response.IsSuccessStatusCode)
-            //    throw new BadRequestException("Refund request failed.");
+            if (!response.IsSuccessStatusCode)
+                throw new BadRequestException("Refund request failed.");
 
             var apiContent = await response.Content.ReadAsStringAsync();
             var resp = JsonConvert.DeserializeObject<ResponseDto>(apiContent);

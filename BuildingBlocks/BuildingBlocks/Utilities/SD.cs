@@ -23,6 +23,7 @@ public static class SD
     public const string PostLabel_Priority_Price = "10000";
 
     public const string HttpClient_Payment = "Payment";
+    public const string HttpClient_User = "User";
 
     public const string AccessTokenCookieName = "access_token";
     

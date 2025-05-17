@@ -21,7 +21,7 @@ import RegisterForm from "./features/authentication/RegisterForm";
 import ForgotPasswordForm from "./features/authentication/ForgotPasswordForm";
 import ResetPasswordForm from "./features/authentication/ResetPasswordForm";
 import Payment from './features/payment/Payment';
-import PostHistory from "./features/account/PostHistory";
+import PostHistory from "./features/posts/PostHistory";
 
 const queryClient = new QueryClient({
   defaultOptions: {

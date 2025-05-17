@@ -433,3 +433,33 @@
 .receipt-details p {
   margin: 5px 0;
 }
+
+/* //// */
+
+.post-category {
+  background-color: #ff7f50;
+}
+
+.post-lost {
+  background-color: #ff4d4d;
+}
+
+.post-found {
+  background-color: #00b894;
+}
+
+.status-pending {
+  background: #ffd700;
+}
+/* POST STATUS */
+.status-processing {
+  background: #0066CC;
+}
+
+.status-approved {
+  background: #00CC99;
+}
+
+.status-rejected {
+  background: #e74c3c;
+}

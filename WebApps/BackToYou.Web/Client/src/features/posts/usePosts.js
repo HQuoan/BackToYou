@@ -78,7 +78,7 @@
 
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getPosts } from "../../services/apiPost";
+import { getPosts } from "../../services/apiPosts";
 import { useLocation, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 
