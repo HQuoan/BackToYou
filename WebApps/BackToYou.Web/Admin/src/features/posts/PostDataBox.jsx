@@ -1,9 +1,12 @@
 import styled from "styled-components";
 import { format } from "date-fns";
-import { HiOutlineChatBubbleBottomCenterText, HiOutlineMapPin } from "react-icons/hi2";
+import {
+  HiOutlineChatBubbleBottomCenterText,
+  HiOutlineMapPin,
+} from "react-icons/hi2";
 import DataItem from "../../ui/DataItem";
-import PostTable from './PostTable';
-
+import Textarea from "../../ui/Textarea";
+import FormRow from "../../ui/FormRow";
 
 const StyledPostDataBox = styled.section`
   background-color: var(--color-grey-0);
@@ -100,6 +103,7 @@ function PostDataBox({ post }) {
     postLabel,
     postImages,
     rejectionReason,
+    isEmbedded,
   } = post;
 
   return (
@@ -111,9 +115,7 @@ function PostDataBox({ post }) {
             {postType} Item: <span>{categoryName}</span>
           </p>
         </div>
-        <p>
-          {format(new Date(lostOrFoundDate), "EEE, MMM dd yyyy, p")}
-        </p>
+        <p>{format(new Date(lostOrFoundDate), "EEE, MMM dd yyyy, p")}</p>
       </Header>
 
       <Section>
@@ -128,23 +130,40 @@ function PostDataBox({ post }) {
           {title}
         </DataItem>
 
-         <DataItem icon={<HiOutlineChatBubbleBottomCenterText />} label="Description">
+        <DataItem
+          icon={<HiOutlineChatBubbleBottomCenterText />}
+          label="Description"
+        >
           {description}
         </DataItem>
 
         <DataItem icon={<HiOutlineMapPin />} label="Location">
           {streetAddress}, {ward}, {district}, {province}
         </DataItem>
-         <DataItem icon={<HiOutlineMapPin />} label="Label">
-         {postLabel} {rejectionReason}
+        <DataItem icon={<HiOutlineMapPin />} label="Label">
+          {postLabel} {rejectionReason}
         </DataItem>
 
+        <DataItem
+          icon={<HiOutlineChatBubbleBottomCenterText />}
+          label="Contact Email"
+        >
+          {postContact.email}
+        </DataItem>
 
-        {postContact.email && (
-          <DataItem icon={<HiOutlineChatBubbleBottomCenterText />} label="Contact Email">
-            {postContact.email}
-          </DataItem>
-        )}
+        <DataItem
+          icon={<HiOutlineChatBubbleBottomCenterText />}
+          label="Trích xuất đặc trưng"
+        >
+          {isEmbedded ? "Đã trích xuất" : "Chưa trích xuất"}
+        </DataItem>
+
+         <DataItem
+          icon={<HiOutlineChatBubbleBottomCenterText />}
+          label="Lý do từ chối"
+        >
+          {rejectionReason}
+        </DataItem>
 
         {postImages.length > 0 && (
           <Images>

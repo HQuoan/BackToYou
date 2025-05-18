@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import PostDataBox from "./PostDataBox";
 import Row from "../../ui/Row";
@@ -10,13 +10,23 @@ import Button from "../../ui/Button";
 import ButtonText from "../../ui/ButtonText";
 import Spinner from "../../ui/Spinner";
 import Modal from "../../ui/Modal";
-import ConfirmDelete from "../../ui/ConfirmDelete";
 import Empty from "../../ui/Empty";
 import { useMoveBack } from "../../hooks/useMoveBack";
 import { usePost } from "./usePost";
-import { POST_STATUS_APPROVED, POST_STATUS_PENDING, POST_STATUS_PROCESSING, POST_STATUS_REJECTED } from './../../utils/constants';
+import {
+  POST_STATUS_APPROVED,
+  POST_STATUS_PROCESSING,
+  POST_STATUS_REJECTED,
+} from "./../../utils/constants";
 import { useUpdatePostUpdateLabelAndStatus } from "./useUpdatePostUpdateLabelAndStatus";
 import ConfirmReject from "../../ui/ConfirmReject";
+import { useCreateEmbedding } from "./../embeddings/useCreateEmbedding";
+import { useDeleteEmbedding } from "./../embeddings/useDeleteEmbedding";
+import { useForm } from "react-hook-form";
+import FormRow from "../../ui/FormRow";
+import Textarea from "../../ui/Textarea";
+import FormRowVertical from "../../ui/FormRowVertical";
+import Form from "../../ui/Form";
 
 const HeadingGroup = styled.div`
   display: flex;
@@ -26,21 +36,43 @@ const HeadingGroup = styled.div`
 
 function PostDetail() {
   const moveBack = useMoveBack();
-  const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
+
+  const { isLoading: isCreateEmbedding, createEmbedding } =
+    useCreateEmbedding();
+  const { isLoading: isDeleteEmbedding, deleteEmbedding } =
+    useDeleteEmbedding();
 
   const { slug } = useParams();
   const { post, isLoading } = usePost(slug);
-  
-  const {isLoading: isUpdating, updatePostUpdateLabelAndStatus}  = useUpdatePostUpdateLabelAndStatus();
+
+  const { isLoading: isUpdating, updatePostUpdateLabelAndStatus } =
+    useUpdatePostUpdateLabelAndStatus();
+
+  const isActionLoading = isUpdating || isCreateEmbedding || isDeleteEmbedding;
+
   if (isLoading) return <Spinner />;
   if (!post) return <Empty resourceName="post" />;
 
-  const { postStatus, postId } = post;
+  const { postStatus, postId, isEmbedded } = post;
 
-
-  function handleChangePostStatus(status){
-    updatePostUpdateLabelAndStatus({postId: postId, postStatus: status})
+  function handleChangePostStatus(status) {
+    updatePostUpdateLabelAndStatus({ postId: postId, postStatus: status });
   }
+
+  const onReject = ({ reason }) => {
+    updatePostUpdateLabelAndStatus({
+      postId,
+      postStatus: POST_STATUS_REJECTED,
+      rejectionReason: reason,
+    });
+    reset();
+  };
 
   const statusToTagName = {
     Pending: "blue",
@@ -61,41 +93,95 @@ function PostDetail() {
       <PostDataBox post={post} />
 
       <ButtonGroup>
-        {/* {postStatus === POST_STATUS_PENDING && (
-          <Button onClick={() => handleChangePostStatus(POST_STATUS_PROCESSING)} disabled={isUpdating}>
-            Process
+        {postStatus === POST_STATUS_APPROVED && !isEmbedded && (
+          <Button
+            onClick={() => createEmbedding(postId)}
+            disabled={isActionLoading}
+          >
+            {isCreateEmbedding ? "Đang xử lý..." : "Trích xuất"}
           </Button>
-        )} */}
-
-         <Button onClick={() => handleChangePostStatus(POST_STATUS_PROCESSING)} disabled={isUpdating}>
-            Process
-          </Button>
-
-         {postStatus === POST_STATUS_PROCESSING && (<>
-          <Button variation="success" onClick={() => handleChangePostStatus(POST_STATUS_APPROVED)} disabled={isUpdating}>
-            Approve
-          </Button>
-
-          <Modal>
-          <Modal.Open opens="reject">
-            <Button variation="danger">Reject</Button>
-          </Modal.Open>
-
-          <Modal.Window name="reject">
-            <ConfirmReject
-              resourceName="post"
-              disabled={isUpdating}
-              onConfirm={() =>
-               handleChangePostStatus(POST_STATUS_REJECTED)
-              }
-            />
-          </Modal.Window>
-        </Modal></>
         )}
 
-        
+        {postStatus === POST_STATUS_REJECTED && isEmbedded && (
+          <Button
+            onClick={() => deleteEmbedding(postId)}
+            disabled={isActionLoading}
+          >
+            {isDeleteEmbedding ? "Đang xử lý..." : "Xóa đặc trưng"}
+          </Button>
+        )}
 
-        <Button variation="secondary" onClick={moveBack}>
+        {postStatus !== POST_STATUS_PROCESSING && (
+          <Button
+            onClick={() => handleChangePostStatus(POST_STATUS_PROCESSING)}
+            disabled={isActionLoading}
+          >
+            Process
+          </Button>
+        )}
+
+        {postStatus === POST_STATUS_PROCESSING && (
+          <>
+            <Button
+              variation="success"
+              onClick={() => handleChangePostStatus(POST_STATUS_APPROVED)}
+              disabled={isActionLoading}
+            >
+              Approve
+            </Button>
+
+            <Modal>
+              <Modal.Open opens="reject">
+                <Button variation="danger" disabled={isActionLoading}>
+                  Reject
+                </Button>
+              </Modal.Open>
+
+              <Modal.Window name="reject">
+                {/* <ConfirmReject
+                  resourceName="post"
+                  disabled={isActionLoading}
+                  onConfirm={() => handleChangePostStatus(POST_STATUS_REJECTED)}
+                /> */}
+                <Form onSubmit={handleSubmit(onReject)}>
+                  <FormRowVertical
+                    label="Rejection reason"
+                    error={errors.reason?.message}
+                  >
+                    <Textarea
+                      style={{ width: "500px", height: "200px" }}
+                      rows={4}
+                      placeholder="Hãy cho tác giả biết lý do từ chối…"
+                      {...register("reason", {
+                        required: "Vui lòng nhập lý do",
+                        minLength: {
+                          value: 10,
+                          message: "Lý do tối thiểu 10 ký tự",
+                        },
+                      })}
+                    />
+                  </FormRowVertical>
+
+                  <FormRow>
+                    <Button
+                      variation="danger"
+                      disabled={isActionLoading}
+                      type="submit"
+                    >
+                      {isActionLoading ? "Đang xử lý…" : "Xác nhận Reject"}
+                    </Button>
+                  </FormRow>
+                </Form>
+              </Modal.Window>
+            </Modal>
+          </>
+        )}
+
+        <Button
+          variation="secondary"
+          onClick={moveBack}
+          disabled={isActionLoading}
+        >
           Back
         </Button>
       </ButtonGroup>

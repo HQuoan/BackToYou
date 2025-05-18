@@ -51,15 +51,41 @@ public class PostImageAPIController : ControllerBase
     }
 
 
-    [HttpPost("embedding")]
-    public async Task<ActionResult<ResponseDto>> Embedding([FromBody] List<PostImageDto> images)
-    {
-        var data = _mapper.Map<IEnumerable<PostImageInput>>(images);
-        using var httpClient = new HttpClient();
+    //[HttpPost("embedding")]
+    //public async Task<ActionResult<ResponseDto>> Embedding([FromBody] List<PostImageDto> images)
+    //{
+    //    var data = _mapper.Map<IEnumerable<PostImageInput>>(images);
+    //    using var httpClient = new HttpClient();
 
+    //    var apiUrl = $"{BASE_URL}/embedding";
+
+    //    var json = JsonConvert.SerializeObject(data); // thay vì System.Text.Json
+    //    var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+    //    var response = await httpClient.PostAsync(apiUrl, content);
+    //    var responseString = await response.Content.ReadAsStringAsync();
+
+    //    if (!response.IsSuccessStatusCode)
+    //    {
+    //        return BadRequest(new ResponseDto { IsSuccess = false, Message = responseString });
+    //    }
+
+    //    return Ok(new ResponseDto { IsSuccess = true, Message = responseString });
+    //}
+
+    [HttpPost("embedding/{postId}")]
+    public async Task<ActionResult<ResponseDto>> Embedding(Guid postId)
+    {
+        var query = new QueryParameters<PostImage>();
+        query.Filters.Add(i => i.PostId == postId);
+
+        var images = await _unitOfWork.PostImage.GetAllAsync(query);
+        var data = _mapper.Map<IEnumerable<PostImageInput>>(images);
+
+        using var httpClient = new HttpClient();
         var apiUrl = $"{BASE_URL}/embedding";
 
-        var json = JsonConvert.SerializeObject(data); // thay vì System.Text.Json
+        var json = JsonConvert.SerializeObject(data);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
         var response = await httpClient.PostAsync(apiUrl, content);
@@ -70,10 +96,45 @@ public class PostImageAPIController : ControllerBase
             return BadRequest(new ResponseDto { IsSuccess = false, Message = responseString });
         }
 
+        var post = await _unitOfWork.Post.GetAsync(p => p.PostId == postId);
+        if (post != null)
+        {
+            post.IsEmbedded = true;
+            await _unitOfWork.Post.UpdateAsync(post);
+            await _unitOfWork.SaveAsync();
+        }
+
         return Ok(new ResponseDto { IsSuccess = true, Message = responseString });
     }
 
-    [HttpGet("embedding/all")]
+
+    [HttpDelete("embedding/{postId}")]
+    public async Task<ActionResult<ResponseDto>> DeleteEmbedding(Guid postId)
+    {
+        var apiUrl = $"{BASE_URL}/{postId}";
+
+        using var httpClient = new HttpClient();
+        var response = await httpClient.DeleteAsync(apiUrl);
+        var responseString = await response.Content.ReadAsStringAsync();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return BadRequest(new ResponseDto { IsSuccess = false, Message = responseString });
+        }
+
+        var post = await _unitOfWork.Post.GetAsync(p => p.PostId == postId);
+        if (post != null)
+        {
+            post.IsEmbedded = false;
+            await _unitOfWork.Post.UpdateAsync(post);
+            await _unitOfWork.SaveAsync(); 
+        }
+
+        return Ok(new ResponseDto { IsSuccess = true, Message = responseString });
+    }
+
+
+    [HttpPost("embedding/all")]
     public async Task<ActionResult<ResponseDto>> EmbeddingAll()
     {
         var query = new QueryParameters<PostImage>

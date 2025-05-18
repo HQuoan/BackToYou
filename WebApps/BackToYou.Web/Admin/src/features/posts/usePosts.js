@@ -17,11 +17,13 @@ export function usePosts() {
 
   // ===== FILTER =====
 
-  const postStatusValue = searchParams.get("status");
+  const postStatus = searchParams.get("status");
+  const postLabel = searchParams.get("label");
 
   const filter = {
     orderBy: searchParams.get("sortBy") || undefined,
-    postStatus: !postStatusValue || postStatusValue === "all" ? null : postStatusValue,
+    postStatus: !postStatus || postStatus === "all" ? null : postStatus,
+    postLabel: !postLabel || postLabel === "all" ? null : postLabel,
   };
 
 

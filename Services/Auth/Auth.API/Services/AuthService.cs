@@ -107,16 +107,22 @@ public class AuthService : IAuthService
     {
         var user = _db.ApplicationUsers.FirstOrDefault(c => c.Email.ToLower() == loginRequestDto.Email.ToLower());
 
-        if (!user.EmailConfirmed)
+        if(user == null)
         {
-            throw new BadRequestException("Please confirm your email to login.");
+            throw new UserNotFoundException(loginRequestDto.Email);
         }
+
 
         bool isValid = await _userManager.CheckPasswordAsync(user, loginRequestDto.Password);
 
         if (user == null || isValid == false)
         {
             return new LoginResponseDto() { User = null, Token = "" };
+        }
+
+        if (!user.EmailConfirmed)
+        {
+            throw new BadRequestException("Please confirm your email to login.");
         }
 
         LoginResponseDto loginResponseDto = new LoginResponseDto();

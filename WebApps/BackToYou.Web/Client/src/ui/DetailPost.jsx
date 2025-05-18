@@ -70,7 +70,7 @@ function DetailPost({ post }) {
               <p>
                 <strong>
                   Địa chỉ {post.postType === "Lost" ? "mất: " : "nhặt: "}
-                  {post.location.streetAddress}, {post.location.ward},{" "}
+                  {post.location.streetAddress}, {post.location.ward + ", "}
                   {post.location.district}, {post.location.province}
                 </strong>
               </p>

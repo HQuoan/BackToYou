@@ -1,21 +1,51 @@
 import SortBy from "../../ui/SortBy";
 import Filter from "../../ui/Filter";
 import TableOperations from "../../ui/TableOperations";
-import { POST_STATUS_APPROVED, POST_STATUS_PENDING, POST_STATUS_PROCESSING, POST_STATUS_REJECTED } from "../../utils/constants";
+import {
+  POST_LABEL_NORMAL,
+  POST_LABEL_PRIORITY,
+  POST_STATUS_APPROVED,
+  POST_STATUS_PENDING,
+  POST_STATUS_PROCESSING,
+  POST_STATUS_REJECTED,
+} from "../../utils/constants";
+import Options from "../../ui/Options";
+import { useSearchParams } from "react-router-dom";
 
 function PostTableOperations() {
+  const [searchParams] = useSearchParams();
+  const option = searchParams.get("option") || "";
+
   return (
     <TableOperations>
-      <Filter
-        filterField="status"
+      <Options
         options={[
-          { value: "all", label: "All" },
-          { value: POST_STATUS_PENDING, label: "Pending" },
-          { value: POST_STATUS_PROCESSING, label: "Processing" },
-          { value: POST_STATUS_APPROVED, label: "Approved" },
-          { value: POST_STATUS_REJECTED, label: "Rejected" },
+          { value: "status", label: "Status" },
+          { value: "label", label: "Label" },
         ]}
       />
+
+      {option === "label" ? (
+        <Filter
+          filterField="label"
+          options={[
+            { value: "all", label: "All" },
+            { value: POST_LABEL_NORMAL, label: "Normal" },
+            { value: POST_LABEL_PRIORITY, label: "Priority" },
+          ]}
+        />
+      ) : (
+        <Filter
+          filterField="status"
+          options={[
+            { value: "all", label: "All" },
+            { value: POST_STATUS_PENDING, label: "Pending" },
+            { value: POST_STATUS_PROCESSING, label: "Processing" },
+            { value: POST_STATUS_APPROVED, label: "Approved" },
+            { value: POST_STATUS_REJECTED, label: "Rejected" },
+          ]}
+        />
+      )}
 
       <SortBy
         options={[

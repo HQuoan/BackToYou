@@ -21,6 +21,7 @@ public class PostDto : BaseEntity
     public DateTime LostOrFoundDate { get; set; }
     public decimal? Price { get; set; }
     public string? RejectionReason { get; set; }
+    public bool IsEmbedded { get; set; }
 
     public ICollection<PostImageDto>? PostImages { get; set; }
     public ICollection<CommentDto>? Comments { get; set; }

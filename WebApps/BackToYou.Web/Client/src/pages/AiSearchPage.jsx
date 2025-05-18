@@ -71,6 +71,7 @@ function AiSearchPage() {
   const handleSearch = async (e) => {
     e.preventDefault();
 
+    setPosts([]);
     if (!selectedImage && !textQuery) return;
 
     const formData = new FormData();

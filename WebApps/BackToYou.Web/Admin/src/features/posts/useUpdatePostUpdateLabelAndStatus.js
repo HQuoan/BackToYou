@@ -10,10 +10,10 @@ export function useUpdatePostUpdateLabelAndStatus() {
     isLoading,
     mutate: updatePostUpdateLabelAndStatus,
   } = useMutation({
-    mutationFn: ({postId, postLabel, postStatus}) => updatePostUpdateLabelAndStatusAPI({postId, postLabel, postStatus}),
+    mutationFn: updatePostUpdateLabelAndStatusAPI,
     onSuccess: (data) => {
       toast.success("Cập nhật trạng thái bài đăng thành công");
-      queryClient.invalidateQueries({ queryKey:  ["post", data?.result?.slug]});
+      queryClient.invalidateQueries({ queryKey:  ["post"]});
     },
     onError: (err) => {
       toast.error(err.message);

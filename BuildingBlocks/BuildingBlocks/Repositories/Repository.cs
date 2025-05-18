@@ -97,10 +97,6 @@ public class Repository<T> : IRepository<T> where T : class
         return await query.Select(selector).ToListAsync();
     }
 
-
-
-
-
     public async Task<int> CountAsync(QueryParameters<T>? queryParameters)
     {
         IQueryable<T> query = dbSet;
