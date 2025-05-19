@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using PostAPI.Features.PostSettings.Dtos;
 using PostAPI.Features.PostSettings.Queries;
 
@@ -40,8 +39,7 @@ public class PostSettingAPIController : ControllerBase
         return Ok(_response);
     }
 
-    [HttpGet]
-    [Route("{id}")]
+    [HttpGet("by-id/{id}")]
     public async Task<ActionResult<ResponseDto>> GetById(Guid id)
     {
         var postSetting = await _unitOfWork.PostSetting.GetAsync(c => c.PostSettingId == id);
@@ -54,8 +52,7 @@ public class PostSettingAPIController : ControllerBase
         return Ok(_response);
     }
 
-    [HttpGet]
-    [Route("{name}")]
+    [HttpGet("by-name/{name}")]
     public async Task<ActionResult<ResponseDto>> GetValue(string name)
     {
         var postSetting = await _unitOfWork.PostSetting.GetAsync(c => c.Name == name);
