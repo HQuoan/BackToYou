@@ -75,59 +75,72 @@ function Header() {
                 Map
               </NavLink>
             </li>
-            <li className="nav-item">
+            {/* <li className="nav-item">
               <NavLink to="/contact" className="nav-link">
                 Contact
               </NavLink>
-            </li>
+            </li> */}
           </ul>
         </div>
         <div className="ms-4 d-flex align-items-center gap-2 position-relative">
           {isAuthenticated ? (
-            <div className="dropdown" ref={dropdownRef}>
-              <div
-                className="profile-dropdown-toggle d-flex align-items-center gap-2 bg-transparent border-0 p-0"
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                style={{ cursor: "pointer" }}
-              >
-                <span className="me-2 text-white">
-                  {user?.shortName || user?.fullName || "User"}
-                </span>
-
-                {user?.avatar ? (
-                  <img
-                    src={user.avatar}
-                    className="profile-block-image"
-                    alt="avatar"
-                  />
-                ) : (
-                  <PlaceholderAvatar name={user?.shortName} />
+            <>
+              <Link to="/listing" className="btn custom-btn custom-border-btn me-5">
+                Đăng bài
+              </Link>
+              <div className="dropdown" ref={dropdownRef}>
+                <div
+                  className="profile-dropdown-toggle d-flex align-items-center gap-2 bg-transparent border-0 p-0"
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <span className="me-2 text-white">
+                    {user?.shortName || user?.fullName || "User"}
+                  </span>
+                  {user?.avatar ? (
+                    <img
+                      src={user.avatar}
+                      className="profile-block-image"
+                      alt="avatar"
+                    />
+                  ) : (
+                    <PlaceholderAvatar name={user?.shortName} />
+                  )}
+                </div>
+                {isDropdownOpen && (
+                  <div className="profile-dropdown-menu">
+                    <Link
+                      to="/account/profile"
+                      className="profile-dropdown-item"
+                    >
+                      <i className="bi bi-person-fill me-2" />
+                      Thông tin tài khoản
+                    </Link>
+                    <Link
+                      to="/account/payment"
+                      className="profile-dropdown-item"
+                    >
+                      <i className="bi bi-wallet2 me-2"></i>
+                      Ví của bạn
+                    </Link>
+                    <Link
+                      to="/account/history"
+                      className="profile-dropdown-item"
+                    >
+                      <i className="bi bi-pencil-square me-2"></i>
+                      Bài đăng
+                    </Link>
+                    <button
+                      className="btn profile-dropdown-item"
+                      onClick={() => logout()}
+                    >
+                      <i className="bi bi-box-arrow-right me-2"></i>
+                      Đăng xuất
+                    </button>
+                  </div>
                 )}
               </div>
-              {isDropdownOpen && (
-                <div className="profile-dropdown-menu">
-                  <Link to="/account/profile" className="profile-dropdown-item">
-                    <i className="bi bi-person-fill me-2" />
-                    Thông tin tài khoản
-                  </Link>
-                  <Link to="/account/payment" className="profile-dropdown-item">
-                    <i className="bi bi-wallet2 me-2"></i>
-                    Ví của bạn
-                  </Link>
-                  <Link to="/account/history" className="profile-dropdown-item">
-                    <i className="bi bi-pencil-square me-2"></i>
-                    Bài đăng
-                  </Link>
-                  <button
-                    className="btn profile-dropdown-item"
-                    onClick={() => logout()}
-                  >
-                    <i className="bi bi-box-arrow-right me-2"></i>
-                    Đăng xuất
-                  </button>
-                </div>
-              )}
-            </div>
+            </>
           ) : (
             <Link to="/login" className="btn custom-btn custom-border-btn">
               Đăng nhập

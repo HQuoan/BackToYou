@@ -1,4 +1,3 @@
-import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
@@ -8,6 +7,9 @@ import mockPosts from "../../data/mockPosts";
 import PostTypeBadge from "../PostTypeBadge ";
 import PriorityLabel from "../PriorityLabel";
 import { Link } from "react-router-dom";
+import { usePosts } from "../../features/posts/usePosts";
+import { POST_LABEL_PRIORITY } from "./../../utils/constants";
+import Spinner from "../Spinner";
 
 const social = [
   // "bi-twitter",
@@ -69,11 +71,11 @@ const getCarouselPosts = (posts, minSlides = 6) => {
   return Array(repeatCount).fill(posts).flat().slice(0, minSlides);
 };
 
-
 const PriorityPostsSlider = () => {
   // const {posts } = usePosts();
   // const carouselPosts = getCarouselPosts(posts);
-  const carouselPosts = getCarouselPosts(mockPosts);
+  const { isPending, posts } = usePosts({ postLabel: POST_LABEL_PRIORITY });
+  const carouselPosts = getCarouselPosts(posts);
 
   return (
     <section className="hero-section">
@@ -101,8 +103,10 @@ const PriorityPostsSlider = () => {
               </Link>
             </div>
 
-            {carouselPosts.length === 0 ? (
-              <p className="text-white text-center">Chưa có bài viết nào</p>
+            {isPending ? (
+              <Spinner />
+            ) : carouselPosts.length === 0 ? (
+              <p className="text-center">Chưa có bài viết ưu tiên nào</p>
             ) : (
               <Swiper
                 className="owl-carousel owl-theme"

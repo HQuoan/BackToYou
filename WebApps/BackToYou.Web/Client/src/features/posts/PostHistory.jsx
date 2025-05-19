@@ -125,10 +125,16 @@ const PostHistory = () => {
                         </span>
                       </div>
                       <div className="d-flex flex-column align-items-start">
-                        <span className="badge badge-category mb-1">
-                          <i className="bi bi-box me-1"></i>
-                          {post.category?.name}
-                        </span>
+                        <div>
+                          <span className="badge badge-category mb-1">
+                            <i className="bi bi-box me-1"></i>
+                            {post.category?.name}
+                          </span>
+                          <span className="badge badge-price mb-1">
+                            <i className="bi bi-currency-dollar me-1"></i>
+                            {post?.price.toLocaleString()}
+                          </span>
+                        </div>
                         <span className="badge badge-location">
                           <i className="bi bi-geo-alt me-1"></i>
                           {post.location.district}, {post.location.province}

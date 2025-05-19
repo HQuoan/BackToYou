@@ -1,4 +1,4 @@
-const POST_LABEL_PRIORITY = import.meta.env.VITE_POST_LABEL_PRIORITY;
+import { POST_LABEL_PRIORITY } from "../utils/constants";
 
 function PriorityLabel({postLabel}) {
   return (  postLabel === POST_LABEL_PRIORITY &&

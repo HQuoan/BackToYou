@@ -8,7 +8,7 @@ import { useUser } from "../authentication/useUser";
 
 const UpdateInfoForm = () => {
  const { isPending, user } = useUser();
-
+ 
   //AVATAR
   const { uploadAvatar, isPending: isUploadingAvatar } = useUploadAvatar();
 
@@ -16,8 +16,7 @@ const UpdateInfoForm = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const url = await uploadAvatar(file);
-    console.log("New avatar URL:", url);
+    await uploadAvatar(file);
   };
 
   // INFORMATION

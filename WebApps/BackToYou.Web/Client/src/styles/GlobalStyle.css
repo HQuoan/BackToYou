@@ -153,7 +153,7 @@ select.form-select {
   color: var(--white-color, #ffffff);
   padding-bottom: 5px;
   margin-right: 5px;
-  cursor: pointer;
+  /* cursor: pointer;GlobalStyle */
 }
 
 .map .badge {
@@ -163,6 +163,12 @@ select.form-select {
 .map .custom-block-info {
   padding: 5px;
 }
+
+.badge-price {
+  background-color: #f1c40f;
+  color: var(--color-grey-800);
+}
+
 
 .badge-category {
   background-color: #ff7f50;
@@ -534,4 +540,16 @@ select.form-select {
 /* Button */
 .modal-box .btn {
   min-width: 100px;
+}
+
+
+
+.page-not-found {
+  height: 100vh;
+  background-color: #f8f9fa; /* tương đương var(--color-grey-50) */
+}
+
+.box {
+  border-color: #dee2e6; /* tương đương var(--color-grey-100) */
+  border-radius: 0.5rem; /* tương đương var(--border-radius-md) */
 }

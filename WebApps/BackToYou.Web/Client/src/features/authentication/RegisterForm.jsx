@@ -12,7 +12,6 @@ function RegisterForm() {
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log("register", data);
     registerAPI(data);
   };
 

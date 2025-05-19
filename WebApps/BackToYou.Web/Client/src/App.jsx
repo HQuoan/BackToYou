@@ -1,4 +1,4 @@
-import "./GlobalStyle.css";
+import "./styles/GlobalStyle.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -22,6 +22,7 @@ import ForgotPasswordForm from "./features/authentication/ForgotPasswordForm";
 import ResetPasswordForm from "./features/authentication/ResetPasswordForm";
 import Payment from './features/payment/Payment';
 import PostHistory from "./features/posts/PostHistory";
+import PageNotFound from "./pages/PageNotFound";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -77,7 +78,7 @@ function App() {
             <Route path="reset-password" element={<ResetPasswordForm />} />
           </Route>
 
-          {/* <Route path="*" element={<PageNotFound />} /> */}
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
       </BrowserRouter>
 

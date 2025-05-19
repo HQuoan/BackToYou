@@ -1,5 +1,8 @@
 import { useFormContext } from "react-hook-form";
 import { useCategories } from "./useCategories";
+import { usePostPriorityPrice } from "./usePostPriorityPrice";
+import LabelWithTooltip from "../../ui/LabelWithTooltip";
+import LabelWithPopover from "../../ui/LabelWithPopover";
 
 function GeneralInfoSection() {
   const {
@@ -7,6 +10,8 @@ function GeneralInfoSection() {
     formState: { errors },
   } = useFormContext();
   const { categories } = useCategories();
+
+  const { isPending, price } = usePostPriorityPrice();
 
   return (
     <div id="general" className="section mb-5 rounded card">
@@ -49,7 +54,7 @@ function GeneralInfoSection() {
                   Tin thường
                 </label>
               </div>
-              <div className="form-check">
+              <div className="form-check position-relative">
                 <input
                   type="radio"
                   className="form-check-input"
@@ -59,9 +64,12 @@ function GeneralInfoSection() {
                     required: "Vui lòng chọn loại bài đăng",
                   })}
                 />
-                <label className="form-check-label" htmlFor="Priority">
-                  Tin ưu tiên
-                </label>
+                <LabelWithPopover
+                  htmlFor="Priority"
+                  label="Tin ưu tiên"
+                  popover="Tin ưu tiên sẽ hiển thị ở đầu trang chủ"
+                />
+                <p className="text-danger mt-1">{`${price?.value} xu/tin`}</p>
               </div>
             </div>
             {errors.postLabel && (

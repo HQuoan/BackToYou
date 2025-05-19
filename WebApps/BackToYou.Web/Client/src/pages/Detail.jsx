@@ -21,7 +21,7 @@ function Detail() {
       {!finalPost ? (
         <section style={{ minHeight: 400 }}>
           <div className="d-flex flex-column justify-content-center align-items-center text-center">
-            { isPending ? (
+            {isPending ? (
               <>
                 <Spinner />
                 <p className="mt-2">Đang tải bài viết...</p>
@@ -32,17 +32,18 @@ function Detail() {
           </div>
         </section>
       ) : (
-        <div className="container shadow rounded header-content-overlay">
-          <div className="row justify-content-center">
-            <div className="col-lg-10 col-12">
-              <DetailPost post={finalPost} />
-              <CommentsList postId={finalPost.postId} />
+        <>
+          <div className="container shadow rounded header-content-overlay">
+            <div className="row justify-content-center">
+              <div className="col-lg-10 col-12">
+                <DetailPost post={finalPost} />
+                <CommentsList postId={finalPost.postId} />
+              </div>
             </div>
           </div>
-        </div>
+          <RecentPosts categorySlug={finalPost?.category.slug} />
+        </>
       )}
-
-      <RecentPosts />
     </>
   );
 }

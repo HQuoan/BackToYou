@@ -15,13 +15,12 @@ function ChangePasswordForm() {
   const newPassword = watch("newPassword");
 
   const onSubmit = (data) => {
-    console.log("change");
-    changePassword(
-      {
-        currentPassword: data.currentPassword,
-        newPassword: data.newPassword,
-        confirmNewPassword: data.confirmNewPassword,
-      },
+    changePassword(data,
+      // {
+      //   currentPassword: data.currentPassword,
+      //   newPassword: data.newPassword,
+      //   confirmNewPassword: data.confirmNewPassword,
+      // },
       {
         onSuccess: () => reset(),
       }

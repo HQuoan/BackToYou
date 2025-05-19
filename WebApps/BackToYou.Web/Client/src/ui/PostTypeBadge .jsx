@@ -1,4 +1,4 @@
-const POST_TYPE_LOST = import.meta.env.VITE_POST_TYPE_LOST;
+import { POST_TYPE_LOST } from "../utils/constants";
 
 const PostTypeBadge = ({ type }) => {
   const isLost = type === POST_TYPE_LOST;
