@@ -32,6 +32,26 @@ const GlobalStyles = createGlobalStyle`
   --color-red-700: #b91c1c;
   --color-red-800: #991b1b;
 
+    /* New colors for labels */
+    --color-pending-100: #fef9c3; /* Light yellow for pending */
+    --color-pending-700: #a16207; /* Darker yellow */
+    --color-processing-100: #e0f2fe; /* Reuse blue for processing */
+    --color-processing-700: #0369a1;
+    --color-approved-100: #dcfce7; /* Reuse green for approved */
+    --color-approved-700: #15803d;
+    --color-rejected-100: #fee2e2; /* Reuse red for rejected */
+    --color-rejected-700: #b91c1c;
+    --color-normal-100: #e5e7eb; /* Reuse silver for normal */
+    --color-normal-700: #374151;
+    --color-priority-100: #ffedd5; /* Light orange for priority */
+    --color-priority-700: #c2410c; /* Darker orange */
+    --color-found-100: #dcfce7; /* Reuse green for found */
+    --color-found-700: #15803d;
+    --color-fake-100: #f3e8ff; /* Light purple for fake */
+    --color-fake-700: #6d28d9; /* Darker purple */
+    --color-lost-100: #e0e7ff; /* Reuse indigo for lost */
+    --color-lost-700: #4338ca;
+
   --backdrop-color: rgba(255, 255, 255, 0.1);
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
@@ -70,6 +90,26 @@ const GlobalStyles = createGlobalStyle`
 --color-red-100: #fee2e2;
 --color-red-700: #b91c1c;
 --color-red-800: #991b1b;
+
+  /* New colors for labels in dark mode */
+    --color-pending-100: #854d0e; /* Darker yellow */
+    --color-pending-700: #fef9c3;
+    --color-processing-100: #075985; /* Reuse blue */
+    --color-processing-700: #e0f2fe;
+    --color-approved-100: #166534; /* Reuse green */
+    --color-approved-700: #dcfce7;
+    --color-rejected-100: #fee2e2; /* Reuse red */
+    --color-rejected-700: #b91c1c;
+    --color-normal-100: #374151; /* Reuse silver */
+    --color-normal-700: #f3f4f6;
+    --color-priority-100: #c2410c; /* Darker orange */
+    --color-priority-700: #ffedd5;
+    --color-found-100: #166534; /* Reuse green */
+    --color-found-700: #dcfce7;
+    --color-fake-100: #6d28d9; /* Darker purple */
+    --color-fake-700: #f3e8ff;
+    --color-lost-100: #3730a3; /* Reuse indigo */
+    --color-lost-700: #e0e7ff;
 
 --backdrop-color: rgba(0, 0, 0, 0.3);
 

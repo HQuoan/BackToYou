@@ -7,13 +7,32 @@ import { useCabins } from "../cabins/useCabins";
 import SalesChart from "./SalesChart";
 import DurationChart from "./DurationChart";
 import TodayActivity from "../check-in-out/TodayActivity";
+import CategoryBarChartWrapper from "./CategoryBarChartWrapper";
 
 const StyledDashboardLayout = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-template-rows: auto 34rem auto;
+  grid-template-rows: auto 43rem auto;
   gap: 2.4rem;
 `;
+
+const payment =  {
+    "timePeriod": "2025-05-13 to 2025-05-20",
+    "dailyTotals": [
+      {
+        "label": "May 14",
+        "totalPayment": 8956668
+      },
+      {
+        "label": "May 15",
+        "totalPayment": 10010000
+      },
+      {
+        "label": "May 19",
+        "totalPayment": 10000
+      }
+    ]
+  }
 
 function DashboardLayout() {
   const { bookings, isLoading: isLoading1 } = useRecentBookings();
@@ -31,8 +50,9 @@ function DashboardLayout() {
         cabinCount={cabins.length}
       />
       <TodayActivity />
-      <DurationChart confirmedStays={confirmedStays} />
-      <SalesChart bookings={bookings} numDays={numDays} />
+      <CategoryBarChartWrapper/>
+      {/* <DurationChart confirmedStays={confirmedStays} /> */}
+      <SalesChart data= {payment}/>
     </StyledDashboardLayout>
   );
 }

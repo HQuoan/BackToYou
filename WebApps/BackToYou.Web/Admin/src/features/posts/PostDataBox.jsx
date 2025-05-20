@@ -1,12 +1,22 @@
 import styled from "styled-components";
 import { format } from "date-fns";
 import {
-  HiOutlineChatBubbleBottomCenterText,
+  HiOutlineCube,
+  HiOutlineDocumentText,
+  HiOutlineDocument,
   HiOutlineMapPin,
+  HiOutlineTag,
+  HiOutlineEnvelope,
+  HiOutlineCog,
+  HiOutlineExclamationCircle,
+  HiOutlineUser,
+  HiOutlinePhone,
+  HiOutlineCurrencyDollar,
 } from "react-icons/hi2";
+
 import DataItem from "../../ui/DataItem";
-import Textarea from "../../ui/Textarea";
-import FormRow from "../../ui/FormRow";
+import Tag from "../../ui/Tag";
+import { formatCurrency } from "../../utils/helpers";
 
 const StyledPostDataBox = styled.section`
   background-color: var(--color-grey-0);
@@ -46,7 +56,32 @@ const Header = styled.header`
 `;
 
 const Section = styled.section`
+  display: flex;
+  flex-direction: row;
   padding: 3.2rem 4rem 1.2rem;
+  gap: 2.4rem;
+`;
+
+const ContentColumn = styled.div`
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  /* gap: 0.5rem; */
+`;
+
+const ImagesColumn = styled.div`
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+
+  & img {
+    width: 15rem;
+    height: 15rem;
+    object-fit: cover;
+    border-radius: var(--border-radius-sm);
+  }
 `;
 
 const User = styled.div`
@@ -65,20 +100,6 @@ const User = styled.div`
     width: 3.2rem;
     height: 3.2rem;
     border-radius: 50%;
-  }
-`;
-
-const Images = styled.div`
-  display: flex;
-  gap: 1.2rem;
-  flex-wrap: wrap;
-  margin-top: 2.4rem;
-
-  & img {
-    width: 15rem;
-    height: 15rem;
-    object-fit: cover;
-    border-radius: var(--border-radius-sm);
   }
 `;
 
@@ -101,6 +122,7 @@ function PostDataBox({ post }) {
     postContact,
     postType,
     postLabel,
+    price,
     postImages,
     rejectionReason,
     isEmbedded,
@@ -110,67 +132,75 @@ function PostDataBox({ post }) {
     <StyledPostDataBox>
       <Header>
         <div>
-          <HiOutlineMapPin />
+          <HiOutlineCube />
           <p>
-            {postType} Item: <span>{categoryName}</span>
+            <Tag type={postType.toLowerCase()}>{postType}</Tag> Item:{" "}
+            <span>{categoryName}</span>
           </p>
         </div>
         <p>{format(new Date(lostOrFoundDate), "EEE, MMM dd yyyy, p")}</p>
       </Header>
 
       <Section>
-        <User>
-          {avatar && <img src={avatar} alt={`Avatar of ${fullName}`} />}
-          <p>{fullName}</p>
-          <span>•</span>
-          <p>{email}</p>
-        </User>
+        <ContentColumn>
+          <User>
+            {avatar && <img src={avatar} alt={`Avatar of ${fullName}`} />}
+            <p>{fullName}</p>
+            <span>•</span>
+            <p>{email}</p>
+          </User>
 
-        <DataItem icon={<HiOutlineChatBubbleBottomCenterText />} label="Title">
-          {title}
-        </DataItem>
+          <DataItem icon={<HiOutlineDocumentText />} label="Title">
+            {title}
+          </DataItem>
 
-        <DataItem
-          icon={<HiOutlineChatBubbleBottomCenterText />}
-          label="Description"
-        >
-          {description}
-        </DataItem>
+          <DataItem icon={<HiOutlineDocument />} label="Description">
+            {description}
+          </DataItem>
 
-        <DataItem icon={<HiOutlineMapPin />} label="Location">
-          {streetAddress}, {ward}, {district}, {province}
-        </DataItem>
-        <DataItem icon={<HiOutlineMapPin />} label="Label">
-          {postLabel} {rejectionReason}
-        </DataItem>
+          <DataItem icon={<HiOutlineMapPin />} label="Location">
+            {streetAddress}, {ward}, {district}, {province}
+          </DataItem>
 
-        <DataItem
-          icon={<HiOutlineChatBubbleBottomCenterText />}
-          label="Contact Email"
-        >
-          {postContact.email}
-        </DataItem>
+          <DataItem icon={<HiOutlineTag />} label="Label">
+            <Tag type={postLabel.toLowerCase()}>{postLabel}</Tag>
+          </DataItem>
 
-        <DataItem
-          icon={<HiOutlineChatBubbleBottomCenterText />}
-          label="Trích xuất đặc trưng"
-        >
-          {isEmbedded ? "Đã trích xuất" : "Chưa trích xuất"}
-        </DataItem>
+          <DataItem icon={<HiOutlineCurrencyDollar />} label="Price">
+            {formatCurrency(price)}
+          </DataItem>
 
-         <DataItem
-          icon={<HiOutlineChatBubbleBottomCenterText />}
-          label="Lý do từ chối"
-        >
-          {rejectionReason}
-        </DataItem>
+          <DataItem icon={<HiOutlineUser />} label="Contact Name">
+            {postContact.name}
+          </DataItem>
 
+          <DataItem icon={<HiOutlinePhone />} label="Contact Phone">
+            {postContact.phone}
+          </DataItem>
+
+          <DataItem icon={<HiOutlineEnvelope />} label="Contact Email">
+            {postContact.email}
+          </DataItem>
+
+          {rejectionReason && (
+            <DataItem
+              icon={<HiOutlineExclamationCircle />}
+              label="Rejection Reason"
+            >
+              {rejectionReason}
+            </DataItem>
+          )}
+
+          <DataItem icon={<HiOutlineCog />} label="Embedding Status">
+            {isEmbedded ? "Extracted" : "Not Extracted"}
+          </DataItem>
+        </ContentColumn>
         {postImages.length > 0 && (
-          <Images>
+          <ImagesColumn>
             {postImages.map((img) => (
               <img key={img.postImageId} src={img.imageUrl} alt="Post item" />
             ))}
-          </Images>
+          </ImagesColumn>
         )}
       </Section>
 

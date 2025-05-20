@@ -11,6 +11,7 @@ import {
 } from "../../utils/constants";
 import Options from "../../ui/Options";
 import { useSearchParams } from "react-router-dom";
+import SearchInput from "../../ui/SearchInput";
 
 function PostTableOperations() {
   const [searchParams] = useSearchParams();
@@ -18,6 +19,8 @@ function PostTableOperations() {
 
   return (
     <TableOperations>
+      <SearchInput searchField="email" placeholder="Search by email..." />
+
       <Options
         options={[
           { value: "status", label: "Status" },

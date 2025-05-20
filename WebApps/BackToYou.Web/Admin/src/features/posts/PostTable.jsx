@@ -8,7 +8,7 @@ import PostRow from "./PostRow";
 import { usePosts } from "./usePosts";
 
 function PostTable() {
-  const {posts, isLoading, pagination} =  usePosts();
+  const { posts, isLoading, pagination } = usePosts();
 
   if (isLoading) return <Spinner />;
 
@@ -29,13 +29,11 @@ function PostTable() {
 
         <Table.Body
           data={posts}
-          render={(post) => (
-            <PostRow key={post.postId} post={post} />
-          )}
+          render={(post) => <PostRow key={post.postId} post={post} />}
         />
 
         <Table.Footer>
-          <Pagination count={pagination.totalItems} />
+          <Pagination pagination={pagination} />
         </Table.Footer>
       </Table>
     </Menus>

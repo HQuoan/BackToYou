@@ -35,3 +35,4 @@ export async function uploadAvatar(avatar) {
 
   return res?.result;
 }
+

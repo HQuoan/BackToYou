@@ -11,7 +11,9 @@ import {
   YAxis,
 } from "recharts";
 import { useDarkMode } from "../../context/DarkModeContext";
-import { eachDayOfInterval, format, isSameDay, subDays } from "date-fns";
+import { eachDayOfInterval, format, parse } from "date-fns";
+import { formatVndCurrency } from "../../utils/helpers";
+
 
 const StyledSalesChart = styled(DashboardBox)`
   grid-column: 1 / -1;
@@ -23,36 +25,40 @@ const StyledSalesChart = styled(DashboardBox)`
   }
 `;
 
-function SalesChart({ bookings, numDays }) {
+function SalesChart({ data }) {
   const { isDarkMode } = useDarkMode();
 
+  // Parse the timePeriod to get start and end dates
+  const [startDateStr, endDateStr] = data.timePeriod.split(" to ");
+  const startDate = parse(startDateStr, "yyyy-MM-dd", new Date());
+  const endDate = parse(endDateStr, "yyyy-MM-dd", new Date());
+
+  // Generate all dates in the interval
   const allDates = eachDayOfInterval({
-    start: subDays(new Date(), numDays - 1),
-    end: new Date(),
+    start: startDate,
+    end: endDate,
   });
 
-  const data = allDates.map((date) => {
+  // Map dates to chart data, filling in 0 for missing days
+  const chartData = allDates.map((date) => {
+    const formattedDate = format(date, "MMM dd");
+    const dailyTotal = data.dailyTotals.find(
+      (entry) => entry.label === format(date, "MMM dd")
+    );
     return {
-      label: format(date, "MMM dd"),
-      totalSales: bookings
-        .filter((booking) => isSameDay(date, new Date(booking.created_at)))
-        .reduce((acc, cur) => acc + cur.totalPrice, 0),
-      extrasSales: bookings
-        .filter((booking) => isSameDay(date, new Date(booking.created_at)))
-        .reduce((acc, cur) => acc + cur.extrasPrice, 0),
+      label: formattedDate,
+      totalSales: dailyTotal ? dailyTotal.totalPayment : 0,
     };
   });
 
   const colors = isDarkMode
     ? {
         totalSales: { stroke: "#4f46e5", fill: "#4f46e5" },
-        extrasSales: { stroke: "#22c55e", fill: "#22c55e" },
         text: "#e5e7eb",
         background: "#18212f",
       }
     : {
         totalSales: { stroke: "#4f46e5", fill: "#c7d2fe" },
-        extrasSales: { stroke: "#16a34a", fill: "#dcfce7" },
         text: "#374151",
         background: "#fff",
       };
@@ -60,24 +66,27 @@ function SalesChart({ bookings, numDays }) {
   return (
     <StyledSalesChart>
       <Heading as="h2">
-        Sales from {format(allDates.at(0), "MMM dd yyyy")} &mdash;{" "}
-        {format(allDates.at(-1), "MMM dd yyyy")}{" "}
+        Sales from {format(startDate, "MMM dd yyyy")} —{" "}
+        {format(endDate, "MMM dd yyyy")}
       </Heading>
 
       <ResponsiveContainer height={300} width="100%">
-        <AreaChart data={data}>
+        <AreaChart data={chartData}   margin={{ top: 20, right: 30, bottom: 20, left: 60 }}>
           <XAxis
             dataKey="label"
             tick={{ fill: colors.text }}
             tickLine={{ stroke: colors.text }}
           />
           <YAxis
-            unit="$"
+            tickFormatter={(value) => formatVndCurrency(value)}
             tick={{ fill: colors.text }}
             tickLine={{ stroke: colors.text }}
           />
           <CartesianGrid strokeDasharray="4" />
-          <Tooltip contentStyle={{ backgroundColor: colors.background }} />
+          <Tooltip
+            formatter={(value) => [formatVndCurrency(value), "Total sales"]}
+            contentStyle={{ backgroundColor: colors.background }}
+          />
           <Area
             dataKey="totalSales"
             type="monotone"
@@ -85,16 +94,6 @@ function SalesChart({ bookings, numDays }) {
             fill={colors.totalSales.fill}
             strokeWidth={2}
             name="Total sales"
-            unit="$"
-          />
-          <Area
-            dataKey="extrasSales"
-            type="monotone"
-            stroke={colors.extrasSales.stroke}
-            fill={colors.extrasSales.fill}
-            strokeWidth={2}
-            name="Extras sales"
-            unit="$"
           />
         </AreaChart>
       </ResponsiveContainer>

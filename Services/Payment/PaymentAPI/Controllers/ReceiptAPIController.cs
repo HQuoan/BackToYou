@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
 using System.Security.Claims;
 
 namespace PaymentAPI.Controllers;
@@ -58,6 +59,58 @@ public class ReceiptAPIController : ControllerBase
 
     //    return Ok(_response);
     //}
+
+    [HttpGet("payment-total/{lastDay}")]
+    public async Task<ActionResult<ResponseDto>> GetPaymentTotal(int lastDay = 7)
+    {
+
+        var endDate = DateTime.Now;
+        var startDate = endDate.AddDays(-lastDay);
+
+        var queryParameters = new QueryParameters<Receipt>
+        {
+            PageSize = 0,
+            Filters = new List<Expression<Func<Receipt, bool>>>
+                {
+                    r => r.Status == SD.Status_Completed && r.LastModified >= startDate && r.LastModified <= endDate
+                }
+        };
+
+        var receipts = await _unitOfWork.Receipt.GetAllAsync(queryParameters);
+
+        // Tính tổng Amount theo từng ngày
+        var dailyTotals = receipts
+            .GroupBy(r => r.LastModified?.Date)
+            .Select(g => new
+            {
+                Date = g.Key,
+                TotalAmount = g.Sum(r => r.Amount)
+            })
+            .OrderBy(g => g.Date)
+            .ToList();
+
+        var result = new
+        {
+            TimePeriod = $"{startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}",
+            DailyTotals = dailyTotals.Select(d => new
+            {
+                Label = d.Date?.ToString("MMM dd"),
+                TotalPayment = d.TotalAmount
+            }).ToList()
+        };
+
+        _response.Result = result;
+        _response.Pagination = new PaginationDto
+        {
+            TotalItems = (int)dailyTotals.Sum(d => d.TotalAmount),
+            TotalItemsPerPage = dailyTotals.Count,
+            CurrentPage = 1,
+            TotalPages = 1
+        };
+
+        return Ok(_response);
+
+    }
 
     [HttpGet]
     [Authorize]
@@ -205,7 +258,7 @@ public class ReceiptAPIController : ControllerBase
             throw new BadRequestException("Invalid or missing user ID claim.");
         }
 
-        if (!(User.IsInRole(SD.AdminRole) || (userId == receipt.UserId && receipt.Status != SD.Status_Completed )))
+        if (!(User.IsInRole(SD.AdminRole) || (userId == receipt.UserId && receipt.Status != SD.Status_Completed)))
         {
             throw new ForbiddenException();
         }

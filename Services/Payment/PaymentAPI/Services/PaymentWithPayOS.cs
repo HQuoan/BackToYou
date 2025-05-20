@@ -19,7 +19,7 @@ public class PaymentWithPayOS : IPaymentMethod
         var item = new ItemData(
             "BackToYou Wallet Top-up",
             1,
-            1000
+            (int)receipt.Amount
         );
 
         //string currentDate = DateTime.Now.ToString("ddMMyy");
@@ -31,7 +31,7 @@ public class PaymentWithPayOS : IPaymentMethod
 
         PaymentData paymentData = new PaymentData(
             orderCode,
-            1000,
+            (int)receipt.Amount,
             receipt.Email,
             new List<ItemData> { item },
             paymentRequestDto.CancelUrl,

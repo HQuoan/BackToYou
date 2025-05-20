@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PostAPI.Features.Posts.Dtos;
 using PostAPI.Features.Posts.Queries;
+using System.Linq.Expressions;
 using System.Security.Claims;
 
 namespace PostAPI.Features.Posts;
@@ -26,6 +27,66 @@ public class PostAPIController : ControllerBase
         _userService = userService;
     }
 
+    public class TimePeriodCategoryDto
+    {
+        public string TimePeriod { get; set; }
+        public List<CategoryCountDto> Categories { get; set; }
+    }
+
+    public class CategoryCountDto
+    {
+        public Guid CategoryId { get; set; }
+        public string CategoryName { get; set; }
+        public int PostCount { get; set; }
+    }
+
+    [HttpGet("posts-by-category/{lastDay}")]
+    public async Task<ActionResult<ResponseDto>> GetPostsByCategory(int lastDay = 7)
+    {
+        var endDate = DateTime.Now;
+        var startDate = endDate.AddDays(-lastDay);
+
+        var queryParameters = new QueryParameters<Post>
+        {
+            PageSize = 0,
+            Filters = new List<Expression<Func<Post, bool>>>
+                {
+                    p => p.CreatedAt >= startDate && p.CreatedAt <= endDate
+                },
+            IncludeProperties = "Category"
+        };
+
+        var posts = await _unitOfWork.Post.GetAllAsync(queryParameters);
+
+        // Nhóm bài đăng theo danh mục và đếm số lượng
+        var categoryCounts = posts
+            .GroupBy(p => new { p.CategoryId, p.Category.Name })
+            .Select(g => new CategoryCountDto
+            {
+                CategoryId = g.Key.CategoryId,
+                CategoryName = g.Key.Name,
+                PostCount = g.Count()
+            })
+            .ToList();
+
+        _response.Result = new TimePeriodCategoryDto
+        {
+            TimePeriod = $"{startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}",
+            Categories = categoryCounts
+        };
+
+        _response.Pagination = new PaginationDto
+        {
+            TotalItems = categoryCounts.Sum(c => c.PostCount),
+            TotalItemsPerPage = categoryCounts.Count,
+            CurrentPage = 1,
+            TotalPages = 1
+        };
+
+
+        return Ok(_response);
+    }
+
     [HttpGet]
     public async Task<ActionResult<ResponseDto>> Get([FromQuery] PostQueryParameters? queryParameters)
     {
@@ -33,6 +94,7 @@ public class PostAPIController : ControllerBase
         {
             queryParameters.PostStatus = PostStatus.Approved;
         }
+
 
         var query = PostFeatures.Build(queryParameters);
         query.IncludeProperties = "Category,PostImages";
@@ -57,34 +119,55 @@ public class PostAPIController : ControllerBase
     //[Authorize(Roles = SD.AdminRole)]
     public async Task<IActionResult> GetPostsWithUsers([FromQuery] PostQueryParameters? queryParameters)
     {
+        UserDto user = null;
+        if (!string.IsNullOrWhiteSpace(queryParameters.UserEmail))
+        {
+            user = await _userService.GetUserByEmail(queryParameters.UserEmail);
+            if (user == null)
+            {
+                _response.Result = new List<PostDto>();
+                return Ok(_response);
+            }
+
+            queryParameters.UserId = Guid.Parse(user.Id);
+        }
+
         var query = PostFeatures.Build(queryParameters);
         query.IncludeProperties = "Category,PostImages";
 
         var posts = await _unitOfWork.Post.GetAllAsync(query);
         var postDtos = _mapper.Map<List<PostDto>>(posts);
 
-        var userIds = posts.Select(p => p.UserId.ToString()).Distinct().ToList();
-
-        List<UserDto> userDtos = new();
-        if (userIds.Count > 0)
+        if (user != null)
         {
-            try
+            postDtos.ForEach(p => p.User = user);
+        }
+        else
+        {
+            var userIds = posts.Select(p => p.UserId.ToString()).Distinct().ToList();
+
+            List<UserDto> userDtos = new();
+            if (userIds.Count > 0)
             {
-                userDtos = await _userService.GetUsersByIds(userIds);
+                try
+                {
+                    userDtos = await _userService.GetUsersByIds(userIds);
+                }
+                catch
+                {
+                    // Bỏ qua lỗi → userDtos = empty
+                }
             }
-            catch
+
+            if (userDtos != null && userDtos.Count > 0)
             {
-                // Bỏ qua lỗi → userDtos = empty
+                foreach (var post in postDtos)
+                {
+                    post.User = userDtos.FirstOrDefault(u => u.Id == post.UserId.ToString());
+                }
             }
         }
 
-        if (userDtos != null && userDtos.Count > 0)
-        {
-            foreach (var post in postDtos)
-            {
-                post.User = userDtos.FirstOrDefault(u => u.Id == post.UserId.ToString());
-            }
-        }
 
 
         int totalItems = await _unitOfWork.Post.CountAsync(query);
@@ -148,7 +231,7 @@ public class PostAPIController : ControllerBase
         {
             post = await _unitOfWork.Post.GetAsync(c => c.PostId == id && c.PostStatus == PostStatus.Approved, includeProperties: "Category,PostImages");
 
-            
+
         }
 
         if (post == null)
@@ -190,7 +273,7 @@ public class PostAPIController : ControllerBase
         {
             post = await _unitOfWork.Post.GetAsync(c => c.Slug == slug && c.PostStatus == PostStatus.Approved, includeProperties: "Category,PostImages");
 
-           
+
         }
 
         if (post == null)
@@ -225,7 +308,7 @@ public class PostAPIController : ControllerBase
         var post = await _unitOfWork.Post.GetAsync(
                   p => p.Slug == slug,
                   includeProperties: "Category,PostImages");
-           
+
 
         if (post == null)
             throw new PostNotFoundException(slug);
@@ -241,11 +324,11 @@ public class PostAPIController : ControllerBase
         }
 
         // --- Lấy thông tin tác giả ---
-        var author = userDtos.FirstOrDefault(); 
+        var author = userDtos.FirstOrDefault();
 
         var postDto = _mapper.Map<PostDto>(post);
         postDto.User = author;
-      
+
         _response.Result = postDto;
         return Ok(_response);
     }
@@ -271,7 +354,7 @@ public class PostAPIController : ControllerBase
         {
             // trừ tiền
             var fee = await _unitOfWork.PostSetting.GetAsync(p => p.Name == nameof(SD.PostLabel_Priority_Price));
-            if(fee == null)
+            if (fee == null)
             {
                 throw new NotFoundException("Not found fee");
             }
@@ -288,7 +371,7 @@ public class PostAPIController : ControllerBase
         else
         {
             post.PostLabel = PostLabel.Normal;
-            post.Price = 0; 
+            post.Price = 0;
         }
 
 

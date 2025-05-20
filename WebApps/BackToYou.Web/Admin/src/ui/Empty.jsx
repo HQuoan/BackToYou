@@ -1,5 +1,5 @@
 function Empty({ resourceName }) {
-  return <p>No {resourceName} could be found.</p>;
+  return <p style={{textAlign:"center"}}>No {resourceName} could be found.</p>;
 }
 
 export default Empty;

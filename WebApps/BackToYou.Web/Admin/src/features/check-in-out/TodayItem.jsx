@@ -2,13 +2,11 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 
 import Tag from "../../ui/Tag";
-import { Flag } from "../../ui/Flag";
 import Button from "../../ui/Button";
-import CheckoutButton from "./CheckoutButton";
 
 const StyledTodayItem = styled.li`
   display: grid;
-  grid-template-columns: 9rem 2rem 1fr 7rem 9rem;
+  grid-template-columns: 9rem 1fr 7rem 9rem;
   gap: 1.2rem;
   align-items: center;
 
@@ -21,33 +19,78 @@ const StyledTodayItem = styled.li`
   }
 `;
 
-const Guest = styled.div`
+const PostInfo = styled.div`
   font-weight: 500;
 `;
 
 function TodayItem({ activity }) {
-  const { id, status, guests, numNights } = activity;
+  const { slug, postStatus, postType, postLabel, title, location } =
+    activity;
+
+  // Map postStatus to tag type and corresponding color from GlobalStyles.js
+  const statusToTagType = {
+    Pending: "pending",
+    Processing: "processing",
+    Approved: "approved",
+    Rejected: "rejected",
+  };
+
+  // Map postLabel to tag type for label display
+  const labelToTagType = {
+    Priority: "priority",
+    Normal: "normal",
+  };
 
   return (
     <StyledTodayItem>
-      {status === "unconfirmed" && <Tag type="green">Arriving</Tag>}
-      {status === "checked-in" && <Tag type="blue">Departing</Tag>}
+      {/* Status Tag */}
+      <Tag type={statusToTagType[postStatus] || "normal"}>{postStatus}</Tag>
 
-      <Flag src={guests.countryFlag} alt={`Flag of ${guests.country}`} />
-      <Guest>{guests.fullName}</Guest>
-      <div>{numNights} nights</div>
+      {/* Post Information */}
+      <PostInfo>
+        {title} ({postType}) - {location.streetAddress}, {location.ward},{" "}
+        {location.district}, {location.province}
+      </PostInfo>
 
-      {status === "unconfirmed" && (
+      {/* Label Tag */}
+      <Tag type={labelToTagType[postLabel] || "normal"}>{postLabel}</Tag>
+
+      {/* Action Button */}
+      {postStatus === "Pending" && (
         <Button
           size="small"
           variation="primary"
           as={Link}
-          to={`/checkin/${id}`}
+          to={`/posts/${slug}`}
         >
-          Check in
+          View Details
         </Button>
       )}
-      {status === "checked-in" && <CheckoutButton bookingId={id} />}
+      {postStatus === "Processing" && (
+        <Button
+          size="small"
+          variation="secondary"
+          as={Link}
+          to={`/posts/${slug}`}
+        >
+          Update Status
+        </Button>
+      )}
+      {postStatus === "Approved" && (
+        <Button
+          size="small"
+          variation="success"
+          as={Link}
+          to={`/posts/${slug}`}
+        >
+          Mark Resolved
+        </Button>
+      )}
+      {postStatus === "Rejected" && (
+        <Button size="small" variation="danger" as={Link} to={`/posts/${slug}`}>
+          Review
+        </Button>
+      )}
     </StyledTodayItem>
   );
 }

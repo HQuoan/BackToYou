@@ -9,18 +9,20 @@ namespace PaymentAPI.Controllers;
 public class WalletAPIController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserService _userService;
     private readonly IMapper _mapper;
     private ResponseDto _response;
 
-    public WalletAPIController(IUnitOfWork unitOfWork, IMapper mapper)
+    public WalletAPIController(IUnitOfWork unitOfWork, IMapper mapper, IUserService userService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _response = new ResponseDto();
+        _userService = userService;
     }
 
     [HttpGet]
-    //[Authorize(Roles = SD.AdminRole)]
+    [Authorize(Roles = SD.AdminRole)]
     public async Task<ActionResult<ResponseDto>> Get([FromQuery] WalletQueryParameters queryParameters)
     {
         var query = WalletFeatures.Build(queryParameters);
@@ -56,6 +58,26 @@ public class WalletAPIController : ControllerBase
         return Ok(_response);
     }
 
+    [HttpGet("balance/{email}")]
+    [Authorize(Roles = SD.AdminRole)]
+    public async Task<ActionResult<ResponseDto>> GetBalanceByEmail(string email)
+    {
+
+        var user = await _userService.GetUserByEmail(email);
+
+        if (user != null)
+        {
+            var wallet = await _unitOfWork.Wallet.GetAsync(c => c.UserId == Guid.Parse(user.Id));
+            _response.Result = new
+            {
+                User = user,
+                Wallet = wallet,
+            };
+        }
+
+        return Ok(_response);
+    }
+
     [HttpGet]
     [Route("{id}")]
     public async Task<ActionResult<ResponseDto>> GetById(Guid id)
@@ -70,35 +92,29 @@ public class WalletAPIController : ControllerBase
         return Ok(_response);
     }
 
-    [HttpPut]
+    [HttpPut("funds")]
     [Authorize(Roles = SD.AdminRole)]
-    public async Task<ActionResult<ResponseDto>> Put([FromBody] WalletDto walletDto)
+    public async Task<ActionResult<ResponseDto>> AdjustFunds([FromBody] WalletDto dto)
     {
-        Wallet wallet;
+        if (dto.Balance == 0)
+            throw new BadRequestException("Amount must be non‑zero.");
 
-        if (walletDto.WalletId == null)
+        var wallet = await _unitOfWork.Wallet.GetAsync(w => w.UserId == dto.UserId);
+        if (wallet == null)
         {
-            wallet = await _unitOfWork.Wallet.GetAsync(c => c.UserId == walletDto.UserId);
-            if (wallet == null)
-            {
-                wallet = _mapper.Map<Wallet>(walletDto);
-                await _unitOfWork.Wallet.AddAsync(wallet);
-            }
-            else
-            {
-                _mapper.Map(walletDto, wallet);
-                await _unitOfWork.Wallet.UpdateAsync(wallet);
-            }
+            // Tạo mới ví, đảm bảo không âm
+            wallet = _mapper.Map<Wallet>(dto);
+            wallet.Balance = Math.Max(0, dto.Balance);      // âm ⇒ 0
+            await _unitOfWork.Wallet.AddAsync(wallet);
         }
         else
         {
-            wallet = await _unitOfWork.Wallet.GetAsync(c => c.WalletId == walletDto.WalletId);
-            if (wallet == null)
-            {
-                throw new WalletNotFoundException(walletDto.WalletId);
-            }
+            var newBalance = wallet.Balance + dto.Balance;  // dto.Amount có thể âm
 
-            _mapper.Map(walletDto, wallet);
+            if (newBalance < 0)
+                throw new BadRequestException("Insufficient balance.");
+
+            wallet.Balance = newBalance;
             await _unitOfWork.Wallet.UpdateAsync(wallet);
         }
 
@@ -152,7 +168,8 @@ public class WalletAPIController : ControllerBase
             throw new BadRequestException("Invalid or missing user ID claim.");
         }
 
-        if (userId != refundDto.UserId) {
+        if (userId != refundDto.UserId)
+        {
             throw new ForbiddenException();
         }
 

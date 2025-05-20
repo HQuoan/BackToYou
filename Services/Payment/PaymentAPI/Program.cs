@@ -1,4 +1,5 @@
-﻿using FluentValidation.AspNetCore;
+﻿using BuildingBlocks.Interceptors;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -97,6 +98,9 @@ builder.Services.AddSwaggerGen(options =>
     }
 });
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<BackendApiAuthenticationHttpClientHandler>();
+
 // Authentication & Authorization
 builder.AddAppAuthentication();
 builder.Services.AddAuthorization();
@@ -114,6 +118,10 @@ builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IPaymentMethodFactory, PaymentMethodFactory>();
 builder.Services.AddScoped<IPaymentMethod, PaymentWithStripe>();
 builder.Services.AddScoped<IPaymentMethod, PaymentWithPayOS>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+
+builder.Services.AddHttpClient(SD.HttpClient_User, u => u.BaseAddress = new Uri(builder.Configuration["ServiceUrls:AuthAPI"])).AddHttpMessageHandler<BackendApiAuthenticationHttpClientHandler>();
 
 // Add CORS
 builder.Services.AddCors(options =>

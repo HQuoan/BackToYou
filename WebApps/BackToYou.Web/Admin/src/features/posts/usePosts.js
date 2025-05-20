@@ -9,9 +9,8 @@ export function usePosts() {
   const [searchParams] = useSearchParams();
 
   // ===== PAGINATION =====
-  const pageNumber = Number(searchParams.get("page")) || 1;
+  let pageNumber = Number(searchParams.get("page")) || 1;
   const pageSize = PAGE_SIZE;
-
 
   const page = { pageNumber, pageSize };
 
@@ -19,20 +18,16 @@ export function usePosts() {
 
   const postStatus = searchParams.get("status");
   const postLabel = searchParams.get("label");
+  const userEmail = searchParams.get("email");
 
   const filter = {
     orderBy: searchParams.get("sortBy") || undefined,
     postStatus: !postStatus || postStatus === "all" ? null : postStatus,
     postLabel: !postLabel || postLabel === "all" ? null : postLabel,
+    userEmail: !userEmail ? null : userEmail,
   };
 
-
-
-  const {
-    isLoading,
-    data,
-    error,
-  } = useQuery({
+  const { isLoading, data, error } = useQuery({
     queryKey: ["posts", page, filter],
     queryFn: () => getPosts({ page, filter }),
     onError: (err) => {
@@ -64,4 +59,3 @@ export function usePosts() {
 
   return { isLoading, error, posts, pagination };
 }
-

@@ -6,6 +6,7 @@ import Row from "../../ui/Row";
 import { useTodayActivity } from "./useTodayActivity";
 import Spinner from "../../ui/Spinner";
 import TodayItem from "./TodayItem";
+import mockPosts from "../../data/mockPosts";
 
 const StyledToday = styled.div`
   /* Box */
@@ -41,7 +42,9 @@ const NoActivity = styled.p`
 `;
 
 function TodayActivity() {
-  const { activities, isLoading } = useTodayActivity();
+  // const { activities, isLoading } = useTodayActivity();
+  const activities = mockPosts;
+
 
   return (
     <StyledToday>
@@ -49,11 +52,11 @@ function TodayActivity() {
         <Heading as="h2">Today</Heading>
       </Row>
 
-      {!isLoading ? (
+      {!false ? (
         activities?.length > 0 ? (
           <TodayList>
             {activities.map((activity) => (
-              <TodayItem activity={activity} key={activity.id} />
+              <TodayItem activity={activity} key={activity.postId} />
             ))}
           </TodayList>
         ) : (

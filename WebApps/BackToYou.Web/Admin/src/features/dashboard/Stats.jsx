@@ -5,7 +5,7 @@ import {
   HiOutlineChartBar,
 } from "react-icons/hi2";
 import Stat from "./Stat";
-import { formatCurrency } from "../../utils/helpers";
+import { formatVndCurrency } from "../../utils/helpers";
 
 function Stats({ bookings, confirmedStays, numDays, cabinCount }) {
   // 1.
@@ -35,7 +35,7 @@ function Stats({ bookings, confirmedStays, numDays, cabinCount }) {
         title="Sales"
         color="green"
         icon={<HiOutlineBanknotes />}
-        value={formatCurrency(sales)}
+        value={formatVndCurrency(18976668)}
       />
       <Stat
         title="Check ins"

@@ -1,13 +1,20 @@
 // import SignupForm from "../features/authentication/SignupForm";
+import UserTable from "../features/users/UserTable";
+import UserTableOperations from "../features/users/UserTableOperations";
 import Heading from "../ui/Heading";
+import Row from "../ui/Row";
 
-function NewUsers() {
+function Users() {
   return (
     <>
-      <Heading as="h1">Create a new user</Heading>
-      {/* <SignupForm /> */}
+      <Row type="horizontal">
+        <Heading as="h1">User Manager</Heading>
+        <UserTableOperations />
+      </Row>
+
+      <UserTable />
     </>
   );
 }
 
-export default NewUsers;
+export default Users;

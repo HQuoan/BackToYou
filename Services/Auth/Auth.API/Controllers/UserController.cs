@@ -193,6 +193,26 @@ public class UserController : ControllerBase
         return Ok(_response);
     }
 
+    [HttpGet("search-by-email/{keyword}")]
+    public async Task<IActionResult> SearchByEmail(string keyword)
+    {
+        if (string.IsNullOrWhiteSpace(keyword))
+            throw new BadRequestException("Keyword is required");
+
+        // Lấy danh sách user
+        var users = await _userManager.Users
+                                .Where(u => u.Email.Contains(keyword))
+                            .ToListAsync();
+
+        // Lấy role cho từng user
+        foreach (var u in users)
+            u.Role = string.Join(", ", await _userManager.GetRolesAsync(u));
+
+        _response.Result = _mapper.Map<List<UserDto>>(users);
+
+        return Ok(_response);
+    }
+
     [HttpPut("update-info")]
     [Authorize]
     public async Task<IActionResult> UpdateInformation(UserInformation userInformation)
