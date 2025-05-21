@@ -12,6 +12,7 @@ import {
 } from "recharts";
 import { useDarkMode } from "../../context/DarkModeContext";
 import Heading from "../../ui/Heading";
+import { useSearchParams } from "react-router-dom";
 
 const ChartBox = styled.div`
   background-color: var(--color-grey-0);
@@ -28,19 +29,19 @@ const ChartBox = styled.div`
 /* Bảng màu cho các danh mục */
 const categoryColors = [
   { name: "Giấy tờ tùy thân", light: "#ef4444", dark: "#b91c1c" },
-  { name: "Người thân",        light: "#f97316", dark: "#c2410c" },
-  { name: "Thú cưng",          light: "#a855f7", dark: "#7e22ce" },
-  { name: "Trang sức",         light: "#eab308", dark: "#a16207" },
-  { name: "Thiết bị điện tử",  light: "#3b82f6", dark: "#1d4ed8" },
-  { name: "Xe cộ",             light: "#22c55e", dark: "#15803d" },
-  { name: "Khác",              light: "#14b8a6", dark: "#0f766e" },
+  { name: "Người thân", light: "#f97316", dark: "#c2410c" },
+  { name: "Thú cưng", light: "#a855f7", dark: "#7e22ce" },
+  { name: "Trang sức", light: "#eab308", dark: "#a16207" },
+  { name: "Thiết bị điện tử", light: "#3b82f6", dark: "#1d4ed8" },
+  { name: "Xe cộ", light: "#22c55e", dark: "#15803d" },
+  { name: "Khác", light: "#14b8a6", dark: "#0f766e" },
 ];
 
 function prepareData(postsByCategory) {
-  if (!postsByCategory?.length) return [];
+  if (!postsByCategory) return [];
 
   const backendMap = new Map(
-    postsByCategory[0].categories.map((c) => [c.categoryName, c.postCount]),
+    postsByCategory.categories.map((c) => [c.categoryName, c.postCount])
   );
 
   // Lấy toàn bộ danh mục từ categoryColors
@@ -53,26 +54,27 @@ function prepareData(postsByCategory) {
   return fullData.sort((a, b) => b.count - a.count);
 }
 
-
 function CategoryBarChart({ postsByCategory }) {
   const { isDarkMode } = useDarkMode();
+
+  const [searchParams] = useSearchParams();
+  const numDays = Number(searchParams.get("last")) || 7;
+
   const data = prepareData(postsByCategory);
 
   return (
     <ChartBox>
-      <Heading as="h2">Bài đăng theo danh mục (7 ngày qua)</Heading>
+      <Heading as="h2">{`Posts by category (last ${numDays} days)`}</Heading>
+
       <ResponsiveContainer width="100%" height={400}>
         <BarChart
           data={data}
           margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
           barCategoryGap={30} // giãn cách cột
         >
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke="var(--color-grey-300)"
-          />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--color-grey-300)" />
 
-            <XAxis
+          <XAxis
             dataKey="category"
             tick={false}
             interval={0}
@@ -82,9 +84,7 @@ function CategoryBarChart({ postsByCategory }) {
             stroke="var(--color-grey-700)"
           />
 
-          <YAxis
-            stroke="var(--color-grey-700)"
-          />
+          <YAxis stroke="var(--color-grey-700)" />
 
           <Tooltip
             formatter={(value) => [`${value} bài`, "Số bài đăng"]}
@@ -95,7 +95,6 @@ function CategoryBarChart({ postsByCategory }) {
               fontSize: "1.4rem",
             }}
           />
-
           <Legend
             verticalAlign="bottom"
             align="center"
@@ -127,6 +126,8 @@ function CategoryBarChart({ postsByCategory }) {
           </Bar>
         </BarChart>
       </ResponsiveContainer>
+
+
     </ChartBox>
   );
 }

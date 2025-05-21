@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import Table from "../../ui/Table";
 
-import { formatCurrency } from "../../utils/helpers";
+import { formatVndCurrency } from "../../utils/helpers";
 import { format } from "date-fns";
 
 const Stacked = styled.div`
@@ -44,7 +44,7 @@ function UserRow({ data }) {
       <InfoCell>{user.sex}</InfoCell>
       <InfoCell>{user.role}</InfoCell>
 
-      <Amount>{formatCurrency(wallet.balance)}</Amount>
+      <Amount>{formatVndCurrency(wallet.balance)}</Amount>
     </Table.Row>
   );
 }

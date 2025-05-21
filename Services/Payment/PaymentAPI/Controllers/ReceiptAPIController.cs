@@ -60,12 +60,13 @@ public class ReceiptAPIController : ControllerBase
     //    return Ok(_response);
     //}
 
-    [HttpGet("payment-total/{lastDay}")]
+    [HttpGet("total/{lastDay}")]
     public async Task<ActionResult<ResponseDto>> GetPaymentTotal(int lastDay = 7)
     {
 
-        var endDate = DateTime.Now;
-        var startDate = endDate.AddDays(-lastDay);
+        var today = DateTime.Now;
+        var startDate = today.Date.AddDays(-lastDay + 1); // Bao gồm cả ngày hôm nay
+        var endDate = today.Date.AddDays(1).AddTicks(-1); // Tới 23:59:59.999...
 
         var queryParameters = new QueryParameters<Receipt>
         {

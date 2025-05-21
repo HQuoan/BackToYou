@@ -11,6 +11,15 @@ export async function getCurrentUser() {
   return res?.result;
 }
 
+export async function getNewUserCount(lastDay) {
+  const res = await callAPI({
+    method: HttpMethod.GET,
+    url: `${ServiceRoutes.auth}/users/new-user-count/${lastDay}`,
+  });
+
+  return res?.result;
+}
+
 export async function updateInfo(info) {
   const res = await callAPI({
     method: HttpMethod.PUT,

@@ -5,14 +5,12 @@ import { Toaster } from "react-hot-toast";
 
 import GlobalStyles from "./styles/GlobalStyles";
 import Dashboard from "./pages/Dashboard";
-import Bookings from "./pages/Bookings";
 import Users from "./pages/Users";
 import Settings from "./pages/Settings";
 import Account from "./pages/Account";
 import Login from "./pages/Login";
 import PageNotFound from "./pages/PageNotFound";
 import AppLayout from "./ui/AppLayout";
-import Booking from "./pages/Booking";
 import ProtectedRoute from "./ui/ProtectedRoute";
 import { DarkModeProvider } from "./context/DarkModeContext";
 import Categories from "./pages/Categories";
@@ -48,9 +46,7 @@ function App() {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="categories" element={<Categories />} />
               <Route path="posts" element={<Posts />} />
-              <Route path="bookings" element={<Bookings />} />
               <Route path="posts/:slug" element={<Post />} />
-              <Route path="bookings/:bookingId" element={<Booking />} />
               <Route path="users" element={<Users />} />
               <Route path="settings" element={<Settings />} />
               <Route path="account" element={<Account />} />

@@ -178,7 +178,7 @@ const PostHistory = () => {
                   </div>
                   {post.postStatus === "Rejected" && (
                     <div className="history-item-reason">
-                      Lý do từ chối:
+                      Lý do từ chối:{" "}
                       {post.rejectionReason || "Không có lý do cụ thể"}
                     </div>
                   )}

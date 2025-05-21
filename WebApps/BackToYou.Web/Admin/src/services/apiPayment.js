@@ -20,3 +20,13 @@ export async function adjustFunds(formData){
 
   return res?.result;
 }
+
+export async function getPaymentTotal(lastDay){
+  const res = await callAPI({
+    method: HttpMethod.GET,
+    url: `${ServiceRoutes.payment}/receipts/total/${lastDay}`,
+  });
+
+  return res;
+}
+

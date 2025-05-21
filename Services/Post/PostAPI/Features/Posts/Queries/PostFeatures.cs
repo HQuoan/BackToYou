@@ -80,14 +80,17 @@ public static class PostFeatures
 
                     case nameof(PostQueryParameters.LostOrFoundDate):
                         var lostOrFoundDate = (TimePeriod)value;
-                        filters.Add(m => m.LostOrFoundDate >= lostOrFoundDate.From && m.LostOrFoundDate <= lostOrFoundDate.To);
+                        var lfFrom = lostOrFoundDate.From.Date;
+                        var lfTo = lostOrFoundDate.To.Date.AddDays(1).AddTicks(-1);
+                        filters.Add(m => m.LostOrFoundDate >= lfFrom && m.LostOrFoundDate <= lfTo);
                         break;
 
                     case nameof(PostQueryParameters.CreatedAt):
                         var createAt = (TimePeriod)value;
-                        filters.Add(m => m.CreatedAt >= createAt.From && m.CreatedAt <= createAt.To);
+                        var fromDate = createAt.From.Date;
+                        var toDate = createAt.To.Date.AddDays(1).AddTicks(-1);
+                        filters.Add(m => m.CreatedAt >= fromDate && m.CreatedAt <= toDate);
                         break;
-
                 }
             }
         }

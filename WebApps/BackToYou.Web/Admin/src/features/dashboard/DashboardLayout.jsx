@@ -1,13 +1,11 @@
 import styled from "styled-components";
-import { useRecentStays } from "./useRecentStays";
-import { useRecentBookings } from "./useRecentBookings";
-import Spinner from "../../ui/Spinner";
 import Stats from "./Stats";
-import { useCabins } from "../cabins/useCabins";
 import SalesChart from "./SalesChart";
-import DurationChart from "./DurationChart";
-import TodayActivity from "../check-in-out/TodayActivity";
+import TodayActivity from "./TodayActivity";
 import CategoryBarChartWrapper from "./CategoryBarChartWrapper";
+import { usePostsByCategory } from "./usePostsByCategory";
+import { usePaymentTotal } from "./usePaymentTotal";
+import { useNewUserCount } from "../users/useNewUserCount";
 
 const StyledDashboardLayout = styled.div`
   display: grid;
@@ -16,43 +14,22 @@ const StyledDashboardLayout = styled.div`
   gap: 2.4rem;
 `;
 
-const payment =  {
-    "timePeriod": "2025-05-13 to 2025-05-20",
-    "dailyTotals": [
-      {
-        "label": "May 14",
-        "totalPayment": 8956668
-      },
-      {
-        "label": "May 15",
-        "totalPayment": 10010000
-      },
-      {
-        "label": "May 19",
-        "totalPayment": 10000
-      }
-    ]
-  }
 
 function DashboardLayout() {
-  const { bookings, isLoading: isLoading1 } = useRecentBookings();
-  const { confirmedStays, isLoading: isLoading2, numDays } = useRecentStays();
-  const { cabins, isLoading: isLoading3 } = useCabins();
-
-  if (isLoading1 || isLoading2 || isLoading3) return <Spinner />;
+  const { isLoading: loadingPayment, posts, pagination: postPagination } = usePostsByCategory();
+  const { isLoading: loadingPosts, paymentTotal, pagination: paymentPagination } = usePaymentTotal();
+  const { userCount } = useNewUserCount();
 
   return (
     <StyledDashboardLayout>
       <Stats
-        bookings={bookings}
-        confirmedStays={confirmedStays}
-        numDays={numDays}
-        cabinCount={cabins.length}
+        postCount = {postPagination?.totalItems}
+        sales = {paymentPagination?.totalItems}
+        userCount = {userCount}
       />
       <TodayActivity />
-      <CategoryBarChartWrapper/>
-      {/* <DurationChart confirmedStays={confirmedStays} /> */}
-      <SalesChart data= {payment}/>
+      <CategoryBarChartWrapper isLoading={loadingPosts} posts={posts}/>
+      <SalesChart isLoading={loadingPayment} data={paymentTotal}/>
     </StyledDashboardLayout>
   );
 }

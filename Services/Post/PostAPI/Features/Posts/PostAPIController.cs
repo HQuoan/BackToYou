@@ -43,8 +43,9 @@ public class PostAPIController : ControllerBase
     [HttpGet("posts-by-category/{lastDay}")]
     public async Task<ActionResult<ResponseDto>> GetPostsByCategory(int lastDay = 7)
     {
-        var endDate = DateTime.Now;
-        var startDate = endDate.AddDays(-lastDay);
+        var today = DateTime.Now;
+        var startDate = today.Date.AddDays(-lastDay + 1); // Bao gồm cả ngày hôm nay
+        var endDate = today.Date.AddDays(1).AddTicks(-1); // Tới 23:59:59.999...
 
         var queryParameters = new QueryParameters<Post>
         {

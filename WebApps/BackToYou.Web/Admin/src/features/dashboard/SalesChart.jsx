@@ -13,7 +13,7 @@ import {
 import { useDarkMode } from "../../context/DarkModeContext";
 import { eachDayOfInterval, format, parse } from "date-fns";
 import { formatVndCurrency } from "../../utils/helpers";
-
+import Spinner from "../../ui/Spinner";
 
 const StyledSalesChart = styled(DashboardBox)`
   grid-column: 1 / -1;
@@ -25,8 +25,15 @@ const StyledSalesChart = styled(DashboardBox)`
   }
 `;
 
-function SalesChart({ data }) {
+function SalesChart({ isLoading, data }) {
   const { isDarkMode } = useDarkMode();
+
+  if (isLoading)
+    return (
+      <StyledSalesChart>
+        <Spinner />
+      </StyledSalesChart>
+    );
 
   // Parse the timePeriod to get start and end dates
   const [startDateStr, endDateStr] = data.timePeriod.split(" to ");
@@ -71,7 +78,10 @@ function SalesChart({ data }) {
       </Heading>
 
       <ResponsiveContainer height={300} width="100%">
-        <AreaChart data={chartData}   margin={{ top: 20, right: 30, bottom: 20, left: 60 }}>
+        <AreaChart
+          data={chartData}
+          margin={{ top: 20, right: 30, bottom: 20, left: 60 }}
+        >
           <XAxis
             dataKey="label"
             tick={{ fill: colors.text }}

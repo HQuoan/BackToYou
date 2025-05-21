@@ -1,7 +1,5 @@
 ﻿using Auth.API.Exceptions;
-using Auth.API.Models.Dtos;
 using BuildingBlocks.Extensions;
-using CloudinaryDotNet;
 using ImageService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -53,7 +51,7 @@ public class UserController : ControllerBase
         }
 
         // Retrieve total items before pagination
-        var totalItemsBeforePagination = queryableUsers.Count();
+        //var totalItemsBeforePagination = queryableUsers.Count();
 
         var users = await queryableUsers
             .Skip((query.PageNumber - 1) * query.PageSize)
@@ -104,6 +102,23 @@ public class UserController : ControllerBase
             TotalItemsPerPage = queryParameters.PageSize,
             CurrentPage = queryParameters.PageNumber,
             TotalPages = (int)Math.Ceiling((double)totalFilteredItems / queryParameters.PageSize)
+        };
+
+        return Ok(_response);
+    }
+
+    [HttpGet("new-user-count/{lastDay}")]
+    public async Task<IActionResult> GetNewUserCount(int lastDay = 7)
+    {
+        var today = DateTime.Now;
+        var startDate = today.Date.AddDays(-lastDay + 1); // Bao gồm cả ngày hôm nay
+        var endDate = today.Date.AddDays(1).AddTicks(-1); // Tới 23:59:59.999...
+
+        var userCount = await _db.ApplicationUsers.Where(u => u.CreatedAt >= startDate && u.CreatedAt <= endDate).CountAsync();
+
+        _response.Result = new
+        {
+            UserCount = userCount,
         };
 
         return Ok(_response);

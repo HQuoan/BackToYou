@@ -7,47 +7,33 @@ import {
 import Stat from "./Stat";
 import { formatVndCurrency } from "../../utils/helpers";
 
-function Stats({ bookings, confirmedStays, numDays, cabinCount }) {
-  // 1.
-  const numBookings = bookings.length;
-
-  // 2.
-  const sales = bookings.reduce((acc, cur) => acc + cur.totalPrice, 0);
-
-  // 3.
-  const checkins = confirmedStays.length;
-
-  // 4.
-  const occupation =
-    confirmedStays.reduce((acc, cur) => acc + cur.numNights, 0) /
-    (numDays * cabinCount);
-  // num checked in nights / all available nights (num days * num cabins)
+function Stats({ postCount, sales, userCount }) {
 
   return (
     <>
       <Stat
-        title="Bookings"
+        title="Posts"
         color="blue"
         icon={<HiOutlineBriefcase />}
-        value={numBookings}
+        value={postCount}
       />
       <Stat
         title="Sales"
         color="green"
         icon={<HiOutlineBanknotes />}
-        value={formatVndCurrency(18976668)}
+        value={formatVndCurrency(sales)}
       />
       <Stat
-        title="Check ins"
+        title="Users"
         color="indigo"
         icon={<HiOutlineCalendarDays />}
-        value={checkins}
+        value={userCount}
       />
       <Stat
-        title="Occupancy rate"
+        title="Reports"
         color="yellow"
         icon={<HiOutlineChartBar />}
-        value={Math.round(occupation * 100) + "%"}
+        value={Math.round(1 * 100) + "%"}
       />
     </>
   );

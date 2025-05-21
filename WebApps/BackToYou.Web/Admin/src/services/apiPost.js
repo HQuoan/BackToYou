@@ -1,10 +1,29 @@
 import { callAPI, HttpMethod } from "./apiClient";
 import { ServiceRoutes } from "./ServiceRoutes";
 
-export async function getPosts({page, filter}) {
+export async function getPostsWithUsers({page, filter}) {
   const data = await callAPI({
     method: HttpMethod.GET,
     url: `${ServiceRoutes.post}/posts/posts-with-users`,
+    params: {...page, ...filter}
+  });
+
+  return data
+}
+
+export async function getPostsByCategory(lastDay) {
+  const data = await callAPI({
+    method: HttpMethod.GET,
+    url: `${ServiceRoutes.post}/posts/posts-by-category/${lastDay}`,
+  });
+
+  return data
+}
+
+export async function getPosts({page, filter}) {
+  const data = await callAPI({
+    method: HttpMethod.GET,
+    url: `${ServiceRoutes.post}/posts`,
     params: {...page, ...filter}
   });
 

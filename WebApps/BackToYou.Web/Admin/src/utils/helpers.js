@@ -42,6 +42,14 @@ export const getToday = function (options = {}) {
   return today.toISOString();
 };
 
+export function getVietnamTime() {
+  const now = new Date();
+  const utcNow = now.getTime();
+  const vietnamOffset = 7 * 60 * 60 * 1000; // 7 giờ (milliseconds)
+  return new Date(utcNow + vietnamOffset);
+}
+
+
 export const formatCurrency = (value) =>
   new Intl.NumberFormat("en", { style: "currency", currency: "USD" }).format(
     value

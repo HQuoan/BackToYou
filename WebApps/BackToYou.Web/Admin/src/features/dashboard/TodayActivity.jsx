@@ -2,11 +2,10 @@ import styled from "styled-components";
 
 import Heading from "../../ui/Heading";
 import Row from "../../ui/Row";
+import { useTodayActivity } from './useTodayActivity';
 
-import { useTodayActivity } from "./useTodayActivity";
 import Spinner from "../../ui/Spinner";
 import TodayItem from "./TodayItem";
-import mockPosts from "../../data/mockPosts";
 
 const StyledToday = styled.div`
   /* Box */
@@ -30,6 +29,8 @@ const TodayList = styled.ul`
   &::-webkit-scrollbar {
     width: 0 !important;
   }
+
+
   scrollbar-width: none;
   -ms-overflow-style: none;
 `;
@@ -39,12 +40,11 @@ const NoActivity = styled.p`
   font-size: 1.8rem;
   font-weight: 500;
   margin-top: 0.8rem;
+  width: auto;
 `;
 
 function TodayActivity() {
-  // const { activities, isLoading } = useTodayActivity();
-  const activities = mockPosts;
-
+  const { activities, isLoading } = useTodayActivity();
 
   return (
     <StyledToday>
@@ -52,7 +52,7 @@ function TodayActivity() {
         <Heading as="h2">Today</Heading>
       </Row>
 
-      {!false ? (
+      {!isLoading ? (
         activities?.length > 0 ? (
           <TodayList>
             {activities.map((activity) => (

@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getPosts } from "../../services/apiPost";
+import { getPosts, getPostsWithUsers } from "../../services/apiPost";
 import { useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { PAGE_SIZE } from "../../utils/constants";
@@ -29,7 +29,7 @@ export function usePosts() {
 
   const { isLoading, data, error } = useQuery({
     queryKey: ["posts", page, filter],
-    queryFn: () => getPosts({ page, filter }),
+    queryFn: () => getPostsWithUsers({ page, filter }),
     onError: (err) => {
       toast.error(err.message);
     },
@@ -45,7 +45,7 @@ export function usePosts() {
     const nextPage = { pageNumber: pageNumber + 1, pageSize };
     queryClient.prefetchQuery({
       queryKey: ["posts", nextPage, filter],
-      queryFn: () => getPosts({ page: nextPage, filter }),
+      queryFn: () => getPostsWithUsers({ page: nextPage, filter }),
     });
   }
 
@@ -53,7 +53,7 @@ export function usePosts() {
     const prevPage = { pageNumber: pageNumber - 1, pageSize };
     queryClient.prefetchQuery({
       queryKey: ["posts", prevPage, filter],
-      queryFn: () => getPosts({ page: prevPage, filter }),
+      queryFn: () => getPostsWithUsers({ page: prevPage, filter }),
     });
   }
 

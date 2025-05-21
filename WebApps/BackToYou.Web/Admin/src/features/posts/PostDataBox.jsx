@@ -16,7 +16,7 @@ import {
 
 import DataItem from "../../ui/DataItem";
 import Tag from "../../ui/Tag";
-import { formatCurrency } from "../../utils/helpers";
+import { formatVndCurrency } from "../../utils/helpers";
 
 const StyledPostDataBox = styled.section`
   background-color: var(--color-grey-0);
@@ -167,7 +167,7 @@ function PostDataBox({ post }) {
           </DataItem>
 
           <DataItem icon={<HiOutlineCurrencyDollar />} label="Price">
-            {formatCurrency(price)}
+            {formatVndCurrency(price)}
           </DataItem>
 
           <DataItem icon={<HiOutlineUser />} label="Contact Name">
