@@ -1,7 +1,6 @@
 import { useFormContext } from "react-hook-form";
 import { useCategories } from "./useCategories";
 import { usePostPriorityPrice } from "./usePostPriorityPrice";
-import LabelWithTooltip from "../../ui/LabelWithTooltip";
 import LabelWithPopover from "../../ui/LabelWithPopover";
 
 function GeneralInfoSection() {

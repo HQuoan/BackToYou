@@ -85,7 +85,7 @@ function Header() {
         <div className="ms-4 d-flex align-items-center gap-2 position-relative">
           {isAuthenticated ? (
             <>
-              <Link to="/listing" className="btn custom-btn custom-border-btn me-5">
+              <Link to="/listing/create" className="btn custom-btn custom-border-btn me-5">
                 Đăng bài
               </Link>
               <div className="dropdown" ref={dropdownRef}>

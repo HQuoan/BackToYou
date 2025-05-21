@@ -88,7 +88,7 @@ const PriorityPostsSlider = () => {
                 Lost something? Let’s bring it back to you.
               </p>
               <Link
-                to="/listing"
+                to="/listing/create"
                 className="btn custom-btn btn2 smoothscroll mt-3 me-1"
               >
                 <i className="bi-pencil-square me-2"></i>

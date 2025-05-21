@@ -108,7 +108,7 @@ const PostHistory = () => {
                       </Link>
                     </div>
                   </div>
-                  <div className="col-6">
+                  <div className="col-5">
                     <div className="history-item-info">
                       <Link
                         to={`/${post.slug}`}
@@ -152,7 +152,7 @@ const PostHistory = () => {
                       <PriorityLabel postLabel={post.postLabel} />
                     </div>
                   </div>
-                  <div className="col-3">
+                  <div className="col-4">
                     <div
                       className={`history-item-status ${
                         post.postLabel === "Priority" ? "mt-4" : ""
@@ -167,12 +167,22 @@ const PostHistory = () => {
 
                       {post.postStatus === POST_STATUS_PENDING ||
                       post.postStatus === POST_STATUS_REJECTED ? (
-                        <button
-                          className="btn custom-btn cancel-btn mt-2"
-                          onClick={() => handleDelete(post.postId)}
-                        >
-                          Hủy bài & Hoàn tiền
-                        </button>
+                        <>
+                          <Link
+                            to={`/listing/edit/${post.slug}`}
+                            className="btn custom-btn edit-btn mt-2"
+                          >
+                            Chỉnh sửa
+                          </Link>
+
+                          <button
+                            className="btn custom-btn cancel-btn mt-2"
+                            onClick={() => handleDelete(post.postId)}
+                            disabled={isDeleting}
+                          >
+                            {isDeleting ? "Đang xử lý ..." : "Hủy bài & Hoàn tiền"}
+                          </button>
+                        </>
                       ) : null}
                     </div>
                   </div>

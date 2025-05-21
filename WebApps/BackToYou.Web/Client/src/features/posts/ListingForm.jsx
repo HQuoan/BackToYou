@@ -1,21 +1,54 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ContactInfoSection from "./ContactInfoSection";
 import GeneralInfoSection from "./GeneralInfoSection";
 import LocationSection from "./LocationSection";
 import PhotoUploadSection from "./PhotoUploadSection";
 import { useCreatePost } from "./useCreatePost";
 import { FormProvider, useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { usePost } from "./usePost";
+import { useUpdatePost } from "./useUpdatePost";
 
-function ListingForm() {
+function ListingForm({ mode }) {
+  const isEdit = mode === "edit";
+  const { slug } = useParams();
+  const { isPending, post } = usePost(slug);
   const methods = useForm();
   const navigate = useNavigate();
-
-  const { isCreating, createPost, error } = useCreatePost();
+  const { isCreating, createPost } = useCreatePost();
+  const { isUpdating, updatePost } = useUpdatePost();
   const [showManual, setShowManual] = useState(false);
 
+  console.log("post", post )
+
+  // Khi có dữ liệu post => reset form
+  useEffect(() => {
+    if (isEdit && post) {
+      methods.reset({
+        title: post.title,
+        postLabel: post.postLabel,
+        lostOrFoundDate: post.lostOrFoundDate?.split("T")[0],
+        postType: post.postType,
+        categoryId: post.categoryId,
+        description: post.description,
+
+        latitude: post.location.latitude,
+        longitude: post.location.longitude,
+        streetAddress: post.location.streetAddress,
+        ward: post.location.ward,
+        district: post.location.district,
+        province: post.location.province,
+
+        name: post.postContact.name,
+        phone: post.postContact.phone,
+        email: post.postContact.email,
+        facebook: post.postContact.facebook,
+      });
+    }
+  }, [isEdit, post, methods]);
+
   const onSubmit = async (data) => {
-    // console.log("Submitted data:", data);
+    console.log("Submitted data:", data);
     // Kiểm tra nếu có lỗi validation
     if (
       methods.formState.errors.latitude ||
@@ -23,10 +56,21 @@ function ListingForm() {
     ) {
       setShowManual(true);
     } else {
-      const post = await createPost(data);
-
-      if (post?.slug) {
-        navigate(`/account/history`);
+      if (isEdit) {
+        updatePost(
+          { postId: post.postId, ...data },
+          {
+            onSettled: () => {
+              navigate(`/account/history`);
+            },
+          }
+        );
+      } else {
+        createPost(data, {
+          onSettled: () => {
+            navigate(`/account/history`);
+          },
+        });
       }
     }
   };
@@ -52,13 +96,13 @@ function ListingForm() {
             className="btn custom-btn w-50"
             disabled={isCreating}
           >
-            {isCreating ? (
+            {isCreating || isUpdating ? (
               <div>
                 <span className="spinner-border spinner-border-sm me-2"></span>
                 Đang xử lý...
               </div>
             ) : (
-              "Submit"
+              isEdit ? "Re-up" : "Submit"
             )}
           </button>
         </div>

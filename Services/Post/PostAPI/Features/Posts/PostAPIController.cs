@@ -1,8 +1,10 @@
 ﻿using ImageService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 using PostAPI.Features.Posts.Dtos;
 using PostAPI.Features.Posts.Queries;
+using PostAPI.Models;
 using System.Linq.Expressions;
 using System.Security.Claims;
 
@@ -263,38 +265,27 @@ public class PostAPIController : ControllerBase
     [Route("by-slug/{slug}")]
     public async Task<ActionResult<ResponseDto>> GetBySlug(string slug)
     {
-        Post post;
-        bool isAdmin = User.IsInRole(SD.AdminRole);
-
-        if (isAdmin)
-        {
-            post = await _unitOfWork.Post.GetAsync(c => c.Slug == slug, includeProperties: "Category,PostImages");
-        }
-        else
-        {
-            post = await _unitOfWork.Post.GetAsync(c => c.Slug == slug && c.PostStatus == PostStatus.Approved, includeProperties: "Category,PostImages");
-
-
-        }
+        var post = await _unitOfWork.Post.GetAsync(c => c.Slug == slug, includeProperties: "Category,PostImages");
 
         if (post == null)
         {
             throw new PostNotFoundException(slug);
         }
 
-        //if (post.PostStatus != PostStatus.Approved)
-        //{
-        //    var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-        //    if (!Guid.TryParse(userIdClaim.Value, out Guid userId))
-        //    {
-        //        throw new BadRequestException("Invalid or missing user ID claim.");
-        //    }
+        bool isAdmin = User.IsInRole(SD.AdminRole);
 
-        //    if (userId != post.UserId)
-        //    {
-        //        throw new ForbiddenException();
-        //    }
-        //}
+        //var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (isAdmin || post.UserId.ToString() == userId)
+        {
+
+        }
+        else
+        {
+            if (post.PostStatus != PostStatus.Approved)
+                throw new PostNotFoundException(slug);
+        }
 
         _response.Result = _mapper.Map<PostDto>(post);
 
@@ -427,37 +418,23 @@ public class PostAPIController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = post.PostId }, _response);
     }
 
+
     [HttpPut]
     [Authorize]
-    public async Task<ActionResult<ResponseDto>> Put([FromBody] PostUpdateDto postDto)
+    [Consumes("multipart/form-data")]
+    public async Task<ActionResult<ResponseDto>> Put([FromForm] PostUpdateDto postDto)
     {
-        //if ((!postDto.RetainedImagePublicIds?.Any() ?? true) && (postDto.ImageFiles == null || !postDto.ImageFiles.Any()))
-        //{
-        //    throw new BadRequestException("Post must contain at least one image.");
-        //}
-
         Post postFromDb = await _unitOfWork.Post.GetAsync(c => c.PostId == postDto.PostId);
         if (postFromDb == null)
         {
             throw new PostNotFoundException(postDto.PostId);
         }
 
-        // Kiểm tra quyền truy cập
-        //var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-        //if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
-        //{
-        //    throw new BadRequestException("Invalid or missing user ID claim.");
-        //}
+        if (postFromDb.PostStatus != PostStatus.Pending && postFromDb.PostStatus != PostStatus.Rejected)
+            throw new BadRequestException("Can't update post status different pending/rejected");
 
-        //bool isAdmin = User.IsInRole(SD.AdminRole);
-        //if (!isAdmin && postFromDb.UserId != userId)
-        //{
-        //    throw new ForbiddenException("You are not allowed to access data that does not belong to you.");
-        //}
-
-
-        if (postFromDb.PostStatus != PostStatus.Pending)
-            throw new BadRequestException("Can't update post status different pending");
+        // Cập nhật các thuộc tính của movieFromDb từ movieDto
+        _mapper.Map(postDto, postFromDb);
 
         // check post type fee
         if (postDto.PostLabel == PostLabel.Priority && postFromDb.PostLabel == PostLabel.Normal)
@@ -478,72 +455,68 @@ public class PostAPIController : ControllerBase
             postFromDb.PostLabel = PostLabel.Priority;
             postFromDb.Price = feeAmount;
         }
-        else
+        else if (postFromDb.PostLabel == PostLabel.Priority && postDto.PostLabel == PostLabel.Normal)
         {
-            postFromDb.PostLabel = PostLabel.Normal;
-            postFromDb.Price = 0;
-        }
+            throw new BadRequestException("Can't update post from Priority to Normal");
+        } 
 
 
+        postFromDb.Slug = SlugGenerator.CreateUniqueSlugAsync(postDto.Title);
+        postFromDb.PostStatus = PostStatus.Pending;
 
-        postFromDb.Slug = SlugGenerator.GenerateSlug(postDto.Title);
 
-        // Cập nhật các thuộc tính của movieFromDb từ movieDto
-        _mapper.Map(postDto, postFromDb);
+        await _unitOfWork.Post.UpdateAsync(postFromDb);
 
         //xử lý ảnh
         var queryImage = new QueryParameters<PostImage>();
         queryImage.Filters.Add(img => img.PostId == postDto.PostId);
 
-        var existingImages = await _unitOfWork.PostImage
+        var oldImgs = await _unitOfWork.PostImage
             .GetAllAsync(queryImage);
 
-        // xóa ảnh cũ 
-        var imagesToDelete = existingImages
-                                .Where(img => !postDto.RetainedImagePublicIds.Contains(img.PublicId))
-                                .ToList();
 
-        foreach (var img in imagesToDelete)
+        // xóa ảnh cũ
+        foreach (var img in oldImgs)
         {
             var result = await _imageUploader.DeleteImageAsync(img.PublicId);
-            if (result.IsSuccess)
+            try
             {
                 await _unitOfWork.PostImage.RemoveAsync(img);
             }
-            else
+            catch (Exception ex)
             {
-                throw new BadRequestException(result.ErrorMessage);
+                throw new BadRequestException("Delete image failed.");
             }
         }
 
         //  upload ảnh mới
+        int i = 0;
+        if (postDto.ThumbnailIndex >= postDto.ImageFiles.Count || postDto.ThumbnailIndex < 0)
+            postDto.ThumbnailIndex = 0;
+
         foreach (var imgDto in postDto.ImageFiles)
         {
             var imageResult = await _imageUploader.UploadImageAsync(imgDto);
             if (!imageResult.IsSuccess)
+            {
                 throw new BadRequestException(imageResult.ErrorMessage);
+            }
 
             var postImage = new PostImage
             {
                 PostId = postFromDb.PostId,
                 ImageUrl = imageResult.Url,
-                PublicId = imageResult.PublicId
+                PublicId = imageResult.PublicId,
             };
             await _unitOfWork.PostImage.AddAsync(postImage);
+
+            if (i == postDto.ThumbnailIndex)
+                postFromDb.ThumbnailUrl = imageResult.Url;
+
+            i++;
         }
 
-        // update thumbnail
-        var updatedImages = await _unitOfWork.PostImage.GetAllAsync(queryImage);
-        if (postDto.ThumbnailIndex < 0 || postDto.ThumbnailIndex >= updatedImages.Count())
-        {
-            postDto.ThumbnailIndex = 0;
-        }
 
-        var thumb = updatedImages.ElementAtOrDefault(postDto.ThumbnailIndex);
-        postFromDb.ThumbnailUrl = thumb?.ImageUrl;
-
-
-        await _unitOfWork.Post.UpdateAsync(postFromDb);
         await _unitOfWork.SaveAsync();
 
         _response.Result = _mapper.Map<PostDto>(postFromDb);
@@ -639,5 +612,130 @@ public class PostAPIController : ControllerBase
 
         return Ok(_response);
     }
+
+
+    //[HttpPut]
+    //[Authorize]
+    //public async Task<ActionResult<ResponseDto>> Put([FromBody] PostUpdateDto postDto)
+    //{
+    //    //if ((!postDto.RetainedImagePublicIds?.Any() ?? true) && (postDto.ImageFiles == null || !postDto.ImageFiles.Any()))
+    //    //{
+    //    //    throw new BadRequestException("Post must contain at least one image.");
+    //    //}
+
+    //    Post postFromDb = await _unitOfWork.Post.GetAsync(c => c.PostId == postDto.PostId);
+    //    if (postFromDb == null)
+    //    {
+    //        throw new PostNotFoundException(postDto.PostId);
+    //    }
+
+    //    // Kiểm tra quyền truy cập
+    //    //var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+    //    //if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+    //    //{
+    //    //    throw new BadRequestException("Invalid or missing user ID claim.");
+    //    //}
+
+    //    //bool isAdmin = User.IsInRole(SD.AdminRole);
+    //    //if (!isAdmin && postFromDb.UserId != userId)
+    //    //{
+    //    //    throw new ForbiddenException("You are not allowed to access data that does not belong to you.");
+    //    //}
+
+
+    //    if (postFromDb.PostStatus != PostStatus.Pending)
+    //        throw new BadRequestException("Can't update post status different pending");
+
+    //    // check post type fee
+    //    if (postDto.PostLabel == PostLabel.Priority && postFromDb.PostLabel == PostLabel.Normal)
+    //    {
+    //        // trừ tiền
+    //        var fee = await _unitOfWork.PostSetting.GetAsync(p => p.Name == nameof(SD.PostLabel_Priority_Price));
+    //        if (fee == null)
+    //        {
+    //            throw new NotFoundException("Not found fee");
+    //        }
+
+    //        if (!decimal.TryParse(fee.Value, out var feeAmount))
+    //        {
+    //            throw new BadRequestException("Invalid fee value format");
+    //        }
+
+    //        await _paymentService.SubtractBalance(feeAmount);
+    //        postFromDb.PostLabel = PostLabel.Priority;
+    //        postFromDb.Price = feeAmount;
+    //    }
+    //    else
+    //    {
+    //        postFromDb.PostLabel = PostLabel.Normal;
+    //        postFromDb.Price = 0;
+    //    }
+
+
+
+    //    postFromDb.Slug = SlugGenerator.GenerateSlug(postDto.Title);
+
+    //    // Cập nhật các thuộc tính của movieFromDb từ movieDto
+    //    _mapper.Map(postDto, postFromDb);
+
+    //    //xử lý ảnh
+    //    var queryImage = new QueryParameters<PostImage>();
+    //    queryImage.Filters.Add(img => img.PostId == postDto.PostId);
+
+    //    var existingImages = await _unitOfWork.PostImage
+    //        .GetAllAsync(queryImage);
+
+    //    // xóa ảnh cũ 
+    //    var imagesToDelete = existingImages
+    //                            .Where(img => !postDto.RetainedImagePublicIds.Contains(img.PublicId))
+    //                            .ToList();
+
+    //    foreach (var img in imagesToDelete)
+    //    {
+    //        var result = await _imageUploader.DeleteImageAsync(img.PublicId);
+    //        if (result.IsSuccess)
+    //        {
+    //            await _unitOfWork.PostImage.RemoveAsync(img);
+    //        }
+    //        else
+    //        {
+    //            throw new BadRequestException(result.ErrorMessage);
+    //        }
+    //    }
+
+    //    //  upload ảnh mới
+    //    foreach (var imgDto in postDto.ImageFiles)
+    //    {
+    //        var imageResult = await _imageUploader.UploadImageAsync(imgDto);
+    //        if (!imageResult.IsSuccess)
+    //            throw new BadRequestException(imageResult.ErrorMessage);
+
+    //        var postImage = new PostImage
+    //        {
+    //            PostId = postFromDb.PostId,
+    //            ImageUrl = imageResult.Url,
+    //            PublicId = imageResult.PublicId
+    //        };
+    //        await _unitOfWork.PostImage.AddAsync(postImage);
+    //    }
+
+    //    // update thumbnail
+    //    var updatedImages = await _unitOfWork.PostImage.GetAllAsync(queryImage);
+    //    if (postDto.ThumbnailIndex < 0 || postDto.ThumbnailIndex >= updatedImages.Count())
+    //    {
+    //        postDto.ThumbnailIndex = 0;
+    //    }
+
+    //    var thumb = updatedImages.ElementAtOrDefault(postDto.ThumbnailIndex);
+    //    postFromDb.ThumbnailUrl = thumb?.ImageUrl;
+
+
+    //    await _unitOfWork.Post.UpdateAsync(postFromDb);
+    //    await _unitOfWork.SaveAsync();
+
+    //    _response.Result = _mapper.Map<PostDto>(postFromDb);
+
+    //    return Ok(_response);
+    //}
 }
 

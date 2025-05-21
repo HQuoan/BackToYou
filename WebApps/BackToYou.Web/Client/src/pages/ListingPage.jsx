@@ -1,10 +1,12 @@
 import UpsertListing from "../features/posts/UpsertListing"
 import "./ListingPage.css"
 
-function ListingPage() {
+function ListingPage({ mode }) {
+
+
   return (
-    <UpsertListing/>
-  )
+    <UpsertListing mode={mode}/>
+  );
 }
 
-export default ListingPage
+export default ListingPage;

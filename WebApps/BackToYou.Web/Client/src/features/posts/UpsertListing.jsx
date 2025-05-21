@@ -2,7 +2,7 @@ import SidebarNav from "./SidebarNav";
 import ListingForm from "./ListingForm";
 import useSectionObserver from "../../hooks/useSectionObserver";
 
-function UpsertListing() {
+function UpsertListing({ mode }) {
   useSectionObserver();
 
   return (
@@ -14,7 +14,7 @@ function UpsertListing() {
             <SidebarNav />
           </div>
           <div className="col-md-9 col-lg-10">
-            <ListingForm />
+            <ListingForm mode={mode} />
           </div>
         </div>
       </div>

@@ -1,39 +1,36 @@
 import { callAPI, HttpMethod } from "./apiClient";
 import { ServiceRoutes } from "./ServiceRoutes";
 
-export async function getPosts({page, filter}) {
+export async function getPosts({ page, filter }) {
   const data = await callAPI({
     method: HttpMethod.GET,
     url: `${ServiceRoutes.post}/posts`,
-    params: {...page, ...filter}
+    params: { ...page, ...filter },
   });
 
-  return data
+  return data;
 }
 
-export async function getMyPosts({page, filter}) {
+export async function getMyPosts({ page, filter }) {
   const data = await callAPI({
     method: HttpMethod.GET,
     url: `${ServiceRoutes.post}/posts/me`,
-    params: {...page, ...filter}
+    params: { ...page, ...filter },
   });
 
-  return data
+  return data;
 }
 
-
-export async function getPostBySlug(slug){
- const data = await callAPI({
+export async function getPostBySlug(slug) {
+  const data = await callAPI({
     method: HttpMethod.GET,
     url: `${ServiceRoutes.post}/posts/by-slug/${slug}`,
   });
 
-  return data
+  return data;
 }
 
-
-export async function createPost(formData){
-
+export async function createPost(formData) {
   const fd = new FormData();
 
   fd.append("categoryId", formData.categoryId);
@@ -46,7 +43,9 @@ export async function createPost(formData){
   // Location fields
   fd.append("location.latitude", formData.latitude || 0);
   fd.append("location.longitude", formData.longitude || 0);
-  fd.append("location.streetAddress", formData.streetAddress);
+  if (formData.streetAddress) {
+    fd.append("location.streetAddress", formData.streetAddress);
+  }
   fd.append("location.ward", formData.ward);
   fd.append("location.district", formData.district);
   fd.append("location.province", formData.province);
@@ -55,7 +54,9 @@ export async function createPost(formData){
   fd.append("postContact.name", formData.name);
   fd.append("postContact.phone", formData.phone);
   fd.append("postContact.email", formData.email);
-  fd.append("postContact.facebook", formData.facebook);
+  if (formData.facebook) {
+    fd.append("postContact.facebook", formData.facebook);
+  }
 
   // Images
   if (formData.postImages && Array.isArray(formData.postImages)) {
@@ -64,23 +65,67 @@ export async function createPost(formData){
     });
   }
 
-
   const data = await callAPI({
     method: HttpMethod.POST,
     url: `${ServiceRoutes.post}/posts`,
-    data: fd
+    data: fd,
   });
-
-  return data
-}
-
-
-export async function deletePost(id){
-  const data = await callAPI({
-    method: HttpMethod.DELETE,
-    url: `${ServiceRoutes.post}/posts/${id}`,
-  })
 
   return data;
 }
 
+export async function updatePost(formData) {
+  const fd = new FormData();
+
+  console.log("text", formData.streetAddress, formData.facebook);
+
+  fd.append("postId", formData.postId);
+  fd.append("categoryId", formData.categoryId);
+  fd.append("title", formData.title);
+  fd.append("description", formData.description);
+  fd.append("postType", formData.postType);
+  fd.append("postLabel", formData.postLabel);
+  fd.append("lostOrFoundDate", formData.lostOrFoundDate);
+
+  // Location fields
+  fd.append("location.latitude", formData.latitude || 0);
+  fd.append("location.longitude", formData.longitude || 0);
+  if (formData.streetAddress) {
+    fd.append("location.streetAddress", formData.streetAddress);
+  }
+  fd.append("location.ward", formData.ward);
+  fd.append("location.district", formData.district);
+  fd.append("location.province", formData.province);
+
+  // Contact info
+  fd.append("postContact.name", formData.name);
+  fd.append("postContact.phone", formData.phone);
+  fd.append("postContact.email", formData.email);
+  if (formData.facebook) {
+    fd.append("postContact.facebook", formData.facebook);
+  }
+
+  // Images
+  if (formData.postImages && Array.isArray(formData.postImages)) {
+    formData.postImages.forEach((file) => {
+      fd.append("imageFiles", file);
+    });
+  }
+
+  const data = await callAPI({
+    method: HttpMethod.PUT,
+    url: `${ServiceRoutes.post}/posts`,
+    data: fd,
+  });
+
+  return data;
+}
+
+export async function deletePost(id) {
+  const data = await callAPI({
+    method: HttpMethod.DELETE,
+    url: `${ServiceRoutes.post}/posts/${id}`,
+  });
+
+  return data;
+}

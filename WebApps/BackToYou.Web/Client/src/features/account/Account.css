@@ -136,6 +136,10 @@
   align-items: center;
 }
 
+.history-item .edit-btn {
+  border-radius: var(--border-radius-small);
+}
+
 .history-item .cancel-btn {
   background: #dc3545;
   border: none;
