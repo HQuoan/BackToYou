@@ -60,7 +60,7 @@ function PostRow({ post }) {
         <span>{post?.user.email}</span>
       </Stacked>
 
-      <div>{post.title}</div>
+      <p>{post.title}</p>
       <Tag type={post.postType.toLowerCase()}>{post.postType}</Tag>
       <Tag type={post.postLabel.toLowerCase()}>{post.postLabel}</Tag>
       <Tag type={post.postStatus.toLowerCase()}>{post.postStatus}</Tag>

@@ -16,6 +16,8 @@ import { DarkModeProvider } from "./context/DarkModeContext";
 import Categories from "./pages/Categories";
 import Posts from "./pages/Posts";
 import Post from "./pages/Post";
+import Reports from "./pages/Reports";
+import Report from "./pages/Report";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -47,6 +49,8 @@ function App() {
               <Route path="categories" element={<Categories />} />
               <Route path="posts" element={<Posts />} />
               <Route path="posts/:slug" element={<Post />} />
+              <Route path="reports" element={<Reports />} />
+              <Route path="reports/:id" element={<Report />} />
               <Route path="users" element={<Users />} />
               <Route path="settings" element={<Settings />} />
               <Route path="account" element={<Account />} />

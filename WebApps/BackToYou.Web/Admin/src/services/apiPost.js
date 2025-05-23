@@ -39,6 +39,15 @@ export async function getPostBySlug(slug){
   return data
 }
 
+export async function getPostById(postId){
+ const data = await callAPI({
+    method: HttpMethod.GET,
+    url: `${ServiceRoutes.post}/posts/by-id-with-user/${postId}`,
+  });
+
+  return data
+}
+
 export async function updatePostUpdateLabelAndStatus(formData){
  const data = await callAPI({
     method: HttpMethod.PUT,

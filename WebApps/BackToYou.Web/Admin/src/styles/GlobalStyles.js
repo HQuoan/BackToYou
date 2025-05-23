@@ -52,6 +52,18 @@ const GlobalStyles = createGlobalStyle`
     --color-lost-100: #e0e7ff; /* Reuse indigo for lost */
     --color-lost-700: #4338ca;
 
+     /* Colors for REPORT_TITLES */
+    --color-fake_report-100: #f3e8ff; /* Reuse fake colors for FAKE_REPORT */
+    --color-fake_report-700: #6d28d9;
+    --color-request_remove_post-100: #fee2e2; /* Reuse rejected colors for REQUEST_REMOVE_POST */
+    --color-request_remove_post-700: #b91c1c;
+    --color-feedback-100: #e5e7eb; /* Reuse normal colors for FEEDBACK */
+    --color-feedback-700: #374151;
+    --color-claim_owner-100: #e0e7ff; /* Reuse lost colors for CLAIM_OWNER */
+    --color-claim_owner-700: #4338ca;
+    --color-found_lost_item-100: #dcfce7; /* Reuse found colors for FOUND_LOST_ITEM */
+    --color-found_lost_item-700: #15803d;
+
   --backdrop-color: rgba(255, 255, 255, 0.1);
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
@@ -110,6 +122,18 @@ const GlobalStyles = createGlobalStyle`
     --color-fake-700: #f3e8ff;
     --color-lost-100: #3730a3; /* Reuse indigo */
     --color-lost-700: #e0e7ff;
+
+        /* Colors for REPORT_TITLES in dark mode */
+    --color-fake_report-100: #6d28d9; /* Reuse fake colors */
+    --color-fake_report-700: #f3e8ff;
+    --color-request_remove_post-100: #fee2e2; /* Reuse rejected colors */
+    --color-request_remove_post-700: #b91c1c;
+    --color-feedback-100: #374151; /* Reuse normal colors */
+    --color-feedback-700: #f3f4f6;
+    --color-claim_owner-100: #3730a3; /* Reuse lost colors */
+    --color-claim_owner-700: #e0e7ff;
+    --color-found_lost_item-100: #166534; /* Reuse found colors */
+    --color-found_lost_item-700: #dcfce7;
 
 --backdrop-color: rgba(0, 0, 0, 0.3);
 

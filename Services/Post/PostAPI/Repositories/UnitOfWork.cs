@@ -4,8 +4,8 @@ using PostAPI.Features.Followers;
 using PostAPI.Features.PostImages;
 using PostAPI.Features.PostSettings;
 using PostAPI.Features.Posts;
-using PostAPI.Features.Locations;
 using PostAPI.Features.Locations.Repositories;
+using PostAPI.Features.Reports;
 
 namespace PostAPI.Repositories;
 
@@ -18,6 +18,7 @@ public class UnitOfWork : IUnitOfWork
     public IPostImageRepository PostImage { get; private set; }
     public ICommentRepository Comment { get; private set; }
     public IFollowerRepository Follower { get; private set; }
+    public IReportRepository Report { get; private set; }
 
     public IProvinceRepository Province { get; private set; }
     public IDistrictRepository District { get; private set; }
@@ -32,6 +33,7 @@ public class UnitOfWork : IUnitOfWork
         Comment = new CommentRepository(_db);
         Follower = new FollowerRepository(_db);
         PostSetting = new PostSettingRepository(_db);
+        Report = new ReportRepository(_db);
 
         // Location
         Province = new ProvinceRepository(_db);

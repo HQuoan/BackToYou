@@ -5,6 +5,7 @@ using PostAPI.Features.PostImages;
 using PostAPI.Features.PostSettings;
 using PostAPI.Features.Posts;
 using PostAPI.Features.Locations.Repositories;
+using PostAPI.Features.Reports;
 
 namespace PostAPI.Repositories;
 
@@ -16,9 +17,11 @@ public interface IUnitOfWork
     IPostImageRepository PostImage { get; }
     ICommentRepository Comment { get; }
     IFollowerRepository Follower { get; }
+    IReportRepository Report { get; }
 
     IProvinceRepository Province { get; }
     IDistrictRepository District { get; }
     IWardRepository Ward { get; }
+
     Task SaveAsync();
 }

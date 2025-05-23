@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
+﻿using System.Text.Json;
 
 namespace PostAPI.Data;
 public class AppDbContext : DbContext
@@ -14,6 +13,7 @@ public class AppDbContext : DbContext
     public DbSet<PostImage> PostImages { get; set; }
     public DbSet<Comment> Comments { get; set; }
     public DbSet<Follower> Followers { get; set; }
+    public DbSet<Report> Reports { get; set; }  
 
 
     public DbSet<AdministrativeRegion> AdministrativeRegions { get; set; }
@@ -38,6 +38,12 @@ public class AppDbContext : DbContext
         builder.Entity<PostSetting>().HasData(
             new PostSetting { PostSettingId = new Guid("B21957F3-D71B-461C-A82B-C4D60D0E854B"), Name = nameof(SD.PostLabel_Priority_Price), Value = SD.PostLabel_Priority_Price }
          );
+
+        builder.Entity<Report>().Property(p => p.Title)
+            .HasConversion<string>();
+
+        builder.Entity<Report>().Property(p => p.Status)
+            .HasConversion<string>();
 
         builder.Entity<Post>()
            .HasIndex(c => c.Title);

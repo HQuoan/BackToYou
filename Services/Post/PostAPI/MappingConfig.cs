@@ -3,6 +3,7 @@ using PostAPI.Features.Followers.Dtos;
 using PostAPI.Features.PostImages.Dtos;
 using PostAPI.Features.Posts.Dtos;
 using PostAPI.Features.PostSettings.Dtos;
+using PostAPI.Features.Reports.Dtos;
 
 namespace PostAPI;
 
@@ -36,6 +37,10 @@ public class MappingConfig
 
             config.CreateMap<Follower, FollowerDto>().ReverseMap();
             config.CreateMap<Follower, FollowerCreateDto>().ReverseMap();
+
+            config.CreateMap<Report, ReportDto>().ReverseMap();
+            config.CreateMap<Report, ReportCreateDto>().ReverseMap();
+            config.CreateMap<Report, ReportUpdateStatus>().ReverseMap();
 
         });
 

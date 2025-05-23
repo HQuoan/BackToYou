@@ -12,11 +12,13 @@ import {
   HiOutlineUser,
   HiOutlinePhone,
   HiOutlineCurrencyDollar,
+  HiOutlineClock,
 } from "react-icons/hi2";
 
 import DataItem from "../../ui/DataItem";
 import Tag from "../../ui/Tag";
 import { formatVndCurrency } from "../../utils/helpers";
+import { POST_TYPE_FOUND } from './../../utils/constants';
 
 const StyledPostDataBox = styled.section`
   background-color: var(--color-grey-0);
@@ -122,6 +124,7 @@ function PostDataBox({ post }) {
     postContact,
     postType,
     postLabel,
+    postStatus,
     price,
     postImages,
     rejectionReason,
@@ -138,7 +141,7 @@ function PostDataBox({ post }) {
             <span>{categoryName}</span>
           </p>
         </div>
-        <p>{format(new Date(lostOrFoundDate), "EEE, MMM dd yyyy, p")}</p>
+         <Tag type={postStatus.toLowerCase()}>{postStatus}</Tag>
       </Header>
 
       <Section>
@@ -164,6 +167,10 @@ function PostDataBox({ post }) {
 
           <DataItem icon={<HiOutlineTag />} label="Label">
             <Tag type={postLabel.toLowerCase()}>{postLabel}</Tag>
+          </DataItem>
+
+          <DataItem icon={<HiOutlineClock />} label={postType === POST_TYPE_FOUND ? "Found Date" : "Lost Date"}>
+            {format(new Date(lostOrFoundDate), "EEE, MMM dd yyyy, p")}
           </DataItem>
 
           <DataItem icon={<HiOutlineCurrencyDollar />} label="Price">

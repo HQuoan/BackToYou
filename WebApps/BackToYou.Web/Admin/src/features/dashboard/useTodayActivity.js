@@ -8,7 +8,6 @@ export function useTodayActivity() {
   const filter = {
     "CreatedAt.From": vietnamNow.toISOString(),
     "CreatedAt.To": vietnamNow.toISOString(),
-    PageSize: 0,
   };
 
   const { isLoading, data } = useQuery({

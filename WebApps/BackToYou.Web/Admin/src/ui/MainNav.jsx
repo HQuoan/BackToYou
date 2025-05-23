@@ -2,7 +2,9 @@ import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 import {
   HiOutlineCalendarDays,
+  HiOutlineClipboardDocumentList,
   HiOutlineCog6Tooth,
+  HiOutlineDocumentText,
   HiOutlineHome,
   HiOutlineHomeModern,
   HiOutlinePencilSquare,
@@ -75,6 +77,12 @@ function MainNav() {
           <StyledNavLink to="/posts">
             <HiOutlinePencilSquare />
             <span>Posts</span>
+          </StyledNavLink>
+        </li>
+        <li>
+          <StyledNavLink to="/reports">
+            <HiOutlineClipboardDocumentList />
+            <span>Reports</span>
           </StyledNavLink>
         </li>
         <li>

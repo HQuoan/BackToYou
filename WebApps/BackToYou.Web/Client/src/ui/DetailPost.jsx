@@ -3,10 +3,29 @@ import { formatDateVN, formatPhoneNumber } from "../utils/helpers";
 import ImageWithPopup from "./ImageWithPopup";
 import PostTypeBadge from "./PostTypeBadge ";
 import PriorityLabel from "./PriorityLabel";
+import ReportModal from "./ReportModal";
+import { useUser } from "../features/authentication/useUser";
+import toast from "react-hot-toast";
 
 function DetailPost({ post }) {
   const [mainImage, setMainImage] = useState(post.thumbnailUrl);
+  const [showReportModal, setShowReportModal] = useState(false);
 
+  const { user } = useUser();
+  const isOwn = user?.id === post?.userId;
+
+  function handleReport() {
+    if (!user) toast.error("Vui lòng đăng nhập để dùng chức năng này!");
+    else setShowReportModal(true);
+  }
+
+  function cancelReport() {
+    setShowReportModal(false);
+  }
+
+  function confirmReport() {
+    setShowReportModal(false);
+  }
 
   return (
     <>
@@ -35,7 +54,10 @@ function DetailPost({ post }) {
                     height: "70px",
                     objectFit: "cover",
                     cursor: "pointer",
-                    border: mainImage === img.imageUrl ? "2px solid #007bff" : "1px solid #ccc",
+                    border:
+                      mainImage === img.imageUrl
+                        ? "2px solid #007bff"
+                        : "1px solid #ccc",
                   }}
                   onClick={() => setMainImage(img.imageUrl)}
                 />
@@ -56,6 +78,12 @@ function DetailPost({ post }) {
                   <i className="bi-geo-alt me-1"></i>
                   {post.location.district}, {post.location.province}
                 </span>
+                {isOwn && (
+                  <span className="badge badge-author mb-1">
+                    <i className="bi-person-check me-1"></i>
+                    Bài viết của bạn
+                  </span>
+                )}
 
                 <div className="ms-auto">
                   <PriorityLabel postLabel={post.postLabel} />
@@ -87,7 +115,8 @@ function DetailPost({ post }) {
                 <p>
                   <strong>Tên: {post.postContact?.name ?? "Unknown"}</strong>
                   <strong>
-                    Phone: {formatPhoneNumber(post.postContact?.phone ?? "Unknown")}
+                    Phone:{" "}
+                    {formatPhoneNumber(post.postContact?.phone ?? "Unknown")}
                   </strong>
                 </p>
               </div>
@@ -104,11 +133,22 @@ function DetailPost({ post }) {
                 <li className="social-icon-item">
                   <a href="#" className="social-icon-link bi-whatsapp"></a>
                 </li>
+
+                <button onClick={handleReport} className="btn custom-btn">
+                  Báo cáo
+                </button>
               </ul>
             </div>
           </div>
         </div>
       </div>
+      <ReportModal
+        isOpen={showReportModal}
+        onCancel={cancelReport}
+        onConfirm={confirmReport}
+        post={post}
+        isOwn={isOwn}
+      />
     </>
   );
 }

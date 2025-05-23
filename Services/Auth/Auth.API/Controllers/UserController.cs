@@ -110,6 +110,8 @@ public class UserController : ControllerBase
     [HttpGet("new-user-count/{lastDay}")]
     public async Task<IActionResult> GetNewUserCount(int lastDay = 7)
     {
+        if (lastDay <= 0) lastDay = 7;
+
         var today = DateTime.Now;
         var startDate = today.Date.AddDays(-lastDay + 1); // Bao gồm cả ngày hôm nay
         var endDate = today.Date.AddDays(1).AddTicks(-1); // Tới 23:59:59.999...

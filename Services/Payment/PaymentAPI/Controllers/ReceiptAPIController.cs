@@ -63,6 +63,7 @@ public class ReceiptAPIController : ControllerBase
     [HttpGet("total/{lastDay}")]
     public async Task<ActionResult<ResponseDto>> GetPaymentTotal(int lastDay = 7)
     {
+        if(lastDay <= 0 ) lastDay = 7;
 
         var today = DateTime.Now;
         var startDate = today.Date.AddDays(-lastDay + 1); // Bao gồm cả ngày hôm nay

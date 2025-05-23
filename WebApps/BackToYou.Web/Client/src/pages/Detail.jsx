@@ -10,8 +10,6 @@ function Detail() {
   const { slug } = useParams();
   const postFromState = location.state?.post;
 
-  console.log("Detail")
-
   const shouldFetch = !postFromState && !!slug;
   const { post, isPending } = usePost(slug, shouldFetch);
   const finalPost = postFromState || post;

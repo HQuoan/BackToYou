@@ -29,3 +29,19 @@ export const POST_TYPE_FOUND = "Found";
 
 // Others
 export const PostLabel_Priority_Price = "PostLabel_Priority_Price";
+
+export const REPORT_TITLES = {
+  FAKE_REPORT: "Fake_Report",
+  REQUEST_REMOVE_POST: "Request_Remove_Post",
+  FEEDBACK: "Feedback",
+  CLAIM_OWNER: "Claim_Owner",
+  FOUND_LOST_ITEM: "Found_Lost_Item"
+};
+
+export const REPORT_TITLES_VN = {
+  FAKE_REPORT: "Báo cáo giả mạo",
+  REQUEST_REMOVE_POST: "Yêu cầu xóa bài đăng",
+  FEEDBACK: "Góp ý cho hệ thống",
+  CLAIM_OWNER: "Tôi là chủ nhân của món đồ",
+  FOUND_LOST_ITEM: "Tôi đã tìm được món đồ bị mất"
+};

@@ -1,10 +1,8 @@
 ﻿using ImageService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
 using PostAPI.Features.Posts.Dtos;
 using PostAPI.Features.Posts.Queries;
-using PostAPI.Models;
 using System.Linq.Expressions;
 using System.Security.Claims;
 
@@ -45,6 +43,8 @@ public class PostAPIController : ControllerBase
     [HttpGet("posts-by-category/{lastDay}")]
     public async Task<ActionResult<ResponseDto>> GetPostsByCategory(int lastDay = 7)
     {
+        if (lastDay <= 0) lastDay = 7;
+
         var today = DateTime.Now;
         var startDate = today.Date.AddDays(-lastDay + 1); // Bao gồm cả ngày hôm nay
         var endDate = today.Date.AddDays(1).AddTicks(-1); // Tới 23:59:59.999...
@@ -304,6 +304,39 @@ public class PostAPIController : ControllerBase
 
         if (post == null)
             throw new PostNotFoundException(slug);
+
+        List<UserDto> userDtos = new();
+        try
+        {
+            userDtos = await _userService.GetUsersByIds(new[] { post.UserId.ToString() });
+        }
+        catch
+        {
+            // Bỏ qua lỗi → userDtos = empty
+        }
+
+        // --- Lấy thông tin tác giả ---
+        var author = userDtos.FirstOrDefault();
+
+        var postDto = _mapper.Map<PostDto>(post);
+        postDto.User = author;
+
+        _response.Result = postDto;
+        return Ok(_response);
+    }
+
+    [HttpGet("by-id-with-user/{id}")]
+    public async Task<ActionResult<ResponseDto>> GetByIdWithUser(Guid id)
+    {
+        //bool isAdmin = User.IsInRole(SD.AdminRole);
+
+        var post = await _unitOfWork.Post.GetAsync(
+                  p => p.PostId == id,
+                  includeProperties: "Category,PostImages");
+
+
+        if (post == null)
+            throw new PostNotFoundException(id);
 
         List<UserDto> userDtos = new();
         try

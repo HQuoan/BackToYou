@@ -60,7 +60,7 @@ function SearchInput({ searchField = "search", placeholder = "Search..." }) {
   return (
     <StyledSearch>
       <Input
-        type="text"
+        type="search"
         placeholder={placeholder}
         value={value}
         onChange={(e) => setValue(e.target.value)}

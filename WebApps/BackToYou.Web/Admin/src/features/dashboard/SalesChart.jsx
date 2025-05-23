@@ -15,6 +15,14 @@ import { eachDayOfInterval, format, parse } from "date-fns";
 import { formatVndCurrency } from "../../utils/helpers";
 import Spinner from "../../ui/Spinner";
 
+
+const NoData = styled.p`
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: 500;
+  margin-top: 0.8rem;
+`;
+
 const StyledSalesChart = styled(DashboardBox)`
   grid-column: 1 / -1;
 
@@ -34,6 +42,8 @@ function SalesChart({ isLoading, data }) {
         <Spinner />
       </StyledSalesChart>
     );
+
+  if(!data) return <StyledSalesChart><NoData>No data.</NoData></StyledSalesChart>
 
   // Parse the timePeriod to get start and end dates
   const [startDateStr, endDateStr] = data.timePeriod.split(" to ");
