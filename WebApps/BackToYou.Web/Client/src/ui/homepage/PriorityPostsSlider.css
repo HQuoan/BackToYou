@@ -95,7 +95,7 @@
 
 .swiper-slide-active.owl-carousel-info-wrap:hover .social-icon,
 .team-thumb:hover .social-icon {
-  transform: translateY(-100%);
+  transform: translateY(-400%);
   opacity: 1;
 }
 

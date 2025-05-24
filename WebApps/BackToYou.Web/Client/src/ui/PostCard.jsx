@@ -7,7 +7,11 @@ import { Link } from "react-router-dom";
 import { formatDateVN } from "../utils/helpers";
 import LinkShareFb from "./LinkShareFb";
 
-const PostCard = ({ post }) => {
+const PostCard = ({ post, targetImgId = null }) => {
+  if(targetImgId){
+    const targetImg = post.postImages.find(i => i.postImageId === targetImgId);
+    post.thumbnailUrl = targetImg.imageUrl
+  }
 
   return (
     <div className="custom-block custom-block-full pb-3">

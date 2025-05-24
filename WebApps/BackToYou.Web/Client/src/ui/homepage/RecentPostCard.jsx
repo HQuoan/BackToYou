@@ -53,14 +53,14 @@ const RecentPostCard = ({ post }) => {
             </span>
           </div>
         </div>
-        <div className="social-share d-flex flex-column ms-auto">
+        {/* <div className="social-share d-flex flex-column ms-auto">
           <a href="#" className="badge ms-auto">
             <i className="bi-heart"></i>
           </a>
           <a href="#" className="badge ms-auto">
             <i className="bi-bookmark"></i>
           </a>
-        </div>
+        </div> */}
       </div>
     </div>
   );

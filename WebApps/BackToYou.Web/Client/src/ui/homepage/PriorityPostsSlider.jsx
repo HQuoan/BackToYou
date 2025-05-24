@@ -3,25 +3,26 @@ import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "./PriorityPostsSlider.css";
-import mockPosts from "../../data/mockPosts";
 import PostTypeBadge from "../PostTypeBadge ";
 import PriorityLabel from "../PriorityLabel";
 import { Link } from "react-router-dom";
 import { usePosts } from "../../features/posts/usePosts";
 import { POST_LABEL_PRIORITY } from "./../../utils/constants";
 import Spinner from "../Spinner";
+import LinkShareFb from './../LinkShareFb';
+import LinkShareFbIcon from "../LinkShareFbIcon";
 
-const social = [
-  // "bi-twitter",
-  "bi-person-fill",
-  "bi-facebook",
-  "bi-whatsapp",
-  // "bi-pinterest",
-  // "bi-messenger",
-  // "bi-instagram",
-  // "bi-youtube",
-  // "bi-linkedin",
-];
+// const social = [
+//   // "bi-twitter",
+//   "bi-person-fill",
+//   "bi-facebook",
+//   "bi-whatsapp",
+//   // "bi-pinterest",
+//   // "bi-messenger",
+//   // "bi-instagram",
+//   // "bi-youtube",
+//   // "bi-linkedin",
+// ];
 
 const swiperOptions = {
   slidesPerView: 2,
@@ -153,14 +154,9 @@ const PriorityPostsSlider = () => {
                     <PriorityLabel postLabel={post.postLabel} />
                     <div className="social-share">
                       <ul className="social-icon">
-                        {social.map((icon, idx) => (
-                          <li className="social-icon-item" key={idx}>
-                            <a
-                              href="#"
-                              className={`social-icon-link ${icon}`}
-                            ></a>
-                          </li>
-                        ))}
+                        <li className="social-icon-item" >
+                          <LinkShareFbIcon/>
+                        </li>
                       </ul>
                     </div>
                   </SwiperSlide>

@@ -12,7 +12,7 @@ import { useUpdatePost } from "./useUpdatePost";
 function ListingForm({ mode }) {
   const isEdit = mode === "edit";
   const { slug } = useParams();
-  const { isPending, post } = usePost(slug);
+  const { isPending, post } = usePost(slug, isEdit);
   const methods = useForm();
   const navigate = useNavigate();
   const { isCreating, createPost } = useCreatePost();

@@ -7,7 +7,6 @@ export function useCreateReport() {
     mutationFn: createReportAPI,
     onSuccess: () => {
       toast.success("Tạo báo cáo thành công");
-      console.log("cos toast")
     },
     onError: (error) => {
       toast.error(error.message);

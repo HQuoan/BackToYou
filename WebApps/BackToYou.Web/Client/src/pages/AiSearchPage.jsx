@@ -235,7 +235,7 @@ function AiSearchPage() {
                     <span className="text-center badge badge-found mb-1">
                       Similarity Score: {post.similarityScore.toFixed(4)}
                     </span>
-                    <PostCard post={post.post} />
+                    <PostCard post={post.post} targetImgId={post.postImageId} />
                   </div>
                 ))}
               </div>

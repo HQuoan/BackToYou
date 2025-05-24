@@ -113,25 +113,46 @@ function DetailPost({ post }) {
 
                 <h5>Thông tin liên hệ</h5>
                 <p>
-                  <strong>Tên: {post.postContact?.name ?? "Unknown"}</strong>
+                  <strong>Tên: {post.postContact.name ?? "Unknown"}</strong>
                   <strong>
                     Phone:{" "}
-                    {formatPhoneNumber(post.postContact?.phone ?? "Unknown")}
+                    {formatPhoneNumber(post.postContact.phone ?? "Unknown")}
+                  </strong>
+                  <strong>
+                    Email:{" "}
+                    {formatPhoneNumber(post.postContact.email ?? "Unknown")}
                   </strong>
                 </p>
               </div>
 
               <ul className="social-icon ms-lg-auto ms-md-auto">
-                <li className="social-icon-item">
-                  <a href="#" className="social-icon-link bi-person-fill"></a>
-                </li>
+                {post.postContact?.facebook && (
+                  <li className="social-icon-item">
+                    <a
+                      href={post.postContact.facebook}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="social-icon-link bi-facebook"
+                    ></a>
+                  </li>
+                )}
 
                 <li className="social-icon-item">
-                  <a href="#" className="social-icon-link bi-facebook"></a>
+                  <a
+                    href={`https://mail.google.com/mail/u/0/?view=cm&to=${post.postContact.email}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="social-icon-link bi-envelope"
+                  ></a>
                 </li>
 
-                <li className="social-icon-item">
-                  <a href="#" className="social-icon-link bi-whatsapp"></a>
+                 <li className="social-icon-item">
+                  <a
+                    href={`tel:${post.postContact.phone}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="social-icon-link bi-whatsapp"
+                  ></a>
                 </li>
 
                 <button onClick={handleReport} className="btn custom-btn">
