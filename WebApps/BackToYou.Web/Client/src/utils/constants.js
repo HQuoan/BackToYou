@@ -14,7 +14,7 @@ export const PAYMENT_PAYOS = "PAYOS";
 // Post Labels
 export const POST_LABEL_NORMAL = "Normal";
 export const POST_LABEL_PRIORITY = "Priority";
-export const POST_LABEL_FOUND = "Found";
+export const POST_LABEL_FOUND = "Founded";
 export const POST_LABEL_FAKE = "Fake";
 
 // Post Statuses

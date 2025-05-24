@@ -6,6 +6,7 @@ import PriorityLabel from "./PriorityLabel";
 import ReportModal from "./ReportModal";
 import { useUser } from "../features/authentication/useUser";
 import toast from "react-hot-toast";
+import { POST_LABEL_FOUND } from "../utils/constants";
 
 function DetailPost({ post }) {
   const [mainImage, setMainImage] = useState(post.thumbnailUrl);
@@ -87,7 +88,10 @@ function DetailPost({ post }) {
 
                 <div className="ms-auto">
                   <PriorityLabel postLabel={post.postLabel} />
+                   {post.postLabel === POST_LABEL_FOUND && <span className="post-label-block">Đã tìm thấy</span>}
                 </div>
+
+
               </div>
 
               <h2 className="mb-3 mt-3 line-clamp-detail-title">

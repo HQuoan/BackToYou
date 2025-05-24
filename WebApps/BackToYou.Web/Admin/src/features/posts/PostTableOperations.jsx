@@ -2,6 +2,8 @@ import SortBy from "../../ui/SortBy";
 import Filter from "../../ui/Filter";
 import TableOperations from "../../ui/TableOperations";
 import {
+  POST_LABEL_FAKE,
+  POST_LABEL_FOUND,
   POST_LABEL_NORMAL,
   POST_LABEL_PRIORITY,
   POST_STATUS_APPROVED,
@@ -35,6 +37,8 @@ function PostTableOperations() {
             { value: "all", label: "All" },
             { value: POST_LABEL_NORMAL, label: "Normal" },
             { value: POST_LABEL_PRIORITY, label: "Priority" },
+            { value: POST_LABEL_FOUND, label: POST_LABEL_FOUND },
+            { value: POST_LABEL_FAKE, label: POST_LABEL_FAKE },
           ]}
         />
       ) : (

@@ -27,7 +27,7 @@ const defaultValues = {
 function SideBar() {
   const methods = useForm({ defaultValues });
   const { register, handleSubmit, reset } = methods;
-  
+
   const [searchParams, setSearchParams] = useSearchParams();
 
   const onSubmit = (data) => {
@@ -103,7 +103,7 @@ function SideBar() {
                 Ưu tiên
               </label>
             </div>
-            <div className="form-check cursor-pointer">
+            <div className="form-check mb-2 cursor-pointer">
               <input
                 type="radio"
                 value="Normal"
@@ -113,6 +113,19 @@ function SideBar() {
               />
               <label className="form-check-label" htmlFor="normal">
                 Bình thường
+              </label>
+            </div>
+
+            <div className="form-check cursor-pointer">
+              <input
+                type="radio"
+                value="Founded"
+                id="founded"
+                className="form-check-input"
+                {...register("postLabel")}
+              />
+              <label className="form-check-label" htmlFor="founded">
+                Đã tìm thấy
               </label>
             </div>
           </div>
@@ -189,7 +202,9 @@ function SideBar() {
           </div>
 
           <div className="mb-3 listing-page">
-            <label className="form-label d-block mb-2 fw-semibold">Khu vực</label>
+            <label className="form-label d-block mb-2 fw-semibold">
+              Khu vực
+            </label>
             <LocationSelector />
           </div>
 

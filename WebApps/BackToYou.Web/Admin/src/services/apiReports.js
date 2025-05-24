@@ -21,6 +21,16 @@ export async function getReport(reportId) {
   return data
 }
 
+export async function updateReportStatus(formData) {
+  const data = await callAPI({
+    method: HttpMethod.PUT,
+    url: `${ServiceRoutes.post}/reports`,
+    data: formData,
+  });
+
+  return data
+}
+
 
 export async function deleteReport(reportId) {
   const data = await callAPI({

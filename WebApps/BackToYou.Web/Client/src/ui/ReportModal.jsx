@@ -64,11 +64,13 @@ const ReportModal = ({ isOpen, onCancel, onConfirm, post, isOwn }) => {
               </>
             )}
 
-            {post.postType === POST_TYPE_LOST && (
-              <option value={REPORT_TITLES.FOUND_LOST_ITEM}>
+            {/* {post.postType === POST_TYPE_LOST && (
+             
+            )} */}
+
+             <option value={REPORT_TITLES.FOUND_LOST_ITEM}>
                 {REPORT_TITLES_VN.FOUND_LOST_ITEM}
               </option>
-            )}
           </select>
           {errors.title && (
             <p className="mb-0">

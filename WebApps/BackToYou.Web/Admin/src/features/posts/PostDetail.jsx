@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
-import { useForm } from "react-hook-form";
 
 import PostDataBox from "./PostDataBox";
 import Row from "../../ui/Row";
@@ -12,9 +11,7 @@ import ButtonText from "../../ui/ButtonText";
 import Spinner from "../../ui/Spinner";
 import Modal from "../../ui/Modal";
 import Empty from "../../ui/Empty";
-import Form from "../../ui/Form";
-import FormRowVertical from "../../ui/FormRowVertical";
-import Textarea from "../../ui/Textarea";
+
 import { useMoveBack } from "../../hooks/useMoveBack";
 import { usePost } from "./usePost";
 import {
@@ -25,7 +22,10 @@ import {
 import { useUpdatePostUpdateLabelAndStatus } from "./useUpdatePostUpdateLabelAndStatus";
 import { useCreateEmbedding } from "../embeddings/useCreateEmbedding";
 import { useDeleteEmbedding } from "../embeddings/useDeleteEmbedding";
-import FormRow from "../../ui/FormRow";
+import RejectForm from "./RejectForm";
+import ChangeLabelForm from "./ChangeLabelForm";
+import ConfirmDelete from "../../ui/ConfirmDelete";
+import { useDeletePost } from "./useDeletePost";
 
 const HeadingGroup = styled.div`
   display: flex;
@@ -42,14 +42,9 @@ function PostDetail() {
     useCreateEmbedding();
   const { isLoading: isDeleteEmbedding, deleteEmbedding } =
     useDeleteEmbedding();
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm();
-  const moveBack = useMoveBack();
+  const { isDeleting, deletePost } = useDeletePost();
 
+  const moveBack = useMoveBack();
   const isActionLoading = isUpdating || isCreateEmbedding || isDeleteEmbedding;
 
   if (isLoading) return <Spinner />;
@@ -57,100 +52,103 @@ function PostDetail() {
 
   const { postStatus, postId, isEmbedded } = post;
 
-  const handleChangePostStatus = (status) => {
-    updatePostUpdateLabelAndStatus({ postId, postStatus: status });
-  };
-
-  const handleReject = ({ reason }) => {
-    updatePostUpdateLabelAndStatus({
-      postId,
-      postStatus: POST_STATUS_REJECTED,
-      rejectionReason: reason,
-    });
-    reset();
-  };
-
-  const renderActionButtons = () => (
+  const renderActions = () => (
     <ButtonGroup>
-      {postStatus === POST_STATUS_APPROVED && !isEmbedded && (
-        <Button
-          onClick={() => createEmbedding(postId)}
-          disabled={isActionLoading}
-        >
-          {isCreateEmbedding ? "Processing..." : "Extract"}
-        </Button>
-      )}
+      {(postStatus === POST_STATUS_APPROVED ||
+        postStatus === POST_STATUS_REJECTED) && (
+        <>
+          {!isEmbedded && (
+            <Button
+              onClick={() => createEmbedding(postId)}
+              disabled={isActionLoading}
+            >
+              {isCreateEmbedding ? "Processing..." : "Extract"}
+            </Button>
+          )}
 
-      {postStatus === POST_STATUS_REJECTED && isEmbedded && (
-        <Button
-          onClick={() => deleteEmbedding(postId)}
-          disabled={isActionLoading}
-        >
-          {isDeleteEmbedding ? "Processing..." : "Delete Embedding"}
-        </Button>
+          {isEmbedded && (
+            <Button
+              onClick={() => deleteEmbedding(postId)}
+              disabled={isActionLoading}
+            >
+              {isDeleteEmbedding ? "Processing..." : "Delete Embedding"}
+            </Button>
+          )}
+        </>
       )}
-
       {postStatus !== POST_STATUS_PROCESSING && (
         <Button
-          onClick={() => handleChangePostStatus(POST_STATUS_PROCESSING)}
+          onClick={() =>
+            updatePostUpdateLabelAndStatus({
+              postId,
+              postStatus: POST_STATUS_PROCESSING,
+            })
+          }
           disabled={isActionLoading}
         >
           Process
         </Button>
       )}
-
       {postStatus === POST_STATUS_PROCESSING && (
         <>
           <Button
             variation="success"
-            onClick={() => handleChangePostStatus(POST_STATUS_APPROVED)}
+            onClick={() =>
+              updatePostUpdateLabelAndStatus({
+                postId,
+                postStatus: POST_STATUS_APPROVED,
+              })
+            }
             disabled={isActionLoading}
           >
             Approve
           </Button>
 
           <Modal>
+            {/* ------- Reject modal ------- */}
             <Modal.Open opens="reject">
               <Button variation="danger" disabled={isActionLoading}>
                 Reject
               </Button>
             </Modal.Open>
-
             <Modal.Window name="reject">
-              <Form onSubmit={handleSubmit(handleReject)}>
-                <FormRowVertical
-                  label="Rejection Reason"
-                  error={errors.reason?.message}
-                >
-                  <Textarea
-                    style={{ width: "500px", height: "200px" }}
-                    rows={4}
-                    placeholder="Please provide the reason for rejection..."
-                    {...register("reason", {
-                      required: "Reason is required",
-                      minLength: {
-                        value: 10,
-                        message: "Reason must be at least 10 characters",
-                      },
-                    })}
-                  />
-                </FormRowVertical>
+              <RejectForm postId={postId} isActionLoading={isActionLoading} />
+            </Modal.Window>
 
-                <FormRow>
-                  <Button
-                    variation="danger"
-                    disabled={isActionLoading}
-                    type="submit"
-                  >
-                    {isActionLoading ? "Processing..." : "Confirm Reject"}
-                  </Button>
-                </FormRow>
-              </Form>
+            {/* ------- Change label modal ------- */}
+            <Modal.Open opens="label">
+              <Button variation="primary" disabled={isActionLoading}>
+                Change label
+              </Button>
+            </Modal.Open>
+            <Modal.Window name="label">
+              <ChangeLabelForm
+                postId={postId}
+                isActionLoading={isActionLoading}
+              />
             </Modal.Window>
           </Modal>
         </>
       )}
 
+      <Modal>
+        <Modal.Open opens="delete">
+          <Button variation="danger" disabled={isActionLoading}>
+            Delete
+          </Button>
+        </Modal.Open>
+
+        <Modal.Window name="delete">
+          <ConfirmDelete
+            resourceName="post"
+            disabled={isDeleting}
+            onConfirm={async (close) => {
+              await deletePost(postId);
+              close();
+            }}
+          />
+        </Modal.Window>
+      </Modal>
       <Button
         variation="secondary"
         onClick={moveBack}
@@ -173,7 +171,7 @@ function PostDetail() {
 
       <PostDataBox post={post} />
 
-      {renderActionButtons()}
+      {renderActions()}
     </>
   );
 }

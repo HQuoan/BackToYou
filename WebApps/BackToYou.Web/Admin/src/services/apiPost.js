@@ -1,14 +1,14 @@
 import { callAPI, HttpMethod } from "./apiClient";
 import { ServiceRoutes } from "./ServiceRoutes";
 
-export async function getPostsWithUsers({page, filter}) {
+export async function getPostsWithUsers({ page, filter }) {
   const data = await callAPI({
     method: HttpMethod.GET,
     url: `${ServiceRoutes.post}/posts/posts-with-users`,
-    params: {...page, ...filter}
+    params: { ...page, ...filter },
   });
 
-  return data
+  return data;
 }
 
 export async function getPostsByCategory(lastDay) {
@@ -17,50 +17,48 @@ export async function getPostsByCategory(lastDay) {
     url: `${ServiceRoutes.post}/posts/posts-by-category/${lastDay}`,
   });
 
-  return data
+  return data;
 }
 
-export async function getPosts({page, filter}) {
+export async function getPosts({ page, filter }) {
   const data = await callAPI({
     method: HttpMethod.GET,
     url: `${ServiceRoutes.post}/posts`,
-    params: {...page, ...filter}
+    params: { ...page, ...filter },
   });
 
-  return data
+  return data;
 }
 
-export async function getPostBySlug(slug){
- const data = await callAPI({
+export async function getPostBySlug(slug) {
+  const data = await callAPI({
     method: HttpMethod.GET,
     url: `${ServiceRoutes.post}/posts/by-slug-with-user/${slug}`,
   });
 
-  return data
+  return data;
 }
 
-export async function getPostById(postId){
- const data = await callAPI({
+export async function getPostById(postId) {
+  const data = await callAPI({
     method: HttpMethod.GET,
     url: `${ServiceRoutes.post}/posts/by-id-with-user/${postId}`,
   });
 
-  return data
+  return data;
 }
 
-export async function updatePostUpdateLabelAndStatus(formData){
- const data = await callAPI({
+export async function updatePostUpdateLabelAndStatus(formData) {
+  const data = await callAPI({
     method: HttpMethod.PUT,
     url: `${ServiceRoutes.post}/posts/post-label-status`,
     data: formData,
   });
 
-  return data
+  return data;
 }
 
-
-export async function createPost(formData){
-
+export async function createPost(formData) {
   const fd = new FormData();
 
   fd.append("categoryId", formData.categoryId);
@@ -91,12 +89,20 @@ export async function createPost(formData){
     });
   }
 
-
   const data = await callAPI({
     method: HttpMethod.POST,
     url: `${ServiceRoutes.post}/posts`,
-    data: fd
+    data: fd,
   });
 
-  return data
+  return data;
+}
+
+export async function deletePost(id) {
+  const data = await callAPI({
+    method: HttpMethod.DELETE,
+    url: `${ServiceRoutes.post}/posts/${id}`,
+  });
+
+  return data;
 }

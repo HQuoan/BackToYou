@@ -491,7 +491,7 @@ public class PostAPIController : ControllerBase
         else if (postFromDb.PostLabel == PostLabel.Priority && postDto.PostLabel == PostLabel.Normal)
         {
             throw new BadRequestException("Can't update post from Priority to Normal");
-        } 
+        }
 
 
         postFromDb.Slug = SlugGenerator.CreateUniqueSlugAsync(postDto.Title);
@@ -610,6 +610,11 @@ public class PostAPIController : ControllerBase
             throw new ForbiddenException("You are not allowed to access data that does not belong to you.");
         }
 
+        if (post.IsEmbedded)
+        {
+            throw new BadHttpRequestException("Please remove embedding before removing the post");
+        }
+
         // xóa ảnh trên cloud
         var queryImage = new QueryParameters<PostImage>();
         queryImage.Filters.Add(img => img.PostId == id);
@@ -633,11 +638,18 @@ public class PostAPIController : ControllerBase
             }
         }
 
-        if ((post.PostStatus == PostStatus.Rejected || post.PostStatus == PostStatus.Pending) && post.PostLabel == PostLabel.Priority)
-        {
-            // trả lại tiền
-            await _paymentService.Refund(new RefundDto { UserId = post.UserId, Amount = post.Price });
+        bool isAdmin = User.IsInRole(SD.AdminRole);
+
+        if (!isAdmin) {
+            if ((post.PostStatus == PostStatus.Rejected || post.PostStatus == PostStatus.Pending) && post.PostLabel == PostLabel.Priority)
+            {
+                // trả lại tiền
+                if (post.Price > 0)
+                    await _paymentService.Refund(new RefundDto { UserId = post.UserId, Amount = post.Price });
+            }
         }
+
+       
 
         // xóa post và post images
         await _unitOfWork.Post.RemoveAsync(post);

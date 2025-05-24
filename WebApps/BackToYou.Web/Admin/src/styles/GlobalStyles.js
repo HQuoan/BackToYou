@@ -64,6 +64,10 @@ const GlobalStyles = createGlobalStyle`
     --color-found_lost_item-100: #dcfce7; /* Reuse found colors for FOUND_LOST_ITEM */
     --color-found_lost_item-700: #15803d;
 
+        --color-founded-100: #dcfce7; /* Reuse green for found */
+    --color-founded-700: #15803d;
+
+
   --backdrop-color: rgba(255, 255, 255, 0.1);
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
@@ -134,6 +138,10 @@ const GlobalStyles = createGlobalStyle`
     --color-claim_owner-700: #e0e7ff;
     --color-found_lost_item-100: #166534; /* Reuse found colors */
     --color-found_lost_item-700: #dcfce7;
+
+        --color-founded-100: #166534; /* Reuse green */
+    --color-founded-700: #dcfce7;
+
 
 --backdrop-color: rgba(0, 0, 0, 0.3);
 

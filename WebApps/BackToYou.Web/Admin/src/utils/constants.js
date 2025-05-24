@@ -8,8 +8,9 @@ export const POST_STATUS_REJECTED = "Rejected";
 
 export const POST_LABEL_NORMAL="Normal"
 export const POST_LABEL_PRIORITY="Priority"
-export const POST_LABEL_FOUND="Found"
+export const POST_LABEL_FOUND="Founded"
 export const POST_LABEL_FAKE="Fake"
+export const POST_LABEL_DELETED="Deleted"
 
 // Post Types
 export const POST_TYPE_LOST = "Lost";
