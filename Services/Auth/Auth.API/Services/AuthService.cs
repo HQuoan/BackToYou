@@ -290,25 +290,56 @@ public class AuthService : IAuthService
         return true;
     }
 
+    //public async Task<bool> AssignRole(string email, string roleName)
+    //{
+    //    var user = _db.ApplicationUsers.FirstOrDefault(c => c.Email.ToLower() == email.ToLower());
+
+    //    if (user != null)
+    //    {
+    //        if (!_roleManager.RoleExistsAsync(roleName).GetAwaiter().GetResult())
+    //        {
+    //            //create role if it does not exit
+    //            //_roleManager.CreateAsync(new IdentityRole(roleName)).GetAwaiter().GetResult();
+    //            throw new BadRequestException("Role does not exist.");
+    //        }
+    //        await _userManager.AddToRoleAsync(user, roleName);
+
+    //        return true;
+    //    }
+
+    //    return false;
+    //}
+
     public async Task<bool> AssignRole(string email, string roleName)
     {
         var user = _db.ApplicationUsers.FirstOrDefault(c => c.Email.ToLower() == email.ToLower());
 
-        if (user != null)
+        if (user == null)
         {
-            if (!_roleManager.RoleExistsAsync(roleName).GetAwaiter().GetResult())
-            {
-                //create role if it does not exit
-                //_roleManager.CreateAsync(new IdentityRole(roleName)).GetAwaiter().GetResult();
-                throw new BadRequestException("Role does not exist.");
-            }
-            await _userManager.AddToRoleAsync(user, roleName);
-
-            return true;
+            return false;
         }
 
-        return false;
+        if (user.Email == SD.AdminEmail)
+        {
+            throw new BadRequestException("You are not allowed to modify this account.");
+        }
+
+        if (!await _roleManager.RoleExistsAsync(roleName))
+        {
+            throw new BadRequestException("Role does not exist.");
+        }
+
+        var currentRoles = await _userManager.GetRolesAsync(user);
+        if (currentRoles.Any())
+        {
+            await _userManager.RemoveFromRolesAsync(user, currentRoles);
+        }
+
+        await _userManager.AddToRoleAsync(user, roleName);
+
+        return true;
     }
+
 
     public Task<LoginResponseDto> SignInWithGoogle(string token)
     {

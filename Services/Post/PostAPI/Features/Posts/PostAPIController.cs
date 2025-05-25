@@ -379,9 +379,11 @@ public class PostAPIController : ControllerBase
         {
             // trừ tiền
             var fee = await _unitOfWork.PostSetting.GetAsync(p => p.Name == nameof(SD.PostLabel_Priority_Price));
-            if (fee == null)
+            var priorityDays = await _unitOfWork.PostSetting.GetAsync(p => p.Name == nameof(SD.Priority_Days));
+
+            if (fee == null || priorityDays == null)
             {
-                throw new NotFoundException("Not found fee");
+                throw new NotFoundException("Not found fee / priority days");
             }
 
             if (!decimal.TryParse(fee.Value, out var feeAmount))
@@ -389,8 +391,15 @@ public class PostAPIController : ControllerBase
                 throw new BadRequestException("Invalid fee value format");
             }
 
+            if (!int.TryParse(priorityDays.Value, out var priorityDaysValue))
+            {
+                throw new BadRequestException("Invalid priorityDays value format");
+            }
+
+
             await _paymentService.SubtractBalance(feeAmount);
             post.PostLabel = PostLabel.Priority;
+            post.PriorityDays = priorityDaysValue;
             post.Price = feeAmount;
         }
         else
@@ -558,36 +567,125 @@ public class PostAPIController : ControllerBase
     }
 
     [HttpPut("post-label-status")]
-    //[Authorize(Roles = SD.AdminRole)]
+    [Authorize(Roles = SD.AdminRole)]
     public async Task<ActionResult<ResponseDto>> UpdatePostUpdateLabelAndStatus([FromBody] PostUpdateLabelAndStatus postDto)
     {
-        Post postFromDb = await _unitOfWork.Post.GetAsync(c => c.PostId == postDto.PostId);
+        var postFromDb = await _unitOfWork.Post.GetAsync(c => c.PostId == postDto.PostId);
         if (postFromDb == null)
             throw new PostNotFoundException(postDto.PostId);
 
-        // check trường hợp rejected thì trả tiền (nếu là priority)
-        //if(postDto.PostStatus == PostStatus.Rejected && postFromDb.PostLabel == PostLabel.Priority)
-        //{
-        //    // trả lại tiền
-        //    await _paymentService.Refund(new RefundDto { UserId = postFromDb.UserId, Amount = postFromDb.Price});
-        //}
+        // Admin chỉ update, không trừ tiền
 
         if (postDto.PostLabel.HasValue)
+        {
+            if (postFromDb.PostLabel == postDto.PostLabel.Value)
+                throw new BadRequestException($"PostLabel is already {postDto.PostLabel.Value}");
+
             postFromDb.PostLabel = postDto.PostLabel.Value;
 
+            if (postDto.PostLabel == PostLabel.Priority)
+            {
+                var priorityDaysSetting = await _unitOfWork.PostSetting.GetAsync(p => p.Name == nameof(SD.Priority_Days));
+
+                if (!int.TryParse(priorityDaysSetting?.Value, out var priorityDaysValue))
+                    throw new BadRequestException("Invalid priorityDays value format");
+
+                postFromDb.PriorityDays = priorityDaysValue;
+
+                // Nếu đã duyệt rồi thì bắt đầu đếm ngày
+                if (postFromDb.PostStatus == PostStatus.Approved)
+                    postFromDb.PriorityStartAt = DateTime.Now;
+                else
+                    postFromDb.PriorityStartAt = null; // đợi duyệt rồi mới bắt đầu
+            }
+            else // nếu đổi về Normal thì clear
+            {
+                postFromDb.PriorityStartAt = null;
+                postFromDb.PriorityDays = null;
+
+                // hoàn tiền
+                if (postFromDb.Price > 0)        
+                    await _paymentService.Refund(new RefundDto { UserId = postFromDb.UserId, Amount = postFromDb.Price });
+
+                postFromDb.Price = 0;
+            }
+        }
+
         if (postDto.PostStatus.HasValue)
+        {
+            if (postFromDb.PostStatus == postDto.PostStatus.Value)
+                throw new BadRequestException($"PostStatus is already {postDto.PostStatus.Value}");
+
             postFromDb.PostStatus = postDto.PostStatus.Value;
 
-        if (postDto.RejectionReason != null)
+            // Nếu status là Approved và label là Priority thì đặt thời gian bắt đầu ưu tiên
+            if (postDto.PostStatus == PostStatus.Approved && postFromDb.PostLabel == PostLabel.Priority)
+            {
+                postFromDb.PriorityStartAt = DateTime.Now;
+            }
+        }
+
+        // Lý do bị từ chối
+        if (!string.IsNullOrWhiteSpace(postDto.RejectionReason))
+        {
             postFromDb.RejectionReason = postDto.RejectionReason;
+        }
 
         await _unitOfWork.Post.UpdateAsync(postFromDb);
         await _unitOfWork.SaveAsync();
 
         _response.Result = _mapper.Map<PostDto>(postFromDb);
-
         return Ok(_response);
     }
+
+
+    //[HttpPut("post-label-status")]
+    ////[Authorize(Roles = SD.AdminRole)]
+    //public async Task<ActionResult<ResponseDto>> UpdatePostUpdateLabelAndStatus([FromBody] PostUpdateLabelAndStatus postDto)
+    //{
+    //    Post postFromDb = await _unitOfWork.Post.GetAsync(c => c.PostId == postDto.PostId);
+    //    if (postFromDb == null)
+    //        throw new PostNotFoundException(postDto.PostId);
+
+    //    if (postDto.PostLabel.HasValue)
+    //    {
+    //        postFromDb.PostLabel = postDto.PostLabel.Value;
+    //        if(postDto.PostLabel == PostLabel.Priority)
+    //        {
+    //            var priorityDays = await _unitOfWork.PostSetting.GetAsync(p => p.Name == nameof(SD.Priority_Days));
+
+    //            if (!int.TryParse(priorityDays.Value, out var priorityDaysValue))
+    //            {
+    //                throw new BadRequestException("Invalid priorityDays value format");
+    //            }
+
+    //            postFromDb.PriorityDays = priorityDaysValue;
+    //            postFromDb.PriorityStartAt = DateTime.Now;
+    //        }
+    //    }
+
+
+    //    if (postDto.PostStatus.HasValue)
+    //    {
+    //        postFromDb.PostStatus = postDto.PostStatus.Value;
+
+    //        if(postDto.PostStatus == PostStatus.Approved)
+    //        {
+    //            postFromDb.PriorityStartAt = DateTime.Now;
+    //        }
+    //    }
+
+
+    //    if (postDto.RejectionReason != null)
+    //        postFromDb.RejectionReason = postDto.RejectionReason;
+
+    //    await _unitOfWork.Post.UpdateAsync(postFromDb);
+    //    await _unitOfWork.SaveAsync();
+
+    //    _response.Result = _mapper.Map<PostDto>(postFromDb);
+
+    //    return Ok(_response);
+    //}
 
     [HttpDelete("{id}")]
     [Authorize]
@@ -605,7 +703,8 @@ public class PostAPIController : ControllerBase
             throw new BadRequestException("Invalid or missing user ID claim.");
         }
 
-        if (post.UserId != userId)
+        bool isAdmin = User.IsInRole(SD.AdminRole);
+        if (!isAdmin && post.UserId != userId)
         {
             throw new ForbiddenException("You are not allowed to access data that does not belong to you.");
         }
@@ -638,10 +737,10 @@ public class PostAPIController : ControllerBase
             }
         }
 
-        bool isAdmin = User.IsInRole(SD.AdminRole);
+
 
         if (!isAdmin) {
-            if ((post.PostStatus == PostStatus.Rejected || post.PostStatus == PostStatus.Pending) && post.PostLabel == PostLabel.Priority)
+            if ((post.PostStatus == PostStatus.Rejected || post.PostStatus == PostStatus.Pending) )
             {
                 // trả lại tiền
                 if (post.Price > 0)

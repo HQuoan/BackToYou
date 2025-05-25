@@ -2,10 +2,6 @@ services:
     sqldb: 
         image: mcr.microsoft.com/mssql/server
 
-
-    # postdb: 
-    #     image: mcr.microsoft.com/mssql/server
-
     yarpapigateway:
         image: ${DOCKER_REGISTRY-}yarpapigateway
         build:
@@ -24,7 +20,11 @@ services:
             context: .
             dockerfile: Services/Post/PostAPI/Dockerfile
 
-
+    paymentapi:
+        image: ${DOCKER_REGISTRY-}paymentapi
+        build:
+            context: .
+            dockerfile: Services/Payment/PaymentAPI/Dockerfile
 
 volumes:
   sqlserver:

@@ -24,3 +24,6 @@ export const REPORT_TITLES = {
   CLAIM_OWNER: "Claim_Owner",
   FOUND_LOST_ITEM: "Found_Lost_Item"
 };
+
+export const ADMIN_ROLE = "ADMIN";
+export const CUSTOMER_ROLE = "CUSTOMER";

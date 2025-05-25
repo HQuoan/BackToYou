@@ -36,7 +36,8 @@ public class AppDbContext : DbContext
             .IsUnique();
 
         builder.Entity<PostSetting>().HasData(
-            new PostSetting { PostSettingId = new Guid("B21957F3-D71B-461C-A82B-C4D60D0E854B"), Name = nameof(SD.PostLabel_Priority_Price), Value = SD.PostLabel_Priority_Price }
+            new PostSetting { PostSettingId = new Guid("B21957F3-D71B-461C-A82B-C4D60D0E854B"), Name = nameof(SD.PostLabel_Priority_Price), Value = SD.PostLabel_Priority_Price },
+            new PostSetting { PostSettingId = new Guid("0CD8B6B5-F668-4BC8-8508-073E71734F72"), Name = nameof(SD.Priority_Days), Value = SD.Priority_Days }
          );
 
         builder.Entity<Report>().Property(p => p.Title)

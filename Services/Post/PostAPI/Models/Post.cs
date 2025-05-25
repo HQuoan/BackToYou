@@ -30,6 +30,14 @@ public class Post : BaseEntity
     public string? RejectionReason { get; set; }
     public bool IsEmbedded { get; set; } = false;
 
+    /// <summary>Ngày bắt đầu ưu tiên (null nếu chưa/đã hết ưu tiên)</summary>
+    public DateTime? PriorityStartAt { get; set; }
+
+    /// <summary>Số ngày tin được ưu tiên (ví dụ 7 hoặc 30) – dễ gia hạn</summary>
+    public int? PriorityDays { get; set; }
+
+
+
     public ICollection<PostImage> PostImages { get; set; }
     public ICollection<Comment> Comments { get; set; }  
     public ICollection<Follower> Followers { get; set; }

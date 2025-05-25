@@ -29,6 +29,16 @@ export async function logout() {
   });
 }
 
+export async function assignRole(formData) {
+  const data = await callAPI({
+    method: HttpMethod.POST,
+    url: `${ServiceRoutes.auth}/auth/assign-role`,
+    data: formData,
+  });
+
+  return data?.result?.user;
+}
+
 export async function changePassword(formData) {
   await callAPI({
     method: HttpMethod.POST,

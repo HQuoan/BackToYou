@@ -21,6 +21,7 @@ public static class SD
     public const string Status_Completed = "Completed";
 
     public const string PostLabel_Priority_Price = "10000";
+    public const string Priority_Days = "7";
 
     public const string HttpClient_Payment = "Payment";
     public const string HttpClient_User = "User";

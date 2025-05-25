@@ -39,7 +39,8 @@ services:
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
       - ConnectionStrings__DefaultConnection=Server=sqldb;Database=BackToYou_Post;User Id=sa;Password=Hquoan12345678;Encrypt=False;TrustServerCertificate=True
-      - ServiceUrls__PaymentAPI=https://localhost:5054
+      - ServiceUrls__AuthAPI=http://auth.api:8080
+      - ServiceUrls__PaymentAPI=http://paymentapi:8080
     depends_on:
       - sqldb
     ports:
@@ -52,6 +53,27 @@ services:
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
+
+  paymentapi:
+    environment:
+        - TZ=Asia/Ho_Chi_Minh
+        - ASPNETCORE_ENVIRONMENT=Development
+        - ASPNETCORE_HTTP_PORTS=8080
+        - ASPNETCORE_HTTPS_PORTS=8081
+        - ConnectionStrings__DefaultConnection=Server=sqldb;Database=BackToYou_Payment;User Id=sa;Password=Hquoan12345678;Encrypt=False;TrustServerCertificate=True
+        - ServiceUrls__AuthAPI=http://auth.api:8080
+    depends_on:
+        - sqldb
+    ports:
+        - "6004:8080"
+        - "6064:8081"
+    volumes:
+        - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+        - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+        - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+        - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/timezone:/etc/timezone:ro
 
   yarpapigateway:
     environment:

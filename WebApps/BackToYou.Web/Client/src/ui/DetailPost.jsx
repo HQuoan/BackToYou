@@ -1,12 +1,16 @@
 import { useState } from "react";
-import { formatDateVN, formatPhoneNumber } from "../utils/helpers";
+import {
+  formatDateTimeVN,
+  formatDateVN,
+  formatPhoneNumber,
+} from "../utils/helpers";
 import ImageWithPopup from "./ImageWithPopup";
 import PostTypeBadge from "./PostTypeBadge ";
 import PriorityLabel from "./PriorityLabel";
 import ReportModal from "./ReportModal";
 import { useUser } from "../features/authentication/useUser";
 import toast from "react-hot-toast";
-import { POST_LABEL_FOUND } from "../utils/constants";
+import { POST_LABEL_FOUND, POST_LABEL_PRIORITY } from "../utils/constants";
 
 function DetailPost({ post }) {
   const [mainImage, setMainImage] = useState(post.thumbnailUrl);
@@ -69,7 +73,7 @@ function DetailPost({ post }) {
         <div className="col-lg-9 col-12">
           <div className="custom-block-info">
             <div className="min-height-300">
-              <div className="custom-block-top d-flex mb-1">
+             <div className="custom-block-top mb-1 d-flex flex-wrap align-items-center">
                 <PostTypeBadge type={post.postType} />
                 <span className="badge badge-category mb-1">
                   <i className="bi-calendar-fill me-1"></i>
@@ -88,10 +92,10 @@ function DetailPost({ post }) {
 
                 <div className="ms-auto">
                   <PriorityLabel postLabel={post.postLabel} />
-                   {post.postLabel === POST_LABEL_FOUND && <span className="post-label-block">Đã tìm thấy</span>}
+                  {post.postLabel === POST_LABEL_FOUND && (
+                    <span className="post-label-block">Đã tìm thấy</span>
+                  )}
                 </div>
-
-
               </div>
 
               <h2 className="mb-3 mt-3 line-clamp-detail-title">
@@ -106,6 +110,28 @@ function DetailPost({ post }) {
                   {post.location.district}, {post.location.province}
                 </strong>
               </p>
+
+              {isOwn && post.postLabel === POST_LABEL_PRIORITY && (
+                <div>
+                  <p>
+                    {" "}
+                    <strong>Số ngày ưu tiên: {post.priorityDays ?? 0}</strong>
+                  </p>
+                  <p>
+                    <strong>
+                      Ngày hết ưu tiên:{" "}
+                      {post.priorityStartAt && post.priorityDays
+                        ? formatDateTimeVN(
+                            new Date(
+                              new Date(post.priorityStartAt).getTime() +
+                                post.priorityDays * 24 * 60 * 60 * 1000
+                            )
+                          )
+                        : "Chưa xác định"}
+                    </strong>
+                  </p>
+                </div>
+              )}
             </div>
             <div className="profile-block profile-detail-block d-flex flex-wrap align-items-center mt-5">
               <div className="ms-3 mb-3 mb-lg-0 mb-md-0">
@@ -150,7 +176,7 @@ function DetailPost({ post }) {
                   ></a>
                 </li>
 
-                 <li className="social-icon-item">
+                <li className="social-icon-item">
                   <a
                     href={`tel:${post.postContact.phone}`}
                     target="_blank"

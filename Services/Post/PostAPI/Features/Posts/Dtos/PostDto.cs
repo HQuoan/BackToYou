@@ -23,6 +23,9 @@ public class PostDto : BaseEntity
     public string? RejectionReason { get; set; }
     public bool IsEmbedded { get; set; }
 
+    public DateTime? PriorityStartAt { get; set; }
+    public int? PriorityDays { get; set; }
+
     public ICollection<PostImageDto>? PostImages { get; set; }
     public ICollection<CommentDto>? Comments { get; set; }
 }

@@ -116,6 +116,9 @@ builder.Services.AddScoped<IImageUploader, CloudinaryUploader>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
+builder.Services.AddHostedService<PriorityDowngradeService>();
+
+
 
 //builder.Services.Configure<LibreTranslateOptions>(
 //    builder.Configuration.GetSection("LibreTranslate"));

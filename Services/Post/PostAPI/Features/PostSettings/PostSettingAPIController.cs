@@ -90,6 +90,15 @@ public class PostSettingAPIController : ControllerBase
             throw new PostSettingNotFoundException(postSettingDto.PostSettingId);
         }
 
+        if (postSettingFromDb.Name == nameof(SD.PostLabel_Priority_Price) && decimal.Parse(postSettingDto.Value) < 10000)
+        {
+            throw new BadRequestException($"{nameof(SD.PostLabel_Priority_Price)} must be greater than or equal to 10000");
+        }
+
+        if (postSettingFromDb.Name == nameof(SD.Priority_Days) && int.Parse(postSettingDto.Value) < 3)
+        {
+            throw new BadRequestException($"{nameof(SD.Priority_Days)} must be greater than or equal to 3");
+        }
 
         _mapper.Map(postSettingDto, postSettingFromDb);
 

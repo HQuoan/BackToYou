@@ -12,22 +12,21 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Services/Auth/Auth.API/Auth.API.csproj", "Services/Auth/Auth.API/"]
+COPY ["Services/Payment/PaymentAPI/PaymentAPI.csproj", "Services/Payment/PaymentAPI/"]
 COPY ["BuildingBlocks/BuildingBlocks/BuildingBlocks.csproj", "BuildingBlocks/BuildingBlocks/"]
 COPY ["BuildingBlocks/EmailService/EmailService.csproj", "BuildingBlocks/EmailService/"]
-COPY ["BuildingBlocks/ImageService/ImageService.csproj", "BuildingBlocks/ImageService/"]
-RUN dotnet restore "./Services/Auth/Auth.API/Auth.API.csproj"
+RUN dotnet restore "./Services/Payment/PaymentAPI/PaymentAPI.csproj"
 COPY . .
-WORKDIR "/src/Services/Auth/Auth.API"
-RUN dotnet build "./Auth.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/Services/Payment/PaymentAPI"
+RUN dotnet build "./PaymentAPI.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Auth.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./PaymentAPI.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Auth.API.dll"]
+ENTRYPOINT ["dotnet", "PaymentAPI.dll"]
