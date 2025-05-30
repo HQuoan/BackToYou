@@ -3,7 +3,6 @@ using BuildingBlocks.Exceptions.Handler;
 using BuildingBlocks.Extensions;
 using BuildingBlocks.Middlewares;
 using FluentValidation.AspNetCore;
-using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.OpenApi.Models;

@@ -1,7 +1,8 @@
 import { useFormContext } from "react-hook-form";
 import { useCategories } from "./useCategories";
-import { usePostPriorityPrice } from "./usePostPriorityPrice";
 import LabelWithPopover from "../../ui/LabelWithPopover";
+import { usePostSettings } from "./usePostSettings";
+import { PostLabel_Priority_Price, Priority_Days } from "../../utils/constants";
 
 function GeneralInfoSection() {
   const {
@@ -10,7 +11,15 @@ function GeneralInfoSection() {
   } = useFormContext();
   const { categories } = useCategories();
 
-  const { isPending, price } = usePostPriorityPrice();
+  // const { isPending, price } = usePostPriorityPrice();
+  const { isPending, postSettings } = usePostSettings();
+
+  const price = Number(
+    postSettings?.find((p) => p.name === PostLabel_Priority_Price)?.value ?? 0
+  );
+  const priorityDays = Number(
+    postSettings?.find((p) => p.name === Priority_Days)?.value ?? 0
+  );
 
   return (
     <div id="general" className="section mb-5 rounded card">
@@ -54,21 +63,27 @@ function GeneralInfoSection() {
                 </label>
               </div>
               <div className="form-check position-relative">
-                <input
-                  type="radio"
-                  className="form-check-input"
-                  value="Priority"
-                  id="Priority"
-                  {...register("postLabel", {
-                    required: "Vui lòng chọn loại bài đăng",
-                  })}
-                />
-                <LabelWithPopover
-                  htmlFor="Priority"
-                  label="Tin ưu tiên"
-                  popover="Tin ưu tiên sẽ hiển thị ở đầu trang chủ"
-                />
-                <p className="text-danger mt-1">{`${price?.value} xu/tin`}</p>
+                {!isPending && (
+                  <>
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      value="Priority"
+                      id="Priority"
+                      {...register("postLabel", {
+                        required: "Vui lòng chọn loại bài đăng",
+                      })}
+                    />
+                    <LabelWithPopover
+                      htmlFor="Priority"
+                      label="Tin ưu tiên"
+                      popover={`Tin ưu tiên sẽ hiển thị ở đầu trang chủ trong vòng ${priorityDays} ngày.\nVới mức giá ${price.toLocaleString()} xu/tin`}
+                    />
+                    <p className="text-danger mt-1">
+                      {price.toLocaleString()} xu/tin
+                    </p>
+                  </>
+                )}
               </div>
             </div>
             {errors.postLabel && (

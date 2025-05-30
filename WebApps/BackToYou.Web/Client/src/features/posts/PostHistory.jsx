@@ -9,6 +9,7 @@ import Pagination from "../../ui/Pagination";
 import Spinner from "../../ui/Spinner";
 import { useState } from "react";
 import {
+  POST_LABEL_NORMAL,
   POST_STATUS_APPROVED,
   POST_STATUS_PENDING,
   POST_STATUS_PROCESSING,
@@ -16,6 +17,8 @@ import {
 } from "../../utils/constants";
 import { useDeletePost } from "./useDeletePost";
 import ConfirmDeleteModal from "../../ui/ConfirmDeleteModal ";
+import { useUpgradePriorityPost } from "./useUpgradePriorityPost";
+import ConfirmUpgradeModal from "../../ui/ConfirmUpgradeModal";
 
 const PostHistory = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -26,8 +29,11 @@ const PostHistory = () => {
 
   const [selectedPostId, setSelectedPostId] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showConfirmUpgradeModal, setShowConfirmUpgradeModal] = useState(false);
 
   const { isDeleting, deletePost } = useDeletePost();
+
+  const { isUpgrading, upgradePriorityPost } = useUpgradePriorityPost();
 
   function handleDelete(postId) {
     setSelectedPostId(postId);
@@ -44,6 +50,23 @@ const PostHistory = () => {
       deletePost(selectedPostId);
       setSelectedPostId(null);
       setShowConfirmModal(false);
+    }
+  }
+
+  function handleUpgrade(postId) {
+    setSelectedPostId(postId);
+    setShowConfirmUpgradeModal(true);
+  }
+
+  function cancelUpgrade() {
+    setSelectedPostId(null);
+    setShowConfirmUpgradeModal(false);
+  }
+  function confirmUpgrade() {
+    if (selectedPostId) {
+      upgradePriorityPost(selectedPostId);
+      setSelectedPostId(null);
+      setShowConfirmUpgradeModal(false);
     }
   }
 
@@ -180,10 +203,23 @@ const PostHistory = () => {
                             onClick={() => handleDelete(post.postId)}
                             disabled={isDeleting}
                           >
-                            {isDeleting ? "Đang xử lý ..." : "Hủy bài & Hoàn tiền"}
+                            {isDeleting
+                              ? "Đang xử lý ..."
+                              : "Hủy bài & Hoàn tiền"}
                           </button>
                         </>
                       ) : null}
+
+                      {post.postStatus === POST_STATUS_APPROVED &&
+                        post.postLabel === POST_LABEL_NORMAL && (
+                          <button
+                            className="btn custom-btn upgrade-btn mt-2"
+                            onClick={() => handleUpgrade(post.postId)}
+                            disabled={isUpgrading}
+                          >
+                            {isUpgrading ? "Đang xử lý ..." : "Nâng cấp"}
+                          </button>
+                        )}
                     </div>
                   </div>
                   {post.postStatus === "Rejected" && (
@@ -207,6 +243,12 @@ const PostHistory = () => {
         isOpen={showConfirmModal}
         onCancel={cancelDelete}
         onConfirm={confirmDelete}
+      />
+
+      <ConfirmUpgradeModal
+        isOpen={showConfirmUpgradeModal}
+        onCancel={cancelUpgrade}
+        onConfirm={confirmUpgrade}
       />
     </section>
   );

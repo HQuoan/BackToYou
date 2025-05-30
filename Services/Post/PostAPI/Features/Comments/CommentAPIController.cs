@@ -1,4 +1,6 @@
-﻿using CommentAPI.Features.Comments.Queries;
+﻿using BuildingBlocks.Messaging.Events;
+using CommentAPI.Features.Comments.Queries;
+using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PostAPI.Features.Comments.Dtos;
@@ -15,11 +17,14 @@ public class CommentAPIController : ControllerBase
     private readonly IMapper _mapper;
     private ResponseDto _response;
 
-    public CommentAPIController(IUnitOfWork unitOfWork, IMapper mapper)
+    private readonly IPublishEndpoint _publishEndpoint;
+
+    public CommentAPIController(IUnitOfWork unitOfWork, IMapper mapper, IPublishEndpoint publishEndpoint = null)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _response = new ResponseDto();
+        _publishEndpoint = publishEndpoint;
     }
 
     [HttpGet]
@@ -64,6 +69,10 @@ public class CommentAPIController : ControllerBase
     {
         Comment comment = _mapper.Map<Comment>(commentDto);
 
+        var post = await _unitOfWork.Post.GetAsync(p => p.PostId == comment.PostId);
+        if (post == null)
+            throw new PostNotFoundException(comment.PostId);
+
         var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
         if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
         {
@@ -81,13 +90,31 @@ public class CommentAPIController : ControllerBase
             comment.PostId = parentCmt.PostId;
         }
 
-        var post = await _unitOfWork.Post.GetAsync(p => p.PostId == comment.PostId);
-        if (post == null)
-            throw new PostNotFoundException(comment.PostId);
-
 
         await _unitOfWork.Comment.AddAsync(comment);
         await _unitOfWork.SaveAsync();
+
+
+        // Xác định người cần nhận thông báo
+        var recipients = new List<Guid>();
+
+        // 1. Chủ bài post
+        if (post.UserId != comment.UserId)            // không tự thông báo cho chính mình
+            recipients.Add(post.UserId);
+
+
+        // Phát event
+        await _publishEndpoint.Publish(new CommentAddedEvent
+        {
+            CommentId = comment.CommentId,
+            PostId = comment.PostId,
+            ParentCommentId = comment.ParentCommentId,
+            CommenterId = comment.UserId,
+            RecipientUserIds = recipients,
+            Preview = comment.Description.Length > 50
+                                 ? comment.Description[..50] + "…"
+                                 : comment.Description
+        });
 
         _response.Result = _mapper.Map<CommentDto>(comment);
 

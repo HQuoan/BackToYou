@@ -29,6 +29,7 @@ export const POST_TYPE_FOUND = "Found";
 
 // Others
 export const PostLabel_Priority_Price = "PostLabel_Priority_Price";
+export const Priority_Days = "Priority_Days";
 
 export const REPORT_TITLES = {
   FAKE_REPORT: "Fake_Report",

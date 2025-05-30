@@ -30,6 +30,15 @@ export async function getPostBySlug(slug) {
   return data;
 }
 
+export async function upgradePriorityPost(postId) {
+  const data = await callAPI({
+    method: HttpMethod.PUT,
+    url: `${ServiceRoutes.post}/posts/upgrade-priority-post/${postId}`,
+  });
+
+  return data;
+}
+
 export async function createPost(formData) {
   const fd = new FormData();
 

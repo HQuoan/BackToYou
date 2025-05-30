@@ -10,5 +10,7 @@ public class Category : BaseEntity
     [Required]
     public string Slug { get; set; }
 
+    //public string? ImageUrl { get; set; }
+
     public ICollection<Post> Posts { get; set; }
 }

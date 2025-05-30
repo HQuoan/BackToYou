@@ -2,7 +2,7 @@ import { useFormContext } from "react-hook-form";
 import { useState, useEffect, useRef } from "react";
 import ImageUploadPlaceholder from "../../ui/ImageUploadPlaceholder";
 
-function PhotoUploadSection() {
+function PhotoUploadSection({ post, isEdit }) {
   const {
     setValue,
     register,
@@ -67,6 +67,29 @@ function PhotoUploadSection() {
         <label className="form-label fw-semibold">
           Ảnh nhặt được (tối đa 3 ảnh)
         </label>
+
+        {isEdit && post?.postImages?.length > 0 && (
+          <div className="mb-3">
+            <p className="text-muted">Ảnh hiện tại:</p>
+            <div className="d-flex gap-3 flex-wrap">
+              {post.postImages.map((img, idx) => (
+                <img
+                  key={img.postImageId || idx}
+                  src={img.imageUrl}
+                  alt={`old-${idx}`}
+                  style={{
+                    height: "120px",
+                    borderRadius: "6px",
+                    objectFit: "cover",
+                  }}
+                />
+              ))}
+            </div>
+            <p className="mt-2 text-danger">
+              * Khi gửi lại, ảnh cũ sẽ bị thay thế hoàn toàn.
+            </p>
+          </div>
+        )}
 
         <div
           className="photo-upload-area border rounded d-flex flex-wrap gap-3 p-3 mb-2"

@@ -46,7 +46,7 @@ import { useUpdateSetting } from "./useUpdateSetting";
 function UpdateSettingsForm() {
   const { isLoading, settings } = useSettings();
   const { isUpdating, updateSetting } = useUpdateSetting();
-  
+
   // Store initial values in a ref to avoid re-renders
   const initialValuesRef = useRef({});
   const [inputValues, setInputValues] = useState({});
@@ -65,7 +65,10 @@ function UpdateSettingsForm() {
 
   function handleUpdate(e, postSettingId) {
     const { value } = e.target;
-    
+
+    // Nếu không thay đổi thì không update
+    if (value === initialValuesRef.current[postSettingId]) return;
+
     // Update the input value in state
     setInputValues((prev) => ({ ...prev, [postSettingId]: value }));
 

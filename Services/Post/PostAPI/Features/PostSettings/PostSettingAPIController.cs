@@ -65,6 +65,24 @@ public class PostSettingAPIController : ControllerBase
         return Ok(_response);
     }
 
+    [HttpPost("by-names")]
+    public async Task<ActionResult<ResponseDto>> GetValues([FromBody] List<string> names)
+    {
+        var query = new QueryParameters<PostSetting>
+        {
+             Filters = { p => names.Contains(p.Name) },
+        };
+
+        var postSettings = await _unitOfWork.PostSetting.GetAllAsync(query);
+        //if (postSetting == null)
+        //{
+        //    throw new PostSettingNotFoundException(name);
+        //}
+
+        _response.Result = _mapper.Map<List<PostSettingDto>>(postSettings);
+        return Ok(_response);
+    }
+
     [HttpPost]
     //[Authorize(Roles = SD.AdminRole)]
     public async Task<ActionResult<ResponseDto>> PostSetting([FromBody] PostSettingCreateDto postSettingDto)

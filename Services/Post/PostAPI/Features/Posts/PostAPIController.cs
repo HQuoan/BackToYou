@@ -1,10 +1,14 @@
 ﻿using ImageService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Identity.Client;
 using PostAPI.Features.Posts.Dtos;
 using PostAPI.Features.Posts.Queries;
+using PostAPI.Models;
 using System.Linq.Expressions;
 using System.Security.Claims;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace PostAPI.Features.Posts;
 [Route("posts")]
@@ -122,57 +126,70 @@ public class PostAPIController : ControllerBase
     //[Authorize(Roles = SD.AdminRole)]
     public async Task<IActionResult> GetPostsWithUsers([FromQuery] PostQueryParameters? queryParameters)
     {
-        UserDto user = null;
+        List<UserDto> users = null;
+        List<Guid> userIds = null;
+
+        // Nếu có lọc theo email
         if (!string.IsNullOrWhiteSpace(queryParameters.UserEmail))
         {
-            user = await _userService.GetUserByEmail(queryParameters.UserEmail);
-            if (user == null)
+            users = await _userService.SearchUsersByEmail(queryParameters.UserEmail);
+
+            // Không tìm thấy user nào thì trả về danh sách rỗng
+            if (users.Count == 0)
             {
                 _response.Result = new List<PostDto>();
                 return Ok(_response);
             }
 
-            queryParameters.UserId = Guid.Parse(user.Id);
+            userIds = users.Select(u => Guid.Parse(u.Id)).Distinct().ToList();
         }
 
+        // Xây query cho Post
         var query = PostFeatures.Build(queryParameters);
         query.IncludeProperties = "Category,PostImages";
 
+        if (userIds != null)
+        {
+            query.Filters.Add(p => userIds.Contains(p.UserId));
+        }
+
+        // Lấy danh sách bài viết
         var posts = await _unitOfWork.Post.GetAllAsync(query);
         var postDtos = _mapper.Map<List<PostDto>>(posts);
 
-        if (user != null)
+        // Lấy danh sách user theo UserId từ post nếu không lọc theo email
+        if (userIds == null)
         {
-            postDtos.ForEach(p => p.User = user);
-        }
-        else
-        {
-            var userIds = posts.Select(p => p.UserId.ToString()).Distinct().ToList();
+            var userIdsFromPosts = posts.Select(p => p.UserId.ToString()).Distinct().ToList();
 
-            List<UserDto> userDtos = new();
-            if (userIds.Count > 0)
+            if (userIdsFromPosts.Count > 0)
             {
                 try
                 {
-                    userDtos = await _userService.GetUsersByIds(userIds);
+                    users = await _userService.GetUsersByIds(userIdsFromPosts);
                 }
                 catch
                 {
-                    // Bỏ qua lỗi → userDtos = empty
-                }
-            }
-
-            if (userDtos != null && userDtos.Count > 0)
-            {
-                foreach (var post in postDtos)
-                {
-                    post.User = userDtos.FirstOrDefault(u => u.Id == post.UserId.ToString());
+                    users = new List<UserDto>();
                 }
             }
         }
 
+        // Gán thông tin user vào từng post
+        if (users != null && users.Count > 0)
+        {
+            var userDict = users.ToDictionary(u => u.Id);
 
+            foreach (var post in postDtos)
+            {
+                if (userDict.TryGetValue(post.UserId.ToString(), out var user))
+                {
+                    post.User = user;
+                }
+            }
+        }
 
+        // Phân trang
         int totalItems = await _unitOfWork.Post.CountAsync(query);
 
         _response.Result = postDtos;
@@ -186,6 +203,76 @@ public class PostAPIController : ControllerBase
 
         return Ok(_response);
     }
+
+
+    //[HttpGet("posts-with-users")]
+    ////[Authorize(Roles = SD.AdminRole)]
+    //public async Task<IActionResult> GetPostsWithUsers([FromQuery] PostQueryParameters? queryParameters)
+    //{
+    //    UserDto user = null;
+    //    if (!string.IsNullOrWhiteSpace(queryParameters.UserEmail))
+    //    {
+    //        user = await _userService.GetUserByEmail(queryParameters.UserEmail);
+    //        if (user == null)
+    //        {
+    //            _response.Result = new List<PostDto>();
+    //            return Ok(_response);
+    //        }
+
+    //        queryParameters.UserId = Guid.Parse(user.Id);
+    //    }
+
+    //    var query = PostFeatures.Build(queryParameters);
+    //    query.IncludeProperties = "Category,PostImages";
+
+    //    var posts = await _unitOfWork.Post.GetAllAsync(query);
+    //    var postDtos = _mapper.Map<List<PostDto>>(posts);
+
+    //    if (user != null)
+    //    {
+    //        postDtos.ForEach(p => p.User = user);
+    //    }
+    //    else
+    //    {
+    //        var userIds = posts.Select(p => p.UserId.ToString()).Distinct().ToList();
+
+    //        List<UserDto> userDtos = new();
+    //        if (userIds.Count > 0)
+    //        {
+    //            try
+    //            {
+    //                userDtos = await _userService.GetUsersByIds(userIds);
+    //            }
+    //            catch
+    //            {
+    //                // Bỏ qua lỗi → userDtos = empty
+    //            }
+    //        }
+
+    //        if (userDtos != null && userDtos.Count > 0)
+    //        {
+    //            foreach (var post in postDtos)
+    //            {
+    //                post.User = userDtos.FirstOrDefault(u => u.Id == post.UserId.ToString());
+    //            }
+    //        }
+    //    }
+
+
+
+    //    int totalItems = await _unitOfWork.Post.CountAsync(query);
+
+    //    _response.Result = postDtos;
+    //    _response.Pagination = new PaginationDto
+    //    {
+    //        TotalItems = totalItems,
+    //        TotalItemsPerPage = queryParameters.PageSize,
+    //        CurrentPage = queryParameters.PageNumber,
+    //        TotalPages = (int)Math.Ceiling((double)totalItems / queryParameters.PageSize)
+    //    };
+
+    //    return Ok(_response);
+    //}
 
     [HttpGet("me")]
     [Authorize]
@@ -233,8 +320,6 @@ public class PostAPIController : ControllerBase
         else
         {
             post = await _unitOfWork.Post.GetAsync(c => c.PostId == id && c.PostStatus == PostStatus.Approved, includeProperties: "Category,PostImages");
-
-
         }
 
         if (post == null)
@@ -483,9 +568,11 @@ public class PostAPIController : ControllerBase
         {
             // trừ tiền
             var fee = await _unitOfWork.PostSetting.GetAsync(p => p.Name == nameof(SD.PostLabel_Priority_Price));
-            if (fee == null)
+            var priorityDays = await _unitOfWork.PostSetting.GetAsync(p => p.Name == nameof(SD.Priority_Days));
+
+            if (fee == null || priorityDays == null)
             {
-                throw new NotFoundException("Not found fee");
+                throw new NotFoundException("Not found fee / priority days");
             }
 
             if (!decimal.TryParse(fee.Value, out var feeAmount))
@@ -493,8 +580,14 @@ public class PostAPIController : ControllerBase
                 throw new BadRequestException("Invalid fee value format");
             }
 
+            if (!int.TryParse(priorityDays.Value, out var priorityDaysValue))
+            {
+                throw new BadRequestException("Invalid priorityDays value format");
+            }
+
             await _paymentService.SubtractBalance(feeAmount);
             postFromDb.PostLabel = PostLabel.Priority;
+            postFromDb.PriorityDays = priorityDaysValue;
             postFromDb.Price = feeAmount;
         }
         else if (postFromDb.PostLabel == PostLabel.Priority && postDto.PostLabel == PostLabel.Normal)
@@ -559,6 +652,67 @@ public class PostAPIController : ControllerBase
         }
 
 
+        await _unitOfWork.SaveAsync();
+
+        _response.Result = _mapper.Map<PostDto>(postFromDb);
+
+        return Ok(_response);
+    }
+
+
+    [HttpPut("upgrade-priority-post/{postId}")]
+    public async Task<ActionResult<ResponseDto>> UpgradePriorityPost(Guid postId)
+    {
+        var postFromDb = await _unitOfWork.Post.GetAsync(p => p.PostId == postId);
+        if (postFromDb == null)
+            throw new PostNotFoundException(postId);
+
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+        {
+            throw new BadRequestException("Invalid or missing user ID claim.");
+        }
+
+        if(postFromDb.UserId != userId)
+        {
+            throw new ForbiddenException();
+        }
+
+        if (postFromDb.PostStatus != PostStatus.Approved)
+        {
+            throw new BadRequestException("The post has not been approved yet.");
+        }
+
+        if (postFromDb.PostLabel == PostLabel.Priority) {
+            throw new BadRequestException("The post is already marked as Priority.");
+        }
+
+
+        // trừ tiền
+        var fee = await _unitOfWork.PostSetting.GetAsync(p => p.Name == nameof(SD.PostLabel_Priority_Price));
+        var priorityDays = await _unitOfWork.PostSetting.GetAsync(p => p.Name == nameof(SD.Priority_Days));
+
+        if (fee == null || priorityDays == null)
+        {
+            throw new NotFoundException("Not found fee / priority days");
+        }
+
+        if (!decimal.TryParse(fee.Value, out var feeAmount))
+        {
+            throw new BadRequestException("Invalid fee value format");
+        }
+
+        if (!int.TryParse(priorityDays.Value, out var priorityDaysValue))
+        {
+            throw new BadRequestException("Invalid priorityDays value format");
+        }
+
+        await _paymentService.SubtractBalance(feeAmount);
+        postFromDb.PostLabel = PostLabel.Priority;
+        postFromDb.PriorityDays = priorityDaysValue;
+        postFromDb.Price = feeAmount;
+
+        await _unitOfWork.Post.UpdateAsync(postFromDb);
         await _unitOfWork.SaveAsync();
 
         _response.Result = _mapper.Map<PostDto>(postFromDb);

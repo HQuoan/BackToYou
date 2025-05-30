@@ -56,8 +56,8 @@ function PostRow({ post }) {
       <Img src={post.thumbnailUrl} />
 
       <Stacked>
-        <span>{post?.user.fullName}</span>
-        <span>{post?.user.email}</span>
+        <span>{post?.user?.fullName}</span>
+        <span>{post?.user?.email}</span>
       </Stacked>
 
       <p>{post.title}</p>

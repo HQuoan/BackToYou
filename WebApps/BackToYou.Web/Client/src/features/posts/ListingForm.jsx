@@ -19,7 +19,7 @@ function ListingForm({ mode }) {
   const { isUpdating, updatePost } = useUpdatePost();
   const [showManual, setShowManual] = useState(false);
 
-  console.log("post", post )
+  // console.log("post", post )
 
   // Khi có dữ liệu post => reset form
   useEffect(() => {
@@ -87,7 +87,9 @@ function ListingForm({ mode }) {
           setShowManual={setShowManual}
           showManual={showManual}
         />
-        <PhotoUploadSection />
+        {/* <PhotoUploadSection /> */}
+        <PhotoUploadSection post={post ?? null} isEdit={isEdit}/>
+
         <ContactInfoSection />
         <div className="d-flex justify-content-center mt-4">
           {/* <button className="btn custom-btn w-100">Preview</button> */}

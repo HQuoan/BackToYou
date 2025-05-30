@@ -15,6 +15,7 @@ public interface IRepository<T> where T : class
     Task<T> GetAsync(Expression<Func<T, bool>>? filter = null, string? includeProperties = null, bool tracked = false);
     //Task<List<T>> GetsAsync(Expression<Func<T, bool>>? filter = null, string? includeProperties = null);
     Task AddAsync(T entity);
+    Task AddRangeAsync(IEnumerable<T> entities);
     Task UpdateAsync(T entity);
     Task RemoveAsync(T entity);
     Task RemoveRangeAsync(IEnumerable<T> entities);

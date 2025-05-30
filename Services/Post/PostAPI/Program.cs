@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text.Json.Serialization;
 using ImageService;
 using FluentValidation.AspNetCore;
+using BuildingBlocks.Messaging.MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -128,6 +129,10 @@ builder.Services.AddHostedService<PriorityDowngradeService>();
 builder.Services.AddHttpClient(SD.HttpClient_Payment, u => u.BaseAddress = new Uri(builder.Configuration["ServiceUrls:PaymentAPI"])).AddHttpMessageHandler<BackendApiAuthenticationHttpClientHandler>();
 
 builder.Services.AddHttpClient(SD.HttpClient_User, u => u.BaseAddress = new Uri(builder.Configuration["ServiceUrls:AuthAPI"])).AddHttpMessageHandler<BackendApiAuthenticationHttpClientHandler>();
+
+
+//Async Communication Services
+builder.Services.AddMessageBroker(builder.Configuration);
 
 // Add CORS
 builder.Services.AddCors(options =>

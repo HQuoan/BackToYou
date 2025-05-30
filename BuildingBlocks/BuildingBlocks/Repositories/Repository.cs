@@ -20,6 +20,11 @@ public class Repository<T> : IRepository<T> where T : class
         await dbSet.AddAsync(entity);
     }
 
+    public async Task AddRangeAsync(IEnumerable<T> entities)
+    {
+        await dbSet.AddRangeAsync(entities);
+    }
+
     public async Task<T> GetAsync(Expression<Func<T, bool>>? filter = null, string? includeProperties = null, bool tracked = false)
     {
         IQueryable<T> query = tracked ? dbSet : dbSet.AsNoTracking();

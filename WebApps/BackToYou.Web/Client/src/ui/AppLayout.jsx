@@ -3,8 +3,10 @@ import Footer from "./Footer";
 import Header from "./Header";
 import ScrollToTop from "./ScrollToTop";
 import ScrollToTopButton from "./ScrollToTopButton";
+import { NotificationListener } from "../notification/NotificationListener";
 
 function AppLayout() {
+  NotificationListener;
   return (
     <>
       <ScrollToTop />
@@ -12,6 +14,7 @@ function AppLayout() {
       <Outlet />
       <Footer />
       <ScrollToTopButton />
+      <NotificationListener />
     </>
   );
 }

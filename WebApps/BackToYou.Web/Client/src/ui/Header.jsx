@@ -85,9 +85,16 @@ function Header() {
         <div className="ms-4 d-flex align-items-center gap-2 position-relative">
           {isAuthenticated ? (
             <>
-              <Link to="/listing/create" className="btn custom-btn custom-border-btn me-5">
+              <Link
+                to="/listing/create"
+                className="btn custom-btn custom-border-btn me-5"
+              >
                 Đăng bài
               </Link>
+
+              <div>
+               <i className="bi bi-bell"></i>
+              </div>
               <div className="dropdown" ref={dropdownRef}>
                 <div
                   className="profile-dropdown-toggle d-flex align-items-center gap-2 bg-transparent border-0 p-0"
