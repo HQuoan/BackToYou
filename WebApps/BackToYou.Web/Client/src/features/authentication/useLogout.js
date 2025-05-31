@@ -11,7 +11,6 @@ export function useLogout() {
     onSuccess: () => {
       queryClient.removeQueries();
       navigate("/", { replace: true });
-
     },
   });
 

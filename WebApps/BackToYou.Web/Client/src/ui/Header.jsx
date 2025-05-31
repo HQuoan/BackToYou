@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useUser } from "../features/authentication/useUser";
 import { useLogout } from "../features/authentication/useLogout";
 import PlaceholderAvatar from "./PlaceholderAvatar";
+import NotificationDropdown from "../features/notifications/NotificationDropdown";
 
 function Header() {
   const { isAuthenticated, user } = useUser();
@@ -91,10 +92,10 @@ function Header() {
               >
                 Đăng bài
               </Link>
-
-              <div>
-               <i className="bi bi-bell"></i>
+              <div className="me-2">
+                <NotificationDropdown />
               </div>
+
               <div className="dropdown" ref={dropdownRef}>
                 <div
                   className="profile-dropdown-toggle d-flex align-items-center gap-2 bg-transparent border-0 p-0"

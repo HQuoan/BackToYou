@@ -53,7 +53,7 @@ public class CommentAPIController : ControllerBase
     [Route("{id}")]
     public async Task<ActionResult<ResponseDto>> GetById(Guid id)
     {
-        var comment = await _unitOfWork.Comment.GetAsync(c => c.CommentId == id);
+        var comment = await _unitOfWork.Comment.GetAsync(c => c.CommentId == id, includeProperties: "ChildComments");
         if (comment == null)
         {
             throw new CommentNotFoundException(id);
@@ -108,6 +108,7 @@ public class CommentAPIController : ControllerBase
         {
             CommentId = comment.CommentId,
             PostId = comment.PostId,
+            Slug = post.Slug,
             ParentCommentId = comment.ParentCommentId,
             CommenterId = comment.UserId,
             RecipientUserIds = recipients,

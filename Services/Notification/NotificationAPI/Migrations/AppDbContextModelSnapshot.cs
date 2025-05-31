@@ -34,6 +34,9 @@ namespace NotificationAPI.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Data")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
 

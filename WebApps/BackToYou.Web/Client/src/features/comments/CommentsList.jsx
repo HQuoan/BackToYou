@@ -1,46 +1,52 @@
 import { useState, useEffect } from "react";
-import { useComments } from "./useComments";
-import CommentItem from "./CommentItem";
-import CommentForm from "./CommentForm";
+import { Link, useLocation } from "react-router-dom";
+
 import { useUser } from "../authentication/useUser";
-import { Link } from "react-router-dom";
+import { useComments } from "./useComments";
+import { useComment } from "./useComment";
+
+import CommentForm from "./CommentForm";
+import CommentItem from "./CommentItem";
 
 function CommentsList({ postId }) {
+  const location = useLocation();
   const [pageNumber, setPageNumber] = useState(1);
   const [commentList, setCommentList] = useState([]);
   const [totalComments, setTotalComments] = useState(0);
+  const [targetCommentId, setTargetCommentId] = useState(null);
 
   const { isAuthenticated } = useUser();
-
   const { comments, pagination, isPending } = useComments(postId, pageNumber);
+  const { comment: targetComment } = useComment(
+    targetCommentId,
+    Boolean(targetCommentId)
+  );
 
-  // useEffect(() => {
-  //   setCommentList((prevComments) => {
-  //     const existingIds = new Set(prevComments.map((c) => c.commentId));
-  //     const mergedComments = [...prevComments];
+  // Xử lý khi có hash trên URL ban đầu
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash.startsWith("#comment-")) {
+      const id = hash.replace("#comment-", "");
+      setTargetCommentId(id);
+    }
+  }, []);
 
-  //     comments.forEach((comment) => {
-  //       if (!existingIds.has(comment.commentId)) {
-  //         mergedComments.push(comment);
-  //       }
-  //     });
+  // Theo dõi thay đổi hash trên URL
+  useEffect(() => {
+    if (location.hash.startsWith("#comment-")) {
+      setTargetCommentId(location.hash.replace("#comment-", ""));
+    } else {
+      setTargetCommentId(null);
+    }
+  }, [location.hash]);
 
-  //     return mergedComments;
-  //   });
-
-  //   if (pagination?.totalItems !== undefined) {
-  //     setTotalComments(pagination.totalItems);
-  //   }
-  // }, [comments, pagination]);
-
+  // Cập nhật danh sách bình luận
   useEffect(() => {
     if (!comments || comments.length === 0) return;
 
     if (pageNumber === 1) {
-      // Lần đầu load, thay thế luôn commentList
       setCommentList(comments);
     } else {
-      // Merge nếu là trang tiếp theo
       setCommentList((prevComments) => {
         const existingIds = new Set(prevComments.map((c) => c.commentId));
         const newComments = comments.filter(
@@ -51,11 +57,24 @@ function CommentsList({ postId }) {
     }
   }, [comments, pageNumber]);
 
+  // Cập nhật tổng số bình luận
   useEffect(() => {
     if (pagination?.totalItems !== undefined) {
       setTotalComments(pagination.totalItems);
     }
   }, [pagination?.totalItems]);
+
+  // Cuộn đến comment mục tiêu
+  useEffect(() => {
+    if (!targetCommentId) return;
+
+    const element = document.getElementById("comment-list");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+      element.classList.add("bg-warning-subtle");
+      setTimeout(() => element.classList.remove("bg-warning-subtle"), 2000);
+    }
+  }, [targetComment, commentList, targetCommentId]);
 
   const hasMorePages = pagination && pageNumber < pagination.totalPages;
 
@@ -74,7 +93,7 @@ function CommentsList({ postId }) {
   };
 
   return (
-    <div className="comments-list mt-5 mb-5">
+    <div id="comment-list" className="comments-list mt-5 mb-5">
       <h4 className="section-title mb-3">Bình luận ({totalComments})</h4>
 
       <div className="mb-4">
@@ -89,14 +108,27 @@ function CommentsList({ postId }) {
         )}
       </div>
 
-      {commentList.map((comment) => (
+      {targetComment && (
         <CommentItem
-          key={comment.commentId}
-          comment={comment}
+          key={targetComment.commentId}
+          comment={targetComment}
           postId={postId}
           onDelete={handleDeleteComment}
+          targetCommentId={targetCommentId}
         />
-      ))}
+      )}
+
+      {commentList.map((comment) =>
+        comment.commentId !== targetCommentId ? (
+          <CommentItem
+            key={comment.commentId}
+            comment={comment}
+            postId={postId}
+            onDelete={handleDeleteComment}
+            targetCommentId={targetCommentId}
+          />
+        ) : null
+      )}
 
       {hasMorePages && (
         <div className="mb-4">

@@ -12,7 +12,7 @@ using NotificationAPI.Data;
 namespace NotificationAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250530062242_Init")]
+    [Migration("20250531084542_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -35,6 +35,9 @@ namespace NotificationAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Data")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsRead")

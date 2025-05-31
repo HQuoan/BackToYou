@@ -27,7 +27,7 @@ public class CommentAddedConsumer : IConsumer<CommentAddedEvent>
             UserId = uid,
             Title = "Bình luận mới",
             Message = evt.Preview ?? "Có bình luận mới về bài viết của bạn",
-            Url = $"/posts/{evt.PostId}#comment-{evt.CommentId}",
+            Url = $"/{evt.Slug}#comment-{evt.CommentId}",
         });
 
         await _notificationRepo.AddRangeAsync(notifications);
@@ -40,7 +40,7 @@ public class CommentAddedConsumer : IConsumer<CommentAddedEvent>
             {
                 Title = "Bình luận mới",
                 Message = evt.Preview ?? "Có bình luận mới về bài viết của bạn",
-                Url = $"/posts/{evt.PostId}#comment-{evt.CommentId}",
+                Url = $"/{evt.Slug}#comment-{evt.CommentId}",
             });
         }
 

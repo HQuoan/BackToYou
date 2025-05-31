@@ -12,6 +12,16 @@ export async function getComments({page, postId}) {
   return data
 }
 
+export async function getCommentById(id) {
+  const data = await callAPI({
+    method: HttpMethod.GET,
+    url: `${ServiceRoutes.post}/comments/${id}`,
+  });
+
+  return data;
+}
+
+
 export async function createComment(comment){
   const data = await callAPI({
     method: HttpMethod.POST,

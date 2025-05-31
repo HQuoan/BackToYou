@@ -63,4 +63,19 @@ public class NotificationAPIController : ControllerBase
 
         return Ok(_response);
     }
+
+    [HttpPut("mark-as-read/{id}")]
+    public async Task<ActionResult<ResponseDto>> MarkAsRead(Guid id)
+    {
+        var notification = await _notificationRepo.GetAsync(n => n.NotificationId == id);
+        if (notification == null)
+            throw new NotFoundException("Not found notification");
+
+        notification.IsRead = true;
+
+        await _notificationRepo.UpdateAsync(notification);
+        await _notificationRepo.SaveAsync();
+
+        return Ok(_response);
+    }
 }

@@ -4,6 +4,7 @@ public record CommentAddedEvent : IntegrationEvent
 {
     public Guid CommentId { get; init; }
     public Guid PostId { get; init; }
+    public string Slug { get; init; }
     public Guid? ParentCommentId { get; init; }
     public Guid CommenterId { get; init; }
 

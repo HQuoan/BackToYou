@@ -1,0 +1,40 @@
+const mockNotification = [
+  {
+    notificationId: "ebe410b4-2675-433d-4fca-08dd9f4acef3",
+    userId: "4986f53c-a2db-4b71-80df-404bcad5413a",
+    title: "Bình luận mới",
+    message: "t đây huy",
+    url: "/posts/34dca5dc-49bc-4941-09e6-08dd9c7c3273#comment-de9b08bc-4999-43a3-c4af-08dd9f4aceb5",
+    isRead: false,
+    createdAt: "2025-05-30T14:23:18.7365317",
+    createdBy: "Unknown:Unknown",
+    lastModified: "2025-05-30T14:23:18.7365412",
+    lastModifiedBy: "Unknown:Unknown",
+  },
+  {
+    notificationId: "ca4b5dc8-4943-42ad-4fc9-08dd9f4acef3",
+    userId: "4986f53c-a2db-4b71-80df-404bcad5413a",
+    title: "Bình luận mới",
+    message: "1",
+    url: "/posts/34dca5dc-49bc-4941-09e6-08dd9c7c3273#comment-ce699135-5c89-45f6-c4ae-08dd9f4aceb5",
+    isRead: false,
+    createdAt: "2025-05-30T14:23:00.576727",
+    createdBy: "Unknown:Unknown",
+    lastModified: "2025-05-30T14:23:00.5768363",
+    lastModifiedBy: "Unknown:Unknown",
+  },
+  {
+    notificationId: "b9614bb1-c4cd-44fd-34f6-08dd9f49a383",
+    userId: "4986f53c-a2db-4b71-80df-404bcad5413a",
+    title: "Bình luận mới",
+    message: "hh",
+    url: "/posts/34dca5dc-49bc-4941-09e6-08dd9c7c3273#comment-b138acff-7364-4fee-2840-08dd9f49a33b",
+    isRead: false,
+    createdAt: "2025-05-30T14:14:38.1997903",
+    createdBy: "Unknown:Unknown",
+    lastModified: "2025-05-30T14:14:38.1998902",
+    lastModifiedBy: "Unknown:Unknown",
+  },
+];
+
+export default mockNotification;

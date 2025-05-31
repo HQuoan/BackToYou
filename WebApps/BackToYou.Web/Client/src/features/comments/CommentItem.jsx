@@ -5,10 +5,10 @@ import { useCanEdit } from "../authentication/useCanEdit";
 import PlaceholderAvatar from "../../ui/PlaceholderAvatar";
 import { useUser } from "../authentication/useUser";
 
-function CommentItem({ comment, postId, onDelete }) {
+function CommentItem({ comment, postId, onDelete, targetCommentId }) {
   const canEdit = useCanEdit(comment.userId);
 
-  const {isAuthenticated} = useUser();
+  const { isAuthenticated } = useUser();
 
   const [isReplying, setIsReplying] = useState(false);
   const [replies, setReplies] = useState(comment.childComments ?? []);
@@ -33,10 +33,14 @@ function CommentItem({ comment, postId, onDelete }) {
   };
 
   return (
-    <div className="mb-3 ms-0">
+    <div
+      className={`mb-3 ms-0  ${
+        comment.commentId === targetCommentId ? "border-custom-primary" : ""
+      }`}
+    >
       <div className="d-flex p-3 bg-light rounded shadow">
         <div className="me-3">
-          <PlaceholderAvatar name={comment?.createdBy}/>
+          <PlaceholderAvatar name={comment?.createdBy} />
         </div>
         <div className="flex-grow-1">
           <div className="d-flex align-items-center mb-2">

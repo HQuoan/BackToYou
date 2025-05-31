@@ -169,7 +169,6 @@ select.form-select {
   color: var(--color-grey-800);
 }
 
-
 .badge-category {
   background-color: #ff7f50;
 }
@@ -260,7 +259,6 @@ select.form-select {
   background: #e8590c; /* cam đậm */
   color: #ffffff;
 }
-
 
 .custom-btn:disabled {
   background-color: var(--color-grey-300);
@@ -494,8 +492,6 @@ select.form-select {
   background: var(--custom-btn-bg-hover-color);
 }
 
-
-
 /* Receipts Filter Navigation */
 .receipts-filter-nav {
   display: flex;
@@ -505,6 +501,10 @@ select.form-select {
   padding: 10px 0;
   background: var(--color-grey-100);
   border-radius: var(--border-radius-medium);
+}
+
+.receipts-filter-nav.notification {
+  margin-bottom: 0px;
 }
 
 .receipts-filter-nav .nav-link {
@@ -523,7 +523,6 @@ select.form-select {
   color: var(--primary-color);
   border-bottom: 2px solid var(--primary-color);
 }
-
 
 /* MODAL */
 /* Overlay phủ toàn màn hình */
@@ -556,8 +555,6 @@ select.form-select {
   min-width: 100px;
 }
 
-
-
 .page-not-found {
   height: 100vh;
   background-color: #f8f9fa; /* tương đương var(--color-grey-50) */
@@ -566,4 +563,132 @@ select.form-select {
 .box {
   border-color: #dee2e6; /* tương đương var(--color-grey-100) */
   border-radius: 0.5rem; /* tương đương var(--border-radius-md) */
+}
+
+/* Notification Dropdown */
+.notification-dropdown-toggle {
+  background: transparent;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  position: relative;
+  color: var(--white-color);
+  font-size: 1.2rem;
+}
+
+.notification-dropdown-toggle:focus {
+  outline: none;
+}
+
+.notification-dropdown-menu {
+  background: var(--color-grey-100);
+  border-radius: var(--border-radius-small);
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+  margin-top: 10px;
+  padding: 10px 0;
+  padding-top: 0px;
+  z-index: 1000;
+}
+
+.notification-dropdown-item {
+  display: block;
+  color: var(--color-grey-800);
+  font-family: var(--body-font-family);
+  font-size: var(--menu-font-size);
+  padding: 10px 20px;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.notification-dropdown-item:hover {
+  background: var(--color-grey-200);
+  color: var(--primary-color);
+}
+
+.notification-empty {
+  text-align: center;
+  color: var(--color-grey-600);
+  padding: 20px;
+}
+
+.notification-unread {
+  background: var(--color-grey-50);
+}
+
+.notification-content {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.notification-title {
+  font-weight: var(--font-weight-semibold);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.notification-message {
+  font-size: 0.9rem;
+  color: var(--p-color);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.notification-time {
+  font-size: 0.8rem;
+  color: var(--color-grey-600);
+}
+
+.notification-unread-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--primary-color);
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 10px;
+  height: 10px;
+  background-color: #ff4d4d;
+  border-radius: 50%;
+}
+
+.border-custom-primary {
+  border: 2px solid #00cc99;
+}
+
+.load-more-text {
+  cursor: pointer;
+  text-decoration: underline;
+  color: #0066cc; /* Màu xanh giống link */
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 1rem;
+  transition: color 0.2s ease;
+}
+
+.load-more-text:hover {
+  color: #084298; /* Màu xanh đậm khi hover */
+}
+
+.load-more-text.disabled {
+  color: #6c757d; /* Màu xám khi bị disable */
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.6;
 }
