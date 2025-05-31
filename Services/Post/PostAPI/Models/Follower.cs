@@ -9,4 +9,5 @@ public class Follower : BaseEntity
     [Required]
     public Guid PostId { get; set; }
     public Post? Post { get; set; }
+    public bool IsSubscribed { get; set; } = true;
 }

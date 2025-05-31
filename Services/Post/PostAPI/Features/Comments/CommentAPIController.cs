@@ -98,9 +98,19 @@ public class CommentAPIController : ControllerBase
         // Xác định người cần nhận thông báo
         var recipients = new List<Guid>();
 
-        // 1. Chủ bài post
-        if (post.UserId != comment.UserId)            // không tự thông báo cho chính mình
-            recipients.Add(post.UserId);
+        //// 1. Chủ bài post
+        //if (post.UserId != comment.UserId)            // không tự thông báo cho chính mình
+        //    recipients.Add(post.UserId);
+
+        var query = new QueryParameters<Follower>();
+        query.Filters.Add(f => f.PostId == post.PostId && f.IsSubscribed == true);
+
+        var followers = await _unitOfWork.Follower.GetAllAsync(query);
+
+        foreach (var item in followers)
+        {
+            recipients.Add(item.UserId);
+        }
 
 
         // Phát event

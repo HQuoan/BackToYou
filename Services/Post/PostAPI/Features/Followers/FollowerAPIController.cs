@@ -56,6 +56,23 @@ public class FollowerAPIController : ControllerBase
         return Ok(_response);
     }
 
+    [HttpGet("is-follower/{postId}")]
+    [Authorize]
+    public async Task<ActionResult<ResponseDto>> IsFollower(Guid postId)
+    {
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+        {
+            throw new BadRequestException("Invalid or missing user ID claim.");
+        }
+
+        var follower = await _unitOfWork.Follower.GetAsync(c => c.PostId == postId && c.UserId == userId);
+      
+
+        _response.Result = follower != null ? _mapper.Map<FollowerDto>(follower) : null;
+        return Ok(_response);
+    }
+
     [HttpPost]
     [Authorize]
     public async Task<ActionResult<ResponseDto>> Post([FromBody] FollowerCreateDto followerDto)
@@ -67,8 +84,17 @@ public class FollowerAPIController : ControllerBase
         {
             throw new BadRequestException("Invalid or missing user ID claim.");
         }
-        follower.UserId = userId;
 
+        var already = await _unitOfWork.Follower
+                .GetAsync(f => f.PostId == followerDto.PostId && f.UserId  == userId);
+
+        if (already is not null) 
+            throw new BadRequestException("Đã theo dõi bài viết này.");
+
+
+
+        follower.UserId = userId;
+        follower.IsSubscribed = true;
 
         await _unitOfWork.Follower.AddAsync(follower);
         await _unitOfWork.SaveAsync();
@@ -78,7 +104,34 @@ public class FollowerAPIController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = follower.FollowerId }, _response);
     }
 
-    [HttpDelete]
+    [HttpPut]
+    [Authorize]
+    public async Task<ActionResult<ResponseDto>> Put([FromBody] FollowerUpdateDto followerDto)
+    {
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+        {
+            throw new BadRequestException("Invalid or missing user ID claim.");
+        }
+
+        var follower = await _unitOfWork.Follower
+                .GetAsync(f => f.FollowerId == followerDto.FollowerId && f.UserId == userId);
+
+        if (follower == null)
+            throw new BadRequestException("Not found follower");
+
+
+        follower.IsSubscribed = followerDto.IsSubscribed;
+
+        await _unitOfWork.Follower.UpdateAsync(follower);
+        await _unitOfWork.SaveAsync();
+
+        _response.Result = _mapper.Map<FollowerDto>(follower);
+
+        return Ok(_response);
+    }
+
+    [HttpDelete("{id}")]
     [Authorize]
     public async Task<ActionResult> Delete(Guid id)
     {

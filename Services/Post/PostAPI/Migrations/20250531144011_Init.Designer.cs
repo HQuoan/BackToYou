@@ -12,8 +12,8 @@ using PostAPI.Data;
 namespace PostAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250525172634_prioritydays")]
-    partial class prioritydays
+    [Migration("20250531144011_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -225,6 +225,9 @@ namespace PostAPI.Migrations
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsSubscribed")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");

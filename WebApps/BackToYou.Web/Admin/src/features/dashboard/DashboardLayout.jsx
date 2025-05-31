@@ -6,6 +6,7 @@ import CategoryBarChartWrapper from "./CategoryBarChartWrapper";
 import { usePostsByCategory } from "./usePostsByCategory";
 import { usePaymentTotal } from "./usePaymentTotal";
 import { useNewUserCount } from "../users/useNewUserCount";
+import { useReports } from './../reports/useReports';
 
 const StyledDashboardLayout = styled.div`
   display: grid;
@@ -20,12 +21,15 @@ function DashboardLayout() {
   const { isLoading: loadingPosts, paymentTotal, pagination: paymentPagination } = usePaymentTotal();
   const { userCount } = useNewUserCount();
 
+  const {pagination} = useReports();
+
   return (
     <StyledDashboardLayout>
       <Stats
         postCount = {postPagination?.totalItems}
         sales = {paymentPagination?.totalItems}
         userCount = {userCount}
+        reportCount = {pagination?.totalItems}
       />
       <TodayActivity />
       <CategoryBarChartWrapper isLoading={loadingPosts} posts={posts}/>

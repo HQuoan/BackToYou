@@ -1,4 +1,4 @@
-import { useUser } from "../features/authentication/useUser";
+import PostPreview from "../features/announcement/PostPreview";
 import Spinner from "../ui/Spinner";
 
 function Contact() {
@@ -10,6 +10,7 @@ function Contact() {
       <section style={{ minHeight: 400 }}>
         <div className="d-flex justify-content-center align-items-center">
           <Spinner />
+          <PostPreview/>
         </div>
       </section>
     </>

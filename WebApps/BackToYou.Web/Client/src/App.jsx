@@ -45,15 +45,6 @@ function App() {
             <Route path="ai-search" element={<AiSearchPage />} />
             <Route path="map" element={<MapPage />} />
             <Route path="contact" element={<Contact />} />
-
-            {/* <Route
-              path="listing/:slug"
-              element={
-                <ProtectedRoute>
-                  <ListingPage />
-                </ProtectedRoute>
-              }
-            /> */}
             <Route
               path="listing/create"
               element={

@@ -76,11 +76,11 @@ function Header() {
                 Map
               </NavLink>
             </li>
-            {/* <li className="nav-item">
+            <li className="nav-item">
               <NavLink to="/contact" className="nav-link">
                 Contact
               </NavLink>
-            </li> */}
+            </li>
           </ul>
         </div>
         <div className="ms-4 d-flex align-items-center gap-2 position-relative">

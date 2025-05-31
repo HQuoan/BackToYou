@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace PostAPI.Migrations
 {
     /// <inheritdoc />
@@ -152,6 +154,8 @@ namespace PostAPI.Migrations
                     Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     RejectionReason = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsEmbedded = table.Column<bool>(type: "bit", nullable: false),
+                    PriorityStartAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    PriorityDays = table.Column<int>(type: "int", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -233,6 +237,7 @@ namespace PostAPI.Migrations
                     FollowerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PostId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsSubscribed = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -300,7 +305,11 @@ namespace PostAPI.Migrations
             migrationBuilder.InsertData(
                 table: "PostSettings",
                 columns: new[] { "PostSettingId", "Name", "Value" },
-                values: new object[] { new Guid("b21957f3-d71b-461c-a82b-c4d60d0e854b"), "PostLabel_Priority_Price", "10000" });
+                values: new object[,]
+                {
+                    { new Guid("0cd8b6b5-f668-4bc8-8508-073e71734f72"), "Priority_Days", "7" },
+                    { new Guid("b21957f3-d71b-461c-a82b-c4d60d0e854b"), "PostLabel_Priority_Price", "10000" }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Categories_Name",

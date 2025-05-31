@@ -86,7 +86,6 @@ export const NotificationListener = () => {
     return () => {
       isMounted = false;
       notificationHub.stop();
-      // Không xóa listener ở đây vì SignalR có thể tái sử dụng kết nối cũ
     };
   }, [queryClient]);
 

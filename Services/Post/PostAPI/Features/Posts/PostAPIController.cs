@@ -535,7 +535,8 @@ public class PostAPIController : ControllerBase
         await _unitOfWork.Follower.AddAsync(new Follower
         {
             PostId = post.PostId,
-            UserId = userId
+            UserId = userId,
+            IsSubscribed = false,
         });
 
         await _unitOfWork.SaveAsync();

@@ -7,7 +7,7 @@ import {
 import Stat from "./Stat";
 import { formatVndCurrency } from "../../utils/helpers";
 
-function Stats({ postCount, sales, userCount }) {
+function Stats({ postCount, sales, userCount, reportCount }) {
 
   return (
     <>
@@ -33,7 +33,7 @@ function Stats({ postCount, sales, userCount }) {
         title="Reports"
         color="yellow"
         icon={<HiOutlineChartBar />}
-        value={Math.round(1 * 100) + "%"}
+        value={reportCount}
       />
     </>
   );

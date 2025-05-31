@@ -11,12 +11,23 @@ import ReportModal from "./ReportModal";
 import { useUser } from "../features/authentication/useUser";
 import toast from "react-hot-toast";
 import { POST_LABEL_FOUND, POST_LABEL_PRIORITY } from "../utils/constants";
+import { useCreateFollower } from "../features/follower/useCreateFollower";
+import { useIsFollower } from "../features/follower/useIsFollower";
+import { useDeleteFollower } from "../features/follower/useDeleteFollower";
+import { useUpdateFollower } from "../features/follower/useUpdateFollower";
+import ContactInfo from "./ContactInfo";
 
 function DetailPost({ post }) {
   const [mainImage, setMainImage] = useState(post.thumbnailUrl);
   const [showReportModal, setShowReportModal] = useState(false);
+  const { isCreating, createFollower } = useCreateFollower();
+  const { isDeleting, deleteFollower } = useDeleteFollower();
+  const { isUpdating, updateFollower } = useUpdateFollower();
+  const { isPending, follower } = useIsFollower(post.postId);
 
-  const { user } = useUser();
+  console.log("follower", follower);
+
+  const { user, isAuthenticated } = useUser();
   const isOwn = user?.id === post?.userId;
 
   function handleReport() {
@@ -73,7 +84,7 @@ function DetailPost({ post }) {
         <div className="col-lg-9 col-12">
           <div className="custom-block-info">
             <div className="min-height-300">
-             <div className="custom-block-top mb-1 d-flex flex-wrap align-items-center">
+              <div className="custom-block-top mb-1 d-flex flex-wrap align-items-center">
                 <PostTypeBadge type={post.postType} />
                 <span className="badge badge-category mb-1">
                   <i className="bi-calendar-fill me-1"></i>
@@ -133,63 +144,10 @@ function DetailPost({ post }) {
                 </div>
               )}
             </div>
-            <div className="profile-block profile-detail-block d-flex flex-wrap align-items-center mt-5">
-              <div className="ms-3 mb-3 mb-lg-0 mb-md-0">
-                {/* <img
-                  src="images/profile/woman-posing-black-dress-medium-shot.jpg"
-                  className="profile-block-image img-fluid"
-                  alt="Profile"
-                /> */}
-
-                <h5>Thông tin liên hệ</h5>
-                <p>
-                  <strong>Tên: {post.postContact.name ?? "Unknown"}</strong>
-                  <strong>
-                    Phone:{" "}
-                    {formatPhoneNumber(post.postContact.phone ?? "Unknown")}
-                  </strong>
-                  <strong>
-                    Email:{" "}
-                    {formatPhoneNumber(post.postContact.email ?? "Unknown")}
-                  </strong>
-                </p>
-              </div>
-
-              <ul className="social-icon ms-lg-auto ms-md-auto">
-                {post.postContact?.facebook && (
-                  <li className="social-icon-item">
-                    <a
-                      href={post.postContact.facebook}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="social-icon-link bi-facebook"
-                    ></a>
-                  </li>
-                )}
-
-                <li className="social-icon-item">
-                  <a
-                    href={`https://mail.google.com/mail/u/0/?view=cm&to=${post.postContact.email}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="social-icon-link bi-envelope"
-                  ></a>
-                </li>
-
-                <li className="social-icon-item">
-                  <a
-                    href={`tel:${post.postContact.phone}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="social-icon-link bi-whatsapp"
-                  ></a>
-                </li>
-
-                <button onClick={handleReport} className="btn custom-btn">
-                  Báo cáo
-                </button>
-              </ul>
-            </div>
+            <ContactInfo
+              post={post}
+              onReport={() => setShowReportModal(true)}
+            />
           </div>
         </div>
       </div>
