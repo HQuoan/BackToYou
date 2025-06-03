@@ -25,6 +25,7 @@ public static class SD
 
     public const string HttpClient_Payment = "Payment";
     public const string HttpClient_User = "User";
+    public const string HttpClient_AI = "AI";
 
     public const string AccessTokenCookieName = "access_token";
     

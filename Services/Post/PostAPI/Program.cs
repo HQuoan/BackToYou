@@ -116,6 +116,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IImageUploader, CloudinaryUploader>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAIService, AIService>();
 
 builder.Services.AddHostedService<PriorityDowngradeService>();
 
@@ -129,6 +130,10 @@ builder.Services.AddHostedService<PriorityDowngradeService>();
 builder.Services.AddHttpClient(SD.HttpClient_Payment, u => u.BaseAddress = new Uri(builder.Configuration["ServiceUrls:PaymentAPI"])).AddHttpMessageHandler<BackendApiAuthenticationHttpClientHandler>();
 
 builder.Services.AddHttpClient(SD.HttpClient_User, u => u.BaseAddress = new Uri(builder.Configuration["ServiceUrls:AuthAPI"])).AddHttpMessageHandler<BackendApiAuthenticationHttpClientHandler>();
+
+builder.Services.AddHttpClient(SD.HttpClient_AI, u => u.BaseAddress = new Uri(builder.Configuration["ServiceUrls:AiAPI"]));
+
+//builder.Services.Configure<ServiceUrls>(builder.Configuration.GetSection("ServiceUrls"));
 
 
 //Async Communication Services

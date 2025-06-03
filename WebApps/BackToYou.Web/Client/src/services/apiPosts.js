@@ -21,6 +21,16 @@ export async function getMyPosts({ page, filter }) {
   return data;
 }
 
+export async function getFollowedPosts({ page }) {
+  const data = await callAPI({
+    method: HttpMethod.GET,
+    url: `${ServiceRoutes.post}/posts/me/following`,
+    params: { ...page},
+  });
+
+  return data;
+}
+
 export async function getPostBySlug(slug) {
   const data = await callAPI({
     method: HttpMethod.GET,

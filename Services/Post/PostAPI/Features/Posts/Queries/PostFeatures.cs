@@ -63,7 +63,7 @@ public static class PostFeatures
                     //    break;
 
                     case nameof(PostQueryParameters.StreetAddress):
-                        filters.Add(m => m.Location.StreetAddress.ToLower() ==((string)value).ToLower());
+                        filters.Add(m => m.Location.StreetAddress.ToLower() == ((string)value).ToLower());
                         break;
 
                     case nameof(PostQueryParameters.Ward):
@@ -123,6 +123,10 @@ public static class PostFeatures
             "createdat" => isDescending
                 ? (q => q.OrderByDescending(m => m.CreatedAt))
                 : q => q.OrderBy(m => m.CreatedAt),
+
+            "lastmodified" => isDescending
+                ? (q => q.OrderByDescending(m => m.LastModified))
+                : q => q.OrderBy(m => m.LastModified),
 
             _ => q => q.OrderByDescending(m => m.CreatedAt)
         };

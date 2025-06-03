@@ -95,6 +95,10 @@
   margin: 0 auto;
 }
 
+.history-section.following {
+  min-height: 500px;
+}
+
 .history-header {
   display: flex;
   justify-content: space-between;

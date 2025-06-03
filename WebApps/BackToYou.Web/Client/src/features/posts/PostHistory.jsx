@@ -25,6 +25,7 @@ const PostHistory = () => {
   const [statusFilter, setStatusFilter] = useState(undefined);
   const { isPending, posts, pagination } = useMyPosts({
     postStatus: statusFilter,
+    orderBy: "-lastmodified"
   });
 
   const [selectedPostId, setSelectedPostId] = useState(null);

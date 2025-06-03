@@ -10,13 +10,21 @@ const StyledSidebar = styled.aside`
   grid-row: 1 / -1;
   display: flex;
   flex-direction: column;
-  gap: 3.2rem;
+  gap: 1.2rem;
+`;
+
+const LogoPlaceholder = styled.div`
+  text-align: center;
+  font-weight: 600;
 `;
 
 function Sidebar() {
   return (
     <StyledSidebar>
-      {/* <Logo /> */}
+      <LogoPlaceholder>
+        <Logo />
+        <h1>Back To You</h1>
+      </LogoPlaceholder>
       <MainNav />
     </StyledSidebar>
   );

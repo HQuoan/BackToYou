@@ -23,6 +23,7 @@ import ResetPasswordForm from "./features/authentication/ResetPasswordForm";
 import Payment from "./features/payment/Payment";
 import PostHistory from "./features/posts/PostHistory";
 import PageNotFound from "./pages/PageNotFound";
+import FollowedPosts from "./features/posts/FollowedPosts";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -74,6 +75,7 @@ function App() {
               <Route path="profile" element={<UpdateInfoForm />} />
               <Route path="change-password" element={<ChangePasswordForm />} />
               <Route path="history" element={<PostHistory />} />
+              <Route path="following" element={<FollowedPosts />} />
               <Route path="payment" element={<Payment />} />
             </Route>
 

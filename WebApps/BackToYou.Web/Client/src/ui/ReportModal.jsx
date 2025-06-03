@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { useCreateReport } from "../features/reports/useCreateReport";
 import {
+  POST_LABEL_FOUND,
   POST_TYPE_FOUND,
   POST_TYPE_LOST,
   REPORT_TITLES,
@@ -67,10 +68,11 @@ const ReportModal = ({ isOpen, onCancel, onConfirm, post, isOwn }) => {
             {/* {post.postType === POST_TYPE_LOST && (
              
             )} */}
-
-             <option value={REPORT_TITLES.FOUND_LOST_ITEM}>
+            {post.postLabel !== POST_LABEL_FOUND && (
+              <option value={REPORT_TITLES.FOUND_LOST_ITEM}>
                 {REPORT_TITLES_VN.FOUND_LOST_ITEM}
               </option>
+            )}
           </select>
           {errors.title && (
             <p className="mb-0">
@@ -85,7 +87,7 @@ const ReportModal = ({ isOpen, onCancel, onConfirm, post, isOwn }) => {
             })}
             className="form-control"
             rows={3}
-            placeholder="Thêm mô tả nếu cần"
+            placeholder="Thêm mô tả"
           />
           {errors.description && (
             <small className="text-danger">{errors.description.message}</small>

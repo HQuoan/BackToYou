@@ -138,6 +138,14 @@ function Header() {
                       <i className="bi bi-pencil-square me-2"></i>
                       Bài đăng
                     </Link>
+
+                    <Link
+                      to="/account/following"
+                      className="profile-dropdown-item"
+                    >
+                      <i className="bi bi-bookmark me-2"></i>
+                      Theo dõi
+                    </Link>
                     <button
                       className="btn profile-dropdown-item"
                       onClick={() => logout()}

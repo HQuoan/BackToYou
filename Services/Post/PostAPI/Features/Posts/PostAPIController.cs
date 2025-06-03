@@ -1,14 +1,10 @@
 ﻿using ImageService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Identity.Client;
 using PostAPI.Features.Posts.Dtos;
 using PostAPI.Features.Posts.Queries;
-using PostAPI.Models;
 using System.Linq.Expressions;
 using System.Security.Claims;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace PostAPI.Features.Posts;
 [Route("posts")]
@@ -287,6 +283,56 @@ public class PostAPIController : ControllerBase
 
         var query = PostFeatures.Build(queryParameters);
         query.IncludeProperties = "Category,PostImages";
+
+        IEnumerable<Post> posts = await _unitOfWork.Post.GetAllAsync(query);
+
+        _response.Result = _mapper.Map<IEnumerable<PostDto>>(posts);
+
+        int totalItems = await _unitOfWork.Post.CountAsync(query);
+        _response.Pagination = new PaginationDto
+        {
+            TotalItems = totalItems,
+            TotalItemsPerPage = queryParameters.PageSize,
+            CurrentPage = queryParameters.PageNumber,
+            TotalPages = (int)Math.Ceiling((double)totalItems / queryParameters.PageSize)
+        };
+
+        return Ok(_response);
+    }
+
+    [HttpGet("me/following")]
+    [Authorize]
+    public async Task<ActionResult<ResponseDto>> GetFollowedPosts([FromQuery] PostQueryParameters? queryParameters)
+    {
+        var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid userId))
+        {
+            throw new BadRequestException("Invalid or missing user ID claim.");
+        }
+
+        var followerQuery = new QueryParameters<Follower>();
+        followerQuery.Filters.Add(f => f.UserId == userId);
+
+        var followers = await _unitOfWork.Follower.GetAllAsync(followerQuery);
+        var postIds = followers.Select(f => f.PostId).Distinct().ToList();
+
+        if (!postIds.Any())
+        {
+            _response.Result = new List<PostDto>();
+            _response.Pagination = new PaginationDto
+            {
+                TotalItems = 0,
+                TotalItemsPerPage = queryParameters.PageSize,
+                CurrentPage = queryParameters.PageNumber,
+                TotalPages = 0
+            };
+            return Ok(_response);
+        }
+
+
+        var query = PostFeatures.Build(queryParameters);
+        query.IncludeProperties = "Category,PostImages";
+        query.Filters.Add(p => postIds.Contains(p.PostId) && p.UserId != userId && p.PostStatus == PostStatus.Approved);
 
         IEnumerable<Post> posts = await _unitOfWork.Post.GetAllAsync(query);
 

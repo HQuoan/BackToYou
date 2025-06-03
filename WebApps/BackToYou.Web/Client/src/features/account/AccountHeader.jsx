@@ -18,6 +18,9 @@ function AccountHeader() {
         <NavLink to="/account/history" className="nav-link">
           <i className="bi bi-pencil-square"></i> Bài đăng
         </NavLink>
+        <NavLink to="/account/following" className="nav-link">
+          <i className="bi bi-bookmark"></i> Theo dõi
+        </NavLink>
       </div>
     </div>
   );
