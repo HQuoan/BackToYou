@@ -1,4 +1,11 @@
 services:
+  # nginx:
+  #     image: nginx:alpine
+  #     container_name: nginx-web
+  #     volumes:
+  #       - ./Admin/dist:/usr/share/nginx/html
+  #     ports:
+  #       - "3001:80"
   client:
     build:
       context: ./Client

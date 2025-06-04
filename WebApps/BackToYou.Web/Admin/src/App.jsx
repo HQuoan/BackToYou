@@ -35,7 +35,8 @@ function App() {
         <ReactQueryDevtools initialIsOpen={false} />
 
         <GlobalStyles />
-        <BrowserRouter basename="/admin">
+        {/* <BrowserRouter basename="/admin"> */}
+        <BrowserRouter>
           <Routes>
             <Route
               element={

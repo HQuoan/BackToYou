@@ -5,17 +5,17 @@ services:
     messagebroker:
         image: rabbitmq:management
 
-    yarpapigateway:
-        image: ${DOCKER_REGISTRY-}yarpapigateway
-        build:
-          context: .
-          dockerfile: ApiGateways/YarpApiGateway/Dockerfile
+    # yarpapigateway:
+    #     image: ${DOCKER_REGISTRY-}yarpapigateway
+    #     build:
+    #       context: .
+    #       dockerfile: ApiGateways/YarpApiGateway/Dockerfile
 
-    auth.api:
-        image: ${DOCKER_REGISTRY-}authapi
-        build:
-            context: .
-            dockerfile: Services/Auth/Auth.API/Dockerfile
+    # auth.api:
+    #     image: ${DOCKER_REGISTRY-}authapi
+    #     build:
+    #         context: .
+    #         dockerfile: Services/Auth/Auth.API/Dockerfile
 
     postapi:
         image: ${DOCKER_REGISTRY-}postapi
@@ -23,17 +23,17 @@ services:
             context: .
             dockerfile: Services/Post/PostAPI/Dockerfile
 
-    paymentapi:
-        image: ${DOCKER_REGISTRY-}paymentapi
-        build:
-            context: .
-            dockerfile: Services/Payment/PaymentAPI/Dockerfile
+    # paymentapi:
+    #     image: ${DOCKER_REGISTRY-}paymentapi
+    #     build:
+    #         context: .
+    #         dockerfile: Services/Payment/PaymentAPI/Dockerfile
 
-    notificationapi:
-        image: ${DOCKER_REGISTRY-}notificationapi
-        build:
-          context: .
-          dockerfile: Services/Notification/NotificationAPI/Dockerfile
+    # notificationapi:
+    #     image: ${DOCKER_REGISTRY-}notificationapi
+    #     build:
+    #       context: .
+    #       dockerfile: Services/Notification/NotificationAPI/Dockerfile
 
 volumes:
   sqlserver:

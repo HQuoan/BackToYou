@@ -21,43 +21,43 @@ services:
       - "5672:5672"
       - "15672:15672"
 
-  auth.api:
+  # auth.api:
+  #   environment:
+  #     - TZ=Asia/Ho_Chi_Minh
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - ASPNETCORE_HTTP_PORTS=8080
+  #     # - ASPNETCORE_HTTPS_PORTS=8081
+  #     - ConnectionStrings__DefaultConnection=Server=sqldb;Database=BackToYou_Auth;User Id=sa;Password=Hquoan12345678;Encrypt=False;TrustServerCertificate=True
+  #     - ApiSettings__ConfirmEmailUrl=https://localhost:6062/auth/confirm-email
+  #     # - ApiSettings__WebClientUrl=http://localhost:5000
+  #     - ApiSettings__WebClientUrl=http://cineworld.io.vn
+  #     - MessageBroker__Host=amqp://messagebroker:5672
+  #   depends_on:
+  #     - sqldb
+  #   ports:
+  #     - "6002:8080"
+  #     # - "6062:8081"
+  #   volumes:
+  #     - /etc/localtime:/etc/localtime:ro
+  #     - /etc/timezone:/etc/timezone:ro
+
+  postapi:
     environment:
       - TZ=Asia/Ho_Chi_Minh
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       # - ASPNETCORE_HTTPS_PORTS=8081
-      - ConnectionStrings__DefaultConnection=Server=sqldb;Database=BackToYou_Auth;User Id=sa;Password=Hquoan12345678;Encrypt=False;TrustServerCertificate=True
-      - ApiSettings__ConfirmEmailUrl=https://localhost:6062/auth/confirm-email
-      # - ApiSettings__WebClientUrl=http://localhost:5000
-      - ApiSettings__WebClientUrl=http://cineworld.io.vn
-      - MessageBroker__Host=amqp://messagebroker:5672
+      - ConnectionStrings__DefaultConnection=Server=sqldb;Database=BackToYou_Post;User Id=sa;Password=Hquoan12345678;Encrypt=False;TrustServerCertificate=True
+      - ServiceUrls__AuthAPI=http://auth.api:8080
+      - ServiceUrls__PaymentAPI=http://paymentapi:8080
     depends_on:
       - sqldb
     ports:
-      - "6002:8080"
-      # - "6062:8081"
+      - "6003:8080"
+      # - "6063:8081"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-
-  # postapi:
-  #   environment:
-  #     - TZ=Asia/Ho_Chi_Minh
-  #     - ASPNETCORE_ENVIRONMENT=Development
-  #     - ASPNETCORE_HTTP_PORTS=8080
-  #     - ASPNETCORE_HTTPS_PORTS=8081
-  #     - ConnectionStrings__DefaultConnection=Server=sqldb;Database=BackToYou_Post;User Id=sa;Password=Hquoan12345678;Encrypt=False;TrustServerCertificate=True
-  #     - ServiceUrls__AuthAPI=http://auth.api:8080
-  #     - ServiceUrls__PaymentAPI=http://paymentapi:8080
-  #   depends_on:
-  #     - sqldb
-  #   ports:
-  #     - "6003:8080"
-  #     # - "6063:8081"
-  #   volumes:
-  #     - /etc/localtime:/etc/localtime:ro
-  #     - /etc/timezone:/etc/timezone:ro
 
   # paymentapi:
   #   environment:
