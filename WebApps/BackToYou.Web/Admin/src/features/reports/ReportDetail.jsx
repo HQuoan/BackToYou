@@ -54,7 +54,6 @@ function ReportDetail() {
 
   const isActionLoading = isLoadingReport || isUpdating;
 
-  console.log(isActionLoading, isLoadingPost, isLoadingReport, isUpdating);
   if (isLoadingReport) return <Spinner />;
   if (!report) return <Empty resourceName="report" />;
 

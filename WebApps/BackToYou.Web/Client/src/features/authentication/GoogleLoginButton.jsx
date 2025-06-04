@@ -1,5 +1,6 @@
 import { GoogleLogin } from "@react-oauth/google";
 import { useLoginWithGoogle } from "./useLogin";
+import toast from "react-hot-toast";
 
 function GoogleLoginButton() {
   const { loginWithGoogle } = useLoginWithGoogle();
@@ -19,7 +20,7 @@ function GoogleLoginButton() {
         <div className="google-login-btn">
           <GoogleLogin
             onSuccess={responseGoogle}
-            onError={() => console.log("Login Failed")}
+            onError={() => toast.error("Login Failed")}
           />
         </div>
       </button>

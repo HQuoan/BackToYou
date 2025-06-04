@@ -22,7 +22,6 @@ function ResetPasswordForm() {
   const { isPending, resetPassword } = useResetPassword();
 
   const onSubmit = (data) => {
-    console.log("toooo")
     resetPassword(data);
 
   };

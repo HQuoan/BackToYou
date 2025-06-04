@@ -29,7 +29,8 @@ services:
       - ASPNETCORE_HTTPS_PORTS=8081
       - ConnectionStrings__DefaultConnection=Server=sqldb;Database=BackToYou_Auth;User Id=sa;Password=Hquoan12345678;Encrypt=False;TrustServerCertificate=True
       - ApiSettings__ConfirmEmailUrl=https://localhost:6062/auth/confirm-email
-      - ApiSettings__WebClientUrl=http://localhost:5000
+      # - ApiSettings__WebClientUrl=http://localhost:5000
+      - ApiSettings__WebClientUrl=http://cineworld.io.vn
     depends_on:
       - sqldb
     ports:

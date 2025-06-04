@@ -15,6 +15,8 @@ import { useDeleteReceipt } from "./useDeleteReceipt";
 import Spinner from "./../../ui/Spinner";
 import Pagination from "../../ui/Pagination";
 
+const DOMAIN = import.meta.env.VITE_API_BASE_URL;
+
 const Payment = () => {
   // State & Refs
   const [searchParams, setSearchParams] = useSearchParams();
@@ -68,7 +70,7 @@ const Payment = () => {
       onSuccess: (receipt) => {
         const { paymentMethod } = data;
         if (paymentMethod === "STRIPE" || paymentMethod === "PAYOS") {
-          const url = `http://localhost:5000/account/payment?receiptId=${receipt.receiptId}`;
+          const url = `${DOMAIN}/account/payment?receiptId=${receipt.receiptId}`;
           createSession(
             {
               receiptId: receipt.receiptId,
@@ -88,7 +90,7 @@ const Payment = () => {
 
   // Tạo lại phiên thanh toán nếu chưa có URL
   function handleCreateSession(receiptId) {
-    const url = `http://localhost:5000/account/payment?receiptId=${receiptId}`;
+    const url = `${DOMAIN}/account/payment?receiptId=${receiptId}`;
     createSession({ receiptId, approvedUrl: url, cancelUrl: url });
   }
 

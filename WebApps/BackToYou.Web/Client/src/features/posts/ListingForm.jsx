@@ -19,7 +19,6 @@ function ListingForm({ mode }) {
   const { isUpdating, updatePost } = useUpdatePost();
   const [showManual, setShowManual] = useState(false);
 
-  // console.log("post", post )
 
   // Khi có dữ liệu post => reset form
   useEffect(() => {

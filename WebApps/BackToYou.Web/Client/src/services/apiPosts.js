@@ -96,8 +96,6 @@ export async function createPost(formData) {
 export async function updatePost(formData) {
   const fd = new FormData();
 
-  console.log("text", formData.streetAddress, formData.facebook);
-
   fd.append("postId", formData.postId);
   fd.append("categoryId", formData.categoryId);
   fd.append("title", formData.title);

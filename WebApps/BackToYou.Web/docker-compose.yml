@@ -1,0 +1,29 @@
+services:
+  client:
+    build:
+      context: ./Client
+    container_name: client-web
+    ports:
+      - "3000:80"
+    restart: always
+
+  admin:
+    build:
+      context: ./Admin
+    container_name: admin-web
+    ports:
+      - "3001:80"
+    restart: always
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-web
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - admin
+      - client
+    restart: always

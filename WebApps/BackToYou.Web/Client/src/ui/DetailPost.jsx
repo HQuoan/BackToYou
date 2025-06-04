@@ -2,38 +2,21 @@ import { useState } from "react";
 import {
   formatDateTimeVN,
   formatDateVN,
-  formatPhoneNumber,
 } from "../utils/helpers";
 import ImageWithPopup from "./ImageWithPopup";
 import PostTypeBadge from "./PostTypeBadge ";
 import PriorityLabel from "./PriorityLabel";
 import ReportModal from "./ReportModal";
 import { useUser } from "../features/authentication/useUser";
-import toast from "react-hot-toast";
 import { POST_LABEL_FOUND, POST_LABEL_PRIORITY } from "../utils/constants";
-import { useCreateFollower } from "../features/follower/useCreateFollower";
-import { useIsFollower } from "../features/follower/useIsFollower";
-import { useDeleteFollower } from "../features/follower/useDeleteFollower";
-import { useUpdateFollower } from "../features/follower/useUpdateFollower";
 import ContactInfo from "./ContactInfo";
 
 function DetailPost({ post }) {
   const [mainImage, setMainImage] = useState(post.thumbnailUrl);
   const [showReportModal, setShowReportModal] = useState(false);
-  const { isCreating, createFollower } = useCreateFollower();
-  const { isDeleting, deleteFollower } = useDeleteFollower();
-  const { isUpdating, updateFollower } = useUpdateFollower();
-  const { isPending, follower } = useIsFollower(post.postId);
 
-  console.log("follower", follower);
-
-  const { user, isAuthenticated } = useUser();
+  const { user } = useUser();
   const isOwn = user?.id === post?.userId;
-
-  function handleReport() {
-    if (!user) toast.error("Vui lòng đăng nhập để dùng chức năng này!");
-    else setShowReportModal(true);
-  }
 
   function cancelReport() {
     setShowReportModal(false);
