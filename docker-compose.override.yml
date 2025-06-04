@@ -31,11 +31,12 @@ services:
       - ApiSettings__ConfirmEmailUrl=https://localhost:6062/auth/confirm-email
       # - ApiSettings__WebClientUrl=http://localhost:5000
       - ApiSettings__WebClientUrl=http://cineworld.io.vn
+      - MessageBroker__Host=amqp://messagebroker:5672
     depends_on:
       - sqldb
     ports:
       - "6002:8080"
-      - "6062:8081"
+      # - "6062:8081"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
@@ -53,7 +54,7 @@ services:
       - sqldb
     ports:
       - "6003:8080"
-      - "6063:8081"
+      # - "6063:8081"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
@@ -70,7 +71,7 @@ services:
         - sqldb
     ports:
         - "6004:8080"
-        - "6064:8081"
+        # - "6064:8081"
     volumes:
         - /etc/localtime:/etc/localtime:ro
         - /etc/timezone:/etc/timezone:ro
@@ -82,9 +83,10 @@ services:
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
       - ConnectionStrings__DefaultConnection=Server=sqldb;Database=BackToYou_Notification;User Id=sa;Password=Hquoan12345678;Encrypt=False;TrustServerCertificate=True
+      - MessageBroker__Host=amqp://messagebroker:5672
     ports:
       - "6005:8080"
-      - "6065:8081"
+      # - "6065:8081"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
@@ -100,7 +102,7 @@ services:
       - postapi
     ports:
       - "6001:8080"
-      - "6061:8081"
+      # - "6061:8081"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
