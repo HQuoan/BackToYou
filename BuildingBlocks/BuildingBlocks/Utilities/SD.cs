@@ -44,6 +44,7 @@ public static class CookieHelper
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.None,
+                //SameSite = SameSiteMode.Lax,
                 Expires = DateTimeOffset.UtcNow.AddDays(7),
                 Path = "/"
             }
@@ -59,6 +60,7 @@ public static class CookieHelper
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.None,
+                //SameSite = SameSiteMode.Lax,
                 Path = "/"
             }
         );

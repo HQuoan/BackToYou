@@ -24,8 +24,7 @@ IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-// Exception Handler
-builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+
 
 // Add services to the container.
 
@@ -85,6 +84,9 @@ builder.Services.AddScoped<BackendApiAuthenticationHttpClientHandler>();
 builder.AddAppAuthentication();
 builder.Services.AddAuthorization();
 
+// Exception Handler
+builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+
 builder.Services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
@@ -128,6 +130,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.MapHub<NotificationHub>("/hubs/notification");

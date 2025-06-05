@@ -1,7 +1,7 @@
 import * as signalR from '@microsoft/signalr';
 
 export const notificationHub = new signalR.HubConnectionBuilder()
-    .withUrl("https://localhost:5055/hubs/notification", {
+    .withUrl("http://localhost:6005/hubs/notification", {
           withCredentials: true
     })
     .withAutomaticReconnect()
