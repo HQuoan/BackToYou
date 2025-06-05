@@ -12,7 +12,7 @@ using PaymentAPI.Data;
 namespace PaymentAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250417061128_Init")]
+    [Migration("20250605125124_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -101,6 +101,9 @@ namespace PaymentAPI.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("WalletId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Wallets");
                 });

@@ -99,6 +99,9 @@ namespace PaymentAPI.Migrations
 
                     b.HasKey("WalletId");
 
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
                     b.ToTable("Wallets");
                 });
 #pragma warning restore 612, 618

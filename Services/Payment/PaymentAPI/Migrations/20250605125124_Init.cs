@@ -50,6 +50,12 @@ namespace PaymentAPI.Migrations
                 {
                     table.PrimaryKey("PK_Wallets", x => x.WalletId);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Wallets_UserId",
+                table: "Wallets",
+                column: "UserId",
+                unique: true);
         }
 
         /// <inheritdoc />

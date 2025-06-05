@@ -12,7 +12,7 @@ using NotificationAPI.Data;
 namespace NotificationAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250531084542_Init")]
+    [Migration("20250605125041_Init")]
     partial class Init
     {
         /// <inheritdoc />
