@@ -29,4 +29,7 @@ RUN dotnet publish "./PostAPI.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+COPY Services/Post/PostAPI/Data/SeedData/ImportData_vn_units.sql ./Data/SeedData/
+
 ENTRYPOINT ["dotnet", "PostAPI.dll"]

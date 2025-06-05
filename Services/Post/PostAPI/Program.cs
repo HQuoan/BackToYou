@@ -209,6 +209,10 @@ void ApplyMigration()
 
         if (!_db.AdministrativeRegions.Any()) 
         {
+
+            //var basePath = AppContext.BaseDirectory;
+            //var sqlFilePath = Path.Combine(basePath, "Data", "SeedData", "ImportData_vn_units.sql");
+
             var sqlFilePath = "Data/SeedData/ImportData_vn_units.sql";
             //var sqlFilePath = "Data/SeedData/test.sql";
 
