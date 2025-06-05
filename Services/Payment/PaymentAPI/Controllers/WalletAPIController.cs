@@ -168,7 +168,9 @@ public class WalletAPIController : ControllerBase
             throw new BadRequestException("Invalid or missing user ID claim.");
         }
 
-        if (userId != refundDto.UserId)
+        bool isAdmin = User.IsInRole(SD.AdminRole);
+
+        if (!isAdmin && userId != refundDto.UserId)
         {
             throw new ForbiddenException();
         }

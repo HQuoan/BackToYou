@@ -8,6 +8,7 @@ using System.Reflection;
 using BuildingBlocks.Messaging.MassTransit;
 using NotificationAPI.Hubs;
 using Microsoft.AspNetCore.SignalR;
+using NotificationAPI.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -130,7 +131,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.MapHub<NotificationHub>("/hubs/notification");
