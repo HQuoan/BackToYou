@@ -757,6 +757,7 @@ public class PostAPIController : ControllerBase
         await _paymentService.SubtractBalance(feeAmount);
         postFromDb.PostLabel = PostLabel.Priority;
         postFromDb.PriorityDays = priorityDaysValue;
+        postFromDb.PriorityStartAt = DateTime.Now;
         postFromDb.Price = feeAmount;
 
         await _unitOfWork.Post.UpdateAsync(postFromDb);
