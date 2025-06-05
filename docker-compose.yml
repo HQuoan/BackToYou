@@ -39,3 +39,7 @@ volumes:
   sqlserver:
   # sqlserver_post:
 
+networks:
+  api-network:
+
+

@@ -4,11 +4,14 @@ services:
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=Hquoan12345678
-    restart: always
+    # restart: always
     ports:
       - "1400:1433"
     volumes:
       - sqlserver:/var/opt/mssql
+    networks:
+      - api-network
+    restart: on-failure
 
   messagebroker:
     container_name: messagebroker
@@ -16,10 +19,13 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
-    restart: always
+    # restart: always
     ports:
       - "5672:5672"
       - "15672:15672"
+    networks:
+      - api-network
+    restart: on-failure
 
   auth.api:
     environment:
@@ -40,6 +46,9 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
+    networks:
+      - api-network
+    restart: on-failure
 
   postapi:
     environment:
@@ -59,6 +68,9 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
+    networks:
+      - api-network
+    restart: on-failure
 
   paymentapi:
     environment:
@@ -76,6 +88,9 @@ services:
     volumes:
         - /etc/localtime:/etc/localtime:ro
         - /etc/timezone:/etc/timezone:ro
+    networks:
+      - api-network
+    restart: on-failure
 
   notificationapi:
     environment:
@@ -85,12 +100,17 @@ services:
       # - ASPNETCORE_HTTPS_PORTS=8081
       - ConnectionStrings__DefaultConnection=Server=sqldb;Database=BackToYou_Notification;User Id=sa;Password=Hquoan12345678;Encrypt=False;TrustServerCertificate=True
       - MessageBroker__Host=amqp://messagebroker:5672
+    depends_on:
+        - sqldb
     ports:
       - "6005:8080"
       # - "6065:8081"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
+    networks:
+      - api-network
+    restart: on-failure
 
   yarpapigateway:
     environment:
@@ -101,11 +121,16 @@ services:
     depends_on:
       - auth.api
       - postapi
+      - paymentapi
+      - notificationapi
     ports:
       - "6001:8080"
       # - "6061:8081"
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
+    networks:
+      - api-network
+    restart: on-failure
 
 
