@@ -1,16 +1,6 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
-
-//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//    .AddJwtBearer(options =>
-//    {
-//        options.Authority = "http://localhost:5002";
-//        options.Audience = "api_gateway";
-//        options.RequireHttpsMetadata = false;
-//    });
-
 
 // Add services to the container.
 builder.Services.AddReverseProxy()
@@ -31,6 +21,7 @@ var app = builder.Build();
 //app.UseAuthorization();
 
 // Configure the HTTP request pipeline.
+//app.UseWebSockets();
 app.UseRateLimiter();
 
 app.MapReverseProxy();

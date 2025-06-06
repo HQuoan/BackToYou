@@ -8,7 +8,6 @@ using System.Reflection;
 using BuildingBlocks.Messaging.MassTransit;
 using NotificationAPI.Hubs;
 using Microsoft.AspNetCore.SignalR;
-using NotificationAPI.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
