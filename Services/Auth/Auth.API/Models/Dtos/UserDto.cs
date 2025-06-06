@@ -13,4 +13,5 @@ public class UserDto
     public string? Role { get; set; }
     public string? FacebookId { get; set; }
     public string? GoogleId { get; set; }
+    public string? Token { get; set; }
 }

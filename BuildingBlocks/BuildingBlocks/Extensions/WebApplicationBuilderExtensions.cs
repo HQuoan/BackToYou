@@ -67,6 +67,16 @@ public static class WebApplicationBuilderExtensions
                         context.HttpContext.SignInAsync(JwtBearerDefaults.AuthenticationScheme, context.Principal, authProps);
                     }
 
+
+                    // Nếu không thì kiểm tra access_token trong query (dùng cho SignalR)
+                    var accessTokenQuery = context.Request.Query["access_token"];
+                    var path = context.HttpContext.Request.Path;
+                    if (!string.IsNullOrEmpty(accessTokenQuery) &&
+                        (path.StartsWithSegments("/hubs/notification"))) // đường dẫn tới hub
+                    {
+                        context.Token = accessTokenQuery;
+                    }
+
                     return Task.CompletedTask;
                 },
 
