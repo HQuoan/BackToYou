@@ -34,21 +34,21 @@ public class CommentAddedConsumer : IConsumer<CommentAddedEvent>
         await _notificationRepo.SaveAsync();
 
         // Gửi realtime notification tới client
-        //foreach (var uid in evt.RecipientUserIds)
-        //{
-        //    await _hubContext.Clients.User(uid.ToString()).SendAsync("ReceiveNotification", new
-        //    {
-        //        Title = "Bình luận mới",
-        //        Message = evt.Preview ?? "Có bình luận mới về bài viết của bạn",
-        //        Url = $"/{evt.Slug}#comment-{evt.CommentId}",
-        //    });
-        //}
-
-        await _hubContext.Clients.All.SendAsync("ReceiveNotification", new
+        foreach (var uid in evt.RecipientUserIds)
         {
-            Title = "Bình luận mới",
-            Message = evt.Preview ?? "Có bình luận mới về bài viết của bạn",
-            Url = $"/posts/{evt.PostId}#comment-{evt.CommentId}"
-        });
+            await _hubContext.Clients.User(uid.ToString()).SendAsync("ReceiveNotification", new
+            {
+                Title = "Bình luận mới",
+                Message = evt.Preview ?? "Có bình luận mới về bài viết của bạn",
+                Url = $"/{evt.Slug}#comment-{evt.CommentId}",
+            });
+        }
+
+        //await _hubContext.Clients.All.SendAsync("ReceiveNotification", new
+        //{
+        //    Title = "Bình luận mới",
+        //    Message = evt.Preview ?? "Có bình luận mới về bài viết của bạn",
+        //    Url = $"/posts/{evt.PostId}#comment-{evt.CommentId}"
+        //});
     }
 }
