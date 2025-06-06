@@ -140,17 +140,17 @@ builder.Services.AddHttpClient(SD.HttpClient_AI, u => u.BaseAddress = new Uri(bu
 builder.Services.AddMessageBroker(builder.Configuration);
 
 // Add CORS
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowAllOrigins",
-//          policy =>
-//          {
-//              policy.SetIsOriginAllowed(_ => true) // Cho phép tất cả các origin
-//                  .AllowAnyHeader()
-//                  .AllowAnyMethod()
-//                  .AllowCredentials();
-//          });
-//});
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+          policy =>
+          {
+              policy.SetIsOriginAllowed(_ => true) // Cho phép tất cả các origin
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+          });
+});
 
 var app = builder.Build();
 
@@ -163,7 +163,7 @@ app.UseMiddleware<RequestLoggingMiddleware>();
 ApplyMigration();
 
 // Apply CORS Policy
-//app.UseCors("AllowAllOrigins");
+app.UseCors("AllowAllOrigins");
 
 // HTTP Request Pipeline Configuration
 if (app.Environment.IsDevelopment())
