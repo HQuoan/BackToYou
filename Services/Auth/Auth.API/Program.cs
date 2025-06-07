@@ -9,6 +9,7 @@ using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using ImageService;
+using BuildingBlocks.Interceptors;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -125,12 +126,22 @@ builder.Services.AddSwaggerGen(options =>
     }
 });
 
+// HttpContext & HTTP Client
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<BackendApiAuthenticationHttpClientHandler>();
+
 // Authentication & Authorization
 builder.AddAppAuthentication();
 builder.Services.AddAuthorization();
 
 // Exception Handler
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+
+builder.Services.AddScoped<IWalletService, WalletService>();
+
+// HttpClient Configuration for External Services
+builder.Services.AddHttpClient(SD.HttpClient_Payment, u => u.BaseAddress = new Uri(builder.Configuration["ServiceUrls:PaymentAPI"])).AddHttpMessageHandler<BackendApiAuthenticationHttpClientHandler>();
+
 
 // Add CORS
 builder.Services.AddCors(options =>

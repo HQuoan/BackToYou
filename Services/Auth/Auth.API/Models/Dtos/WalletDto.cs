@@ -1,12 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace PaymentAPI.Models.Dtos;
+﻿namespace Auth.API.Models.Dtos;
 
 public class WalletDto
 {
     public Guid? WalletId { get; set; }
     public Guid UserId { get; set; }
     public UserDto? User { get; set; }
-    [Range(0, double.MaxValue, ErrorMessage = "Balance cannot be negative.")]
     public decimal Balance { get; set; }
 }

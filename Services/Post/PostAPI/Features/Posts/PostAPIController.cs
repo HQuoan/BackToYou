@@ -582,7 +582,7 @@ public class PostAPIController : ControllerBase
         {
             PostId = post.PostId,
             UserId = userId,
-            IsSubscribed = false,
+            IsSubscribed = true,
         });
 
         await _unitOfWork.SaveAsync();

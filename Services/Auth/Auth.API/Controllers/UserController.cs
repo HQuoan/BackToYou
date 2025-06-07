@@ -16,8 +16,9 @@ public class UserController : ControllerBase
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IImageUploader _imageUploader;
+    private readonly IWalletService _walletService;
 
-    public UserController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper, AppDbContext db, IImageUploader imageUploader)
+    public UserController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper, AppDbContext db, IImageUploader imageUploader, IWalletService walletService)
     {
         _userManager = userManager;
         _roleManager = roleManager;
@@ -25,19 +26,18 @@ public class UserController : ControllerBase
         _db = db;
         _response = new();
         _imageUploader = imageUploader;
+        _walletService = walletService;
     }
 
     [HttpGet]
     [Authorize]
     public async Task<IActionResult> Get([FromQuery] UserQueryParameters queryParameters)
     {
-        // Build query parameters
         var query = UserFeatures.Build(queryParameters);
-
-        // Apply filters, sorting, and pagination (exclude Role)
         var queryableUsers = _db.ApplicationUsers.AsQueryable();
 
-        if (query.Filters != null && query.Filters.Any()) 
+        // Filter bằng EF Core (ngoại trừ Role)
+        if (query.Filters != null && query.Filters.Any())
         {
             foreach (var filter in query.Filters)
             {
@@ -50,62 +50,78 @@ public class UserController : ControllerBase
             queryableUsers = query.OrderBy(queryableUsers);
         }
 
-        // Retrieve total items before pagination
-        //var totalItemsBeforePagination = queryableUsers.Count();
+        var users = await queryableUsers.ToListAsync();
 
-        var users = await queryableUsers
-            .Skip((query.PageNumber - 1) * query.PageSize)
-            .Take(query.PageSize)
-            .ToListAsync();
-
-        // Retrieve roles for each user
+        // Gán Role cho từng user
         foreach (var user in users)
         {
             var roles = await _userManager.GetRolesAsync(user);
             user.Role = string.Join(", ", roles);
         }
 
-        // Filter by Role (in-memory)
+        // Filter Role (in-memory)
         if (!string.IsNullOrEmpty(queryParameters.Role))
         {
             users = users
-                .Where(u => u.Role.ToLower().Contains(queryParameters.Role.ToLower()))
+                .Where(u => u.Role != null &&
+                            u.Role.ToLower().Contains(queryParameters.Role.ToLower()))
                 .ToList();
         }
 
-        // Sort by Role (in-memory)
-        if (!string.IsNullOrEmpty(queryParameters.OrderBy))
-        {
-            var isDescending = queryParameters.OrderBy.StartsWith("-");
-            var property = isDescending ? queryParameters.OrderBy.Substring(1) : queryParameters.OrderBy;
+        // Sort theo Role (in-memory)
+        var isDescending = queryParameters.OrderBy?.StartsWith("-") == true;
+        var property = isDescending ? queryParameters.OrderBy.Substring(1) : queryParameters.OrderBy;
 
-            if (property.ToLower() == "role")
-            {
-                users = isDescending
-                    ? users.OrderByDescending(u => u.Role).ToList()
-                    : users.OrderBy(u => u.Role).ToList();
-            }
+        if (property?.ToLower() == "role")
+        {
+            users = isDescending
+                ? users.OrderByDescending(u => u.Role).ToList()
+                : users.OrderBy(u => u.Role).ToList();
         }
 
-        // Calculate pagination details
-        var totalFilteredItems = users.Count; // Count after Role filter
+        // Phân trang
+        var totalFilteredItems = users.Count;
         var paginatedUsers = users
             .Skip((query.PageNumber - 1) * query.PageSize)
             .Take(query.PageSize)
             .ToList();
 
+
         // Map to DTO
-        _response.Result = _mapper.Map<IEnumerable<UserDto>>(paginatedUsers);
+        var userDtos = _mapper.Map<IEnumerable<UserDto>>(paginatedUsers);
+
+        List<Guid> userIds = null;
+
+        userIds = userDtos.Select(u => Guid.Parse(u.Id)).Distinct().ToList();
+        var wallets = await _walletService.GetWallets(userIds);
+
+        // Gán thông tin wallet vào từng user
+        if (wallets != null && wallets.Count > 0)
+        {
+            var walletDict = wallets.ToDictionary(u => u.UserId.ToString());
+
+            foreach (var item in userDtos)
+            {
+                if (walletDict.TryGetValue(item.Id, out var wallet))
+                {
+                    item.Wallet = wallet;
+                }
+            }
+        }
+
+
+        _response.Result = userDtos;
         _response.Pagination = new PaginationDto
         {
             TotalItems = totalFilteredItems,
-            TotalItemsPerPage = queryParameters.PageSize,
-            CurrentPage = queryParameters.PageNumber,
-            TotalPages = (int)Math.Ceiling((double)totalFilteredItems / queryParameters.PageSize)
+            TotalItemsPerPage = query.PageSize,
+            CurrentPage = query.PageNumber,
+            TotalPages = (int)Math.Ceiling((double)totalFilteredItems / query.PageSize)
         };
 
         return Ok(_response);
     }
+
 
     [HttpGet("new-user-count/{lastDay}")]
     public async Task<IActionResult> GetNewUserCount(int lastDay = 7)

@@ -31,6 +31,7 @@ services:
       - ApiSettings__ConfirmEmailUrl=https://api.backtoyou.io.vn/auth-service/auth/confirm-email
       # - ApiSettings__WebClientUrl=http://localhost:5000
       - ApiSettings__WebClientUrl=https://backtoyou.io.vn
+      - ServiceUrls__PaymentAPI=http://paymentapi:8080
     depends_on:
       - sqldb
     ports:

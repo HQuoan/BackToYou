@@ -14,4 +14,5 @@ public class UserDto
     public string? FacebookId { get; set; }
     public string? GoogleId { get; set; }
     public string? Token { get; set; }
+    public WalletDto? Wallet { get; set; }
 }
