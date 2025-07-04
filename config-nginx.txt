@@ -1,0 +1,136 @@
+# root@cloud:/etc/nginx/sites-available# cat backtoyou.io.vn
+# Redirect HTTP to HTTPS
+server {
+    listen 80;
+    server_name backtoyou.io.vn admin.backtoyou.io.vn auth.backtoyou.io.vn post.backtoyou.io.vn payment.backtoyou.io.vn notification.backtoyou.io.vn api.backtoyou.io.vn social.backtoyou.io.vn;
+    return 301 https://$host$request_uri;
+}
+
+# --- CLIENT WEB ---
+server {
+    listen 443 ssl;
+    server_name backtoyou.io.vn;
+    ssl_certificate /etc/letsencrypt/live/backtoyou.io.vn/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/backtoyou.io.vn/privkey.pem; # managed by Certbot
+
+
+    location / {
+        proxy_pass http://localhost:3000;
+        include proxy_params;
+    }
+
+}
+
+# --- ADMIN WEB ---
+server {
+    listen 443 ssl;
+    server_name admin.backtoyou.io.vn;
+    ssl_certificate /etc/letsencrypt/live/admin.backtoyou.io.vn-0001/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/admin.backtoyou.io.vn-0001/privkey.pem; # managed by Certbot
+
+
+    location / {
+        proxy_pass http://localhost:3001;
+        include proxy_params;
+    }
+
+}
+
+# --- AUTH SERVICE ---
+server {
+    listen 443 ssl;
+    server_name auth.backtoyou.io.vn;
+    ssl_certificate /etc/letsencrypt/live/auth.backtoyou.io.vn/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/auth.backtoyou.io.vn/privkey.pem; # managed by Certbot
+
+
+    location / {
+        proxy_pass http://localhost:6002;
+        include proxy_params;
+    }
+
+
+}
+
+# --- POST SERVICE ---
+server {
+    listen 443 ssl;
+    server_name post.backtoyou.io.vn;
+    ssl_certificate /etc/letsencrypt/live/post.backtoyou.io.vn/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/post.backtoyou.io.vn/privkey.pem; # managed by Certbot
+
+
+    location / {
+        proxy_pass http://localhost:6003;
+        include proxy_params;
+    }
+
+
+}
+
+# --- PAYMENT SERVICE ---
+server {
+    listen 443 ssl;
+    server_name payment.backtoyou.io.vn;
+    ssl_certificate /etc/letsencrypt/live/payment.backtoyou.io.vn/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/payment.backtoyou.io.vn/privkey.pem; # managed by Certbot
+
+
+    location / {
+        proxy_pass http://localhost:6004;
+        include proxy_params;
+    }
+
+
+}
+
+# --- NOTIFICATION SERVICE ---
+server {
+    listen 443 ssl;
+    server_name notification.backtoyou.io.vn;
+    ssl_certificate /etc/letsencrypt/live/notification.backtoyou.io.vn/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/notification.backtoyou.io.vn/privkey.pem; # managed by Certbot
+
+
+    location / {
+         proxy_pass http://localhost:6005;
+         include proxy_params;
+         proxy_http_version  1.1;
+         proxy_cache_bypass  $http_upgrade;
+         proxy_set_header    Connection $http_connection;
+         proxy_set_header    Upgrade $http_upgrade;
+    }
+
+
+}
+
+# --- YARP GATEWAY ---
+server {
+    listen 443 ssl;
+    server_name api.backtoyou.io.vn;
+    ssl_certificate /etc/letsencrypt/live/api.backtoyou.io.vn/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/api.backtoyou.io.vn/privkey.pem; # managed by Certbot
+
+
+    location / {
+         proxy_pass http://localhost:6001;
+         include proxy_params;
+    }
+
+
+}
+
+# --- SOCIAL WEB ---
+server {
+    listen 443 ssl;
+    server_name social.backtoyou.io.vn;
+    ssl_certificate /etc/letsencrypt/live/social.backtoyou.io.vn/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/social.backtoyou.io.vn/privkey.pem; # managed by Certbot
+
+
+    location / {
+        proxy_pass http://localhost:3005;
+        include proxy_params;
+    }
+
+}
